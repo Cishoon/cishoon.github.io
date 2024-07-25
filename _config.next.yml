@@ -29,72 +29,14 @@ darkmode: true
 # ================= Site Information Settings ================= #
 # ============================================================= #
 
-creative_commons:
-  license: by-nc-sa
-  size: big
-  sidebar: true
-
 
 # ============================================================= #
 # ======================= Menu Settings ======================= #
 # ============================================================= #
 
 menu:
-  home: / || fa fa-bell
-
-  Docs:
-    default: /docs/ || fa fa-book
-
-    Getting Started:
-      default: /getting-started/ || fa fa-flag
-      Installation: /installation.html || fa fa-download
-      Deployment: /deployment.html || fa fa-upload
-      Configuration: /configuration.html || fa fa-wrench
-      Upgrade: /upgrade.html || fa fa-history
-
-    Theme Settings:
-      default: /theme-settings/ || fa fa-star
-      Sidebar: /sidebar.html || fa fa-bars
-      Footer: /footer.html || fa fa-sticky-note
-      Posts: /posts.html || fa fa-paragraph
-      Custom Pages: /custom-pages.html || fa fa-swatchbook
-      Miscellaneous: /miscellaneous.html || fa fa-university
-      SEO: /seo.html || fa fa-external-link-square-alt
-      i18n: /internationalization.html || fa fa-language
-
-    Tag Plugins:
-      default: /tag-plugins/ || fa fa-rocket
-      Button: /button.html || fa fa-cube
-      Caniuse: /caniuse.html || fa fa-signal
-      Group Pictures: /group-pictures.html || fa fa-images
-      Label: /label.html || fa fa-hat-wizard
-      Link Grid: /link-grid.html || fa fa-grip-vertical
-      Mermaid: /mermaid.html || fa fa-project-diagram
-      WaveDrom: /wavedrom.html || fa fa-diagram-predecessor
-      Note: /note.html || fa fa-adjust
-      PDF: /pdf.html || fa fa-file-pdf
-      Tabs: /tabs.html || fa fa-columns
-
-    Third Party Plugins:
-      default: /third-party-services/ || fa fa-puzzle-piece
-      Math Equations: /math-equations.html || fa fa-square-root-alt
-      External Libraries: /external-libraries.html || fa fa-lightbulb
-      Comment Systems: /comments.html || fa fa-comment-alt
-      Post Widgets: /post-widgets.html || fa fa-gift
-      Statistics and Analytics: /statistics-and-analytics.html || fa fa-chart-pie
-      Search Services: /search-services.html || fab fa-algolia
-      Chat Services: /chat-services.html || fa fa-comments
-
-    Advanced Settings:
-      default: /advanced-settings/ || fa fa-cog
-      Vendors: /vendors.html || fa fa-plug
-      Custom Files: /custom-files.html || fa fa-palette
-      Injects: injects.html || fa fa-layer-group
-      Front Matter: /front-matter.html || fa fa-edit
-
-    Troubleshooting: /troubleshooting.html || fa fa-life-ring
-
-  Plugins: /plugins/ || fa fa-flask
+  home: / || fa fa-home
+  notes: /notes/ || fa fa-book
   archives: /archives/ || fa fa-archive
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
@@ -114,14 +56,15 @@ sidebar:
   padding: 18
   offset: 12
 
+site_state: false
+
 avatar:
-  url: /images/logo.svg
+  url: /images/cishoon.jpg
   rounded: true
 
 social:
-  GitHub: https://github.com/next-theme || fab fa-github
-  Crowdin: https://crowdin.com/project/hexo-theme-next || fa fa-globe-asia
-  RSS: /atom.xml || fa fa-rss
+  GitHub: https://github.com/cishoon || fab fa-github
+  哔哩哔哩: https://space.bilibili.com/106695488 || fa-brands fa-bilibili
 
 social_icons:
   enable: true
@@ -130,7 +73,7 @@ social_icons:
 
 toc:
   enable: true
-  number: true
+  number: false
   wrap: true
 
 
@@ -139,29 +82,29 @@ toc:
 # ============================================================= #
 
 footer:
-  since: 2014
+  since: 2024
   icon:
     name: fa fa-heart
     animated: true
     color: "#808080"
-  copyright: NexT
+  copyright: Cishoon
+  powered: false
 
 
 # ============================================================= #
 # ======================= Post Settings ======================= #
 # ============================================================= #
 
+read_more_btn: true
+
 post_meta:
+  item_text: false
   updated_at:
     enable: false
 
-symbols_count_time:
-  separated_meta: true
-  item_text_total: true
+tag_icon: true
 
-post_edit:
-  enable: true
-  url: https://github.com/next-theme/theme-next-docs/edit/master/source/
+post_navigation: right
 
 
 # ============================================================= #
@@ -185,7 +128,7 @@ back2top:
 
 github_banner:
   enable: true
-  permalink: https://github.com/next-theme/hexo-theme-next
+  permalink: https://github.com/Cishoon
   title: Fork NexT on GitHub
 
 font:
@@ -252,7 +195,7 @@ comments:
   lazyload: true
 
 disqus:
-  enable: true
+  enable: false
   shortname: next-theme
   count: true
 
@@ -281,3 +224,4 @@ local_search:
 vendors:
   internal: cdnjs
   plugins: cdnjs
+

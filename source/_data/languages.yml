@@ -1,22 +1,17 @@
-en:
-  name: English
-  subtitle: Theme for Hexo
-  author: Theme NexT
-  description: Stay Simple. Stay NexT.
-ru:
-  name: Русский
-  subtitle: Тема для Hexo
-  author: Тема NexT
-  description: Ставь просто. Ставь NexT.
+zh-CN:
   menu:
-    News: Новости
-    Docs: Документация
-    Getting Started: Начало работы
-    Theme Settings: Настройки темы
-    Third Party Plugins: Сторонние приложения
-    Algolia Search: Поиск Algolia
-    Tag Plugins: Плагины тэгов
-    Advanced Settings: Расширенные настройки
-    FAQ's: ЧаВо
-zh-TW:
-  name: Chinese
+    life: 生活
+    observer: 观点
+    arts: 文艺
+    notes: 笔记
+    album: 光影
+    guestbook: 留言
+    # search: 搜索
+  sidebar:
+    toc: 目 录
+  post:
+    comments:
+      artalk: 评论数
+  counter:
+    tag_cloud:
+      other: '<strong><i class="fas fa-fw fa-tags"></i> 目前共计 %d 个标签</strong>'

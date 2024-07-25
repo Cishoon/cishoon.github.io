@@ -8,6 +8,7 @@ description: 一条数学公式 + 一个简单的故事
 keywords: "Cishoon"
 language: zh-CN
 timezone: Asia/Shanghai
+author: Cishoon
 
 # URL
 url: http://cishoon.top
@@ -54,6 +55,7 @@ index_generator:
 # Category & Tag
 default_category: uncategorized
 category_map:
+  笔记: notes
 tag_map:
 
 # Date / Time format
@@ -71,7 +73,7 @@ archive_generator:
   per_page: 12
   yearly: true
   monthly: true
-  daily: false
+  daily: true
 
 marked:
   # For preserve original quotes in code blocks.
