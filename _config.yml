@@ -99,5 +99,5 @@ symbols_count_time:
 
 deploy:
   type: git
-  repo: https://github.com/Cishoon/cishoon.github.io.git
+  repo: git@github.com:Cishoon/cishoon.github.io.git
   branch: main
