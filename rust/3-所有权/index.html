@@ -28,17 +28,17 @@
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
 <meta property="og:description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  本文记录了 Rust 所有权 (ownership) 相关的内容。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/Cishoon/pic-bed/raw/master/202407292226831.svg">
-<meta property="og:image" content="https://gitee.com/Cishoon/pic-bed/raw/master/202407292223784.png">
-<meta property="og:image" content="https://gitee.com/Cishoon/pic-bed/raw/master/202407292253395.svg">
-<meta property="og:image" content="https://gitee.com/Cishoon/pic-bed/raw/master/202407292254851.svg">
+<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg">
+<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292223784.png">
+<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292253395-2850267.svg">
+<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292254851.svg">
 <meta property="article:published_time" content="2024-07-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-07-29T15:30:36.646Z">
+<meta property="article:modified_time" content="2024-08-05T09:31:18.693Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="Rust">
 <meta property="article:tag" content="学习笔记">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/Cishoon/pic-bed/raw/master/202407292226831.svg">
+<meta name="twitter:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg">
 
 
 <link rel="canonical" href="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/">
@@ -100,7 +100,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">3</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">7</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -291,9 +291,9 @@
 <p>这里说简单变量类型不够严谨，准确说是实现了 Copy trait 的类型。</p>
 </blockquote>
 <p>对于复杂类型的变量，例如 <code>String</code> ，需要在堆中分配空间，在栈中压入一个<strong>指针</strong>，指向堆中的空间。</p>
-<p><img src="https://gitee.com/Cishoon/pic-bed/raw/master/202407292226831.svg" alt="String in memory" loading="lazy"></p>
+<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg" alt="String in memory" loading="lazy"></p>
 <p>此类变量的类型在 Rust 中显示为 <code>&#123;unknown&#125;</code> ，</p>
-<p><img src="https://gitee.com/Cishoon/pic-bed/raw/master/202407292223784.png" alt="image-20240729222344611" loading="lazy"></p>
+<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292223784.png" alt="image-20240729222344611" loading="lazy"></p>
 <figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y); <span class="comment">// 报错，x无法使用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>在执行 <code>let y = x;</code> 时，并不是像其他语言那样浅拷贝，创建了第二个指针 <code>y</code> 指向相同的内存空间。</p>
@@ -309,7 +309,7 @@
 <p>如果要深拷贝，使用 <code>clone</code> 方法。</p>
 <figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x.<span class="title function_ invoke__">clone</span>();</span><br><span class="line">    <span class="title function_ invoke__">test</span>(y.<span class="title function_ invoke__">clone</span>());</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test</span>(s: <span class="type">String</span>) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://gitee.com/Cishoon/pic-bed/raw/master/202407292253395.svg" alt="s1 and s2 to two places" loading="lazy"></p>
+<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292253395-2850267.svg" alt="s1 and s2 to two places" loading="lazy"></p>
 <p>总结一下，就是这个非常暴力、强硬的规则，保证了 Rust 的内存安全：</p>
 <ul>
 <li>一个内存空间，有且仅有一个变量具有其所有权</li>
@@ -322,7 +322,7 @@
 <p> 所以 Rust 还提供了 <strong>引用</strong> 的概念。</p>
 <figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">len</span> = <span class="title function_ invoke__">calculate_length</span>(&amp;s1);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_length</span>(s: &amp;<span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">usize</span> &#123;</span><br><span class="line">    s.<span class="title function_ invoke__">len</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://gitee.com/Cishoon/pic-bed/raw/master/202407292254851.svg" alt="&amp;String s pointing at String s1" loading="lazy"></p>
+<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292254851.svg" alt="&amp;String s pointing at String s1" loading="lazy"></p>
 <p>这些 &amp; 符号就是 <strong>引用</strong>，它们允许你使用值但不获取其所有权。</p>
 <p>应用的变量被离开作用域时，不会释放内存空间。这很正常，因为只有具有所有权的变量离开作用域时才会释放内存空间，而引用不具有所有权。</p>
 <p>同样的，默认情况下引用是 <strong>只读</strong> 的。必须显示的规定引用的 <strong>可写</strong> 性：</p>
