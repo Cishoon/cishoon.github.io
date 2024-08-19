@@ -21,21 +21,21 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
 
-    <meta name="description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud 开始。  总的来说，Spring Boot 提供构建应用的基础，Spring Cloud 在此基础上提供了分布式系统和微服务架构所需的工具和支持。">
+    <meta name="description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud 开始。   31722821596_.pic  总的来说，Spring Boot 提供构建应用的基础，Spring Cloud 在此基础上提供了分布式系统和微服务架构所需的工具和支持。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring Cloud - 注册中心、中央配置、网关">
 <meta property="og:url" content="http://cishoon.top/cloud-native/spring-cloud/index.html">
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
-<meta property="og:description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud 开始。  总的来说，Spring Boot 提供构建应用的基础，Spring Cloud 在此基础上提供了分布式系统和微服务架构所需的工具和支持。">
+<meta property="og:description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud 开始。   31722821596_.pic  总的来说，Spring Boot 提供构建应用的基础，Spring Cloud 在此基础上提供了分布式系统和微服务架构所需的工具和支持。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cishoon.top/spring-cloud/202408050942244.jpg">
+<meta property="og:image" content="http://cishoon.top/cloud-native/spring-cloud/202408050942244.jpg">
 <meta property="og:image" content="https://gitee.com/Cishoon/pic-bed/raw/master/202408051045349.png">
 <meta property="article:published_time" content="2024-08-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-08-05T09:39:01.575Z">
+<meta property="article:modified_time" content="2024-08-05T13:51:19.381Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="实习，SpringCloud，微服务">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cishoon.top/spring-cloud/202408050942244.jpg">
+<meta name="twitter:image" content="http://cishoon.top/cloud-native/spring-cloud/202408050942244.jpg">
 
 
 <link rel="canonical" href="http://cishoon.top/cloud-native/spring-cloud/">
@@ -62,7 +62,119 @@
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
 <link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -148,7 +260,9 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%EF%BC%88Eureka%EF%BC%89"><span class="nav-text">1 注册中心（Eureka）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Eureka-%E5%90%8D%E5%AD%97%E7%94%B1%E6%9D%A5"><span class="nav-text">1.1 Eureka 名字由来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84"><span class="nav-text">1.2 网络架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="nav-text">1.2.1 注册中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85"><span class="nav-text">1.2.2 服务提供者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E8%80%85"><span class="nav-text">1.2.3 服务消费者</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RestTemplate%E7%9A%84%E7%AE%80%E5%8C%96"><span class="nav-text">RestTemplate的简化</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%B8%AD%E5%A4%AE%E9%85%8D%E7%BD%AE%EF%BC%88Spring-Cloud-Config%EF%BC%89"><span class="nav-text">2 中央配置（Spring Cloud Config）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%BD%91%E5%85%B3%EF%BC%88Spring-Cloud-Gateway"><span class="nav-text">3 网关（Spring Cloud Gateway)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Cloud-Gateway-%E7%AE%80%E4%BB%8B"><span class="nav-text">Spring Cloud Gateway 简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E6%88%90-Spring-Cloud-Gateway"><span class="nav-text">集成 Spring Cloud Gateway</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA-Spring-Cloud-Gateway-%E9%A1%B9%E7%9B%AE"><span class="nav-text">1. 创建 Spring Cloud Gateway 项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE-Gateway"><span class="nav-text">2. 配置 Gateway</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="nav-text">3. 启动类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%92%8C%E6%B5%8B%E8%AF%95"><span class="nav-text">启动和测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95-Gateway-%E8%B7%AF%E7%94%B1"><span class="nav-text">测试 Gateway 路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-text">总结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83eureka"><span class="nav-text">1 注册中心（Eureka）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#eureka-%E5%90%8D%E5%AD%97%E7%94%B1%E6%9D%A5"><span class="nav-text">1.1 Eureka 名字由来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84"><span class="nav-text">1.2 网络架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="nav-text">1.2.1 注册中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85"><span class="nav-text">1.2.2 服务提供者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E8%80%85"><span class="nav-text">1.2.3 服务消费者</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#resttemplate%E7%9A%84%E7%AE%80%E5%8C%96"><span class="nav-text">RestTemplate的简化</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%AD%E5%A4%AE%E9%85%8D%E7%BD%AEspring-cloud-config"><span class="nav-text">2 中央配置（Spring Cloud
+Config）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E5%85%B3spring-cloud-gateway"><span class="nav-text">3 网关（Spring Cloud Gateway)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-cloud-gateway-%E7%AE%80%E4%BB%8B"><span class="nav-text">Spring Cloud Gateway 简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E6%88%90-spring-cloud-gateway"><span class="nav-text">集成 Spring Cloud Gateway</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-spring-cloud-gateway-%E9%A1%B9%E7%9B%AE"><span class="nav-text">1. 创建 Spring Cloud Gateway
+项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-gateway"><span class="nav-text">2. 配置 Gateway</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="nav-text">3. 启动类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%92%8C%E6%B5%8B%E8%AF%95"><span class="nav-text">启动和测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95-gateway-%E8%B7%AF%E7%94%B1"><span class="nav-text">测试 Gateway 路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-text">总结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -256,135 +370,163 @@
     <div class="post-body" itemprop="articleBody"><blockquote>
 <p>本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结</p>
 </blockquote>
-<p>实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud 开始。</p>
-<p><img src="/./spring-cloud/202408050942244.jpg" alt="31722821596_.pic" loading="lazy"></p>
-<p>总的来说，Spring Boot 提供构建应用的基础，Spring Cloud 在此基础上提供了分布式系统和微服务架构所需的工具和支持。</p>
+<p>实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud
+开始。</p>
+<figure>
+<img src="/cloud-native/spring-cloud/202408050942244.jpg" alt="31722821596_.pic">
+<figcaption aria-hidden="true">31722821596_.pic</figcaption>
+</figure>
+<p>总的来说，Spring Boot 提供构建应用的基础，Spring Cloud
+在此基础上提供了分布式系统和微服务架构所需的工具和支持。</p>
 <span id="more"></span>
-
-
-
-<h1 id="1-注册中心（Eureka）"><a href="#1-注册中心（Eureka）" class="headerlink" title="1 注册中心（Eureka）"></a>1 注册中心（Eureka）</h1><h2 id="1-1-Eureka-名字由来"><a href="#1-1-Eureka-名字由来" class="headerlink" title="1.1 Eureka 名字由来"></a>1.1 Eureka 名字由来</h2><p>“Eureka”是希腊语，意思是“我发现了！”</p>
+<h1 id="注册中心eureka">1 注册中心（Eureka）</h1>
+<h2 id="eureka-名字由来">1.1 Eureka 名字由来</h2>
+<p>“Eureka”是希腊语，意思是“我发现了！”</p>
 <p>源自经典的 <strong>阿基米德洗澡时发现浮力原理</strong> 小故事。</p>
 <blockquote>
 <p>阿基米德在洗澡时发现了证明王冠是否纯金的方法(黄金密度)，他激动地一边大喊“Eureka！”一边跳出澡盆奔去王宫，连衣服都忘了穿。后来人们用Eureka这个词来形容洞察浮现的瞬间。</p>
 </blockquote>
-<h2 id="1-2-网络架构"><a href="#1-2-网络架构" class="headerlink" title="1.2 网络架构"></a>1.2 网络架构</h2><p>一个最简单的示例如下：</p>
-<p><img src="https://gitee.com/Cishoon/pic-bed/raw/master/202408051045349.png" alt="image-20240805104516240" loading="lazy"></p>
-<p>要记住这个架构是一个微服务架构，将各个功能的实现分布式地部署在多个服务器中。每一个微服务都是独立的Springboot App，分为以下三类：</p>
-<ol>
+<h2 id="网络架构">1.2 网络架构</h2>
+<p>一个最简单的示例如下：</p>
+<figure>
+<img src="https://gitee.com/Cishoon/pic-bed/raw/master/202408051045349.png" alt="image-20240805104516240">
+<figcaption aria-hidden="true">image-20240805104516240</figcaption>
+</figure>
+<p>要记住这个架构是一个微服务架构，将各个功能的实现分布式地部署在多个服务器中。每一个微服务都是独立的Springboot
+App，分为以下三类：</p>
+<ol type="1">
 <li><strong>Eureka Server（注册中心）</strong></li>
 <li><strong>Eureka Client（服务提供者）</strong></li>
 <li><strong>Eureka Client（服务消费者）</strong></li>
 </ol>
-<h3 id="1-2-1-注册中心"><a href="#1-2-1-注册中心" class="headerlink" title="1.2.1 注册中心"></a>1.2.1 注册中心</h3><p><strong>注册中心</strong>是一个中央服务器，其他微服务都知道注册中心的Url。</p>
-<p>只需要增加配置，并在入口处增加 <code>@EnableEurekaServer</code> 注解。</p>
+<h3 id="注册中心">1.2.1 注册中心</h3>
+<p><strong>注册中心</strong>是一个中央服务器，其他微服务都知道注册中心的Url。</p>
+<p>只需要增加配置，并在入口处增加 <code>@EnableEurekaServer</code>
+注解。</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">8761</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">    <span class="attr">client:</span></span><br><span class="line">        <span class="attr">register-with-eureka:</span> <span class="literal">false</span></span><br><span class="line">        <span class="attr">fetch-registry:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">server:</span></span><br><span class="line">        <span class="attr">enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EurekaServerApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(EurekaServerApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="1-2-2-服务提供者"><a href="#1-2-2-服务提供者" class="headerlink" title="1.2.2 服务提供者"></a>1.2.2 服务提供者</h3><p><strong>服务提供者</strong>实现了一部分的 REST 接口，即实现 <code>Controller</code>。在启动时会连接上注册中心，将他提供的接口注册到Eureka Server。可以有多个提供者提供相同的接口。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EurekaServerApplication</span> {</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {</span><br><span class="line">        SpringApplication.run(EurekaServerApplication.class, args);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="服务提供者">1.2.2 服务提供者</h3>
+<p><strong>服务提供者</strong>实现了一部分的 REST 接口，即实现
+<code>Controller</code>。在启动时会连接上注册中心，将他提供的接口注册到Eureka
+Server。可以有多个提供者提供相同的接口。</p>
 <p>服务提供者在配置文件中设置实例名称，以及注册中心的Url</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8081</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">provider-service</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://localhost:8761/eureka/</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="1-2-3-服务消费者"><a href="#1-2-3-服务消费者" class="headerlink" title="1.2.3 服务消费者"></a>1.2.3 服务消费者</h3><p><strong>服务消费者</strong>的工作流程：</p>
+<h3 id="服务消费者">1.2.3 服务消费者</h3>
+<p><strong>服务消费者</strong>的工作流程：</p>
 <ul>
-<li>消费者发送请求 <code>http://provider-service/hello</code>。（这里的 <code>provider-service</code> 就是服务提供者设置的实例名称，<code>hello</code> 是提供者已经实现的一个接口。）</li>
-<li><code>RestTemplate</code> 查询 Eureka 注册中心，获取 <code>provider-service</code> 的所有实例地址。</li>
+<li>消费者发送请求 <code>http://provider-service/hello</code>。（这里的
+<code>provider-service</code>
+就是服务提供者设置的实例名称，<code>hello</code>
+是提供者已经实现的一个接口。）</li>
+<li><code>RestTemplate</code> 查询 Eureka 注册中心，获取
+<code>provider-service</code> 的所有实例地址。</li>
 <li>负载均衡器选择一个实例，将请求路由到该实例。</li>
 </ul>
 <p>代码实现是：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConsumerController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/invoke&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">invokeProviderService</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(<span class="string">&quot;http://provider-service/hello&quot;</span>, String.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在配置中设置 <code>RestTemplate</code> ，增加 <code>@loadBalanced</code> 负载均衡注解：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="keyword">public</span> RestTemplate <span class="title function_">restTemplate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RestTemplate</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="RestTemplate的简化"><a href="#RestTemplate的简化" class="headerlink" title="RestTemplate的简化"></a>RestTemplate的简化</h4><blockquote>
-<p><code>RestTemplate</code> 是 Spring 提供的一个同步 HTTP 客户端，用于简化与 RESTful 服务的通信。它提供了多种便捷的方法，可以轻松地执行各种 HTTP 请求（如 GET、POST、PUT、DELETE 等）并处理响应。<code>RestTemplate</code> 可以自动处理请求和响应的序列化和反序列化，使得与 REST API 的交互变得更加简洁和直观。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConsumerController</span> {</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping("/invoke")</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">invokeProviderService</span><span class="params">()</span> {</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(<span class="string">"http://provider-service/hello"</span>, String.class);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>在配置中设置 <code>RestTemplate</code> ，增加
+<code>@loadBalanced</code> 负载均衡注解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppConfig</span> {</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="keyword">public</span> RestTemplate <span class="title function_">restTemplate</span><span class="params">()</span> {</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RestTemplate</span>();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h4 id="resttemplate的简化">RestTemplate的简化</h4>
+<blockquote>
+<p><code>RestTemplate</code> 是 Spring 提供的一个同步 HTTP
+客户端，用于简化与 RESTful
+服务的通信。它提供了多种便捷的方法，可以轻松地执行各种 HTTP 请求（如
+GET、POST、PUT、DELETE 等）并处理响应。<code>RestTemplate</code>
+可以自动处理请求和响应的序列化和反序列化，使得与 REST API
+的交互变得更加简洁和直观。</p>
 </blockquote>
-<p><code>@LoadBalanced</code> 注解是 Spring Cloud 实现的，会自动完成以下步骤：</p>
-<ol>
-<li><strong>服务发现</strong>：从 Eureka 注册中心获取指定服务的所有可用实例。</li>
+<p><code>@LoadBalanced</code> 注解是 Spring Cloud
+实现的，会自动完成以下步骤：</p>
+<ol type="1">
+<li><strong>服务发现</strong>：从 Eureka
+注册中心获取指定服务的所有可用实例。</li>
 <li><strong>负载均衡</strong>：根据负载均衡策略（默认是轮询）选择一个实例。</li>
 <li><strong>请求转发</strong>：将请求转发到选择的实例。</li>
 </ol>
-<p>如果不使用 <code>@LoadBalance</code> 注解，完整的 <code>invoke</code> 接口实现如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cn.hutool.http.HttpUtil;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.ServiceInstance;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.discovery.DiscoveryClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConsumerController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DiscoveryClient discoveryClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/invoke&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">invokeProviderService</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 获取 provider-service 的所有实例</span></span><br><span class="line">        List&lt;ServiceInstance&gt; instances = discoveryClient.getInstances(<span class="string">&quot;provider-service&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (instances == <span class="literal">null</span> || instances.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;No instances available for provider-service&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 随机选择一个实例（简单的负载均衡策略）</span></span><br><span class="line">        <span class="type">ServiceInstance</span> <span class="variable">selectedInstance</span> <span class="operator">=</span> instances.get(random.nextInt(instances.size()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构造服务URL</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> selectedInstance.getUri().toString() + <span class="string">&quot;/hello&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用 Hutool 发送 HTTP 请求</span></span><br><span class="line">        <span class="keyword">return</span> HttpUtil.get(url);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h1 id="2-中央配置（Spring-Cloud-Config）"><a href="#2-中央配置（Spring-Cloud-Config）" class="headerlink" title="2 中央配置（Spring Cloud Config）"></a>2 中央配置（Spring Cloud Config）</h1><p>原理差不多。中央配置与服务注册的逻辑是独立的，他们互不相关。</p>
-<p>也分为 <strong>config-client</strong> 和 <strong>config-server</strong>.</p>
+<p>如果不使用 <code>@LoadBalance</code> 注解，完整的 <code>invoke</code>
+接口实现如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cn.hutool.http.HttpUtil;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.ServiceInstance;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.discovery.DiscoveryClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConsumerController</span> {</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DiscoveryClient discoveryClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping("/invoke")</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">invokeProviderService</span><span class="params">()</span> {</span><br><span class="line">        <span class="comment">// 获取 provider-service 的所有实例</span></span><br><span class="line">        List&lt;ServiceInstance&gt; instances = discoveryClient.getInstances(<span class="string">"provider-service"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (instances == <span class="literal">null</span> || instances.isEmpty()) {</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">"No instances available for provider-service"</span>);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 随机选择一个实例（简单的负载均衡策略）</span></span><br><span class="line">        <span class="type">ServiceInstance</span> <span class="variable">selectedInstance</span> <span class="operator">=</span> instances.get(random.nextInt(instances.size()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构造服务URL</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> selectedInstance.getUri().toString() + <span class="string">"/hello"</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用 Hutool 发送 HTTP 请求</span></span><br><span class="line">        <span class="keyword">return</span> HttpUtil.get(url);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h1 id="中央配置spring-cloud-config">2 中央配置（Spring Cloud
+Config）</h1>
+<p>原理差不多。中央配置与服务注册的逻辑是独立的，他们互不相关。</p>
+<p>也分为 <strong>config-client</strong> 和
+<strong>config-server</strong>.</p>
 <p>配置文件参考网上其他教程。</p>
 <hr>
-<p>我测试过程中遇到一个问题，client一直没有向 server 发送获取配置的请求。</p>
+<p>我测试过程中遇到一个问题，client一直没有向 server
+发送获取配置的请求。</p>
 <p>原因：</p>
 <p><code>pom.xml</code> 中必须有以下配置（开始运行时获取配置）</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-config<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>并且不能有 server 的依赖：</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-config-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我就是在client的 <code>pom.xml</code> 里不小心赋值进去了 <code>config-server</code> 的依赖，导致一直没有获取配置。</p>
+<p>我就是在client的 <code>pom.xml</code> 里不小心赋值进去了
+<code>config-server</code> 的依赖，导致一直没有获取配置。</p>
 <hr>
 <p>另外，有两个设计思路：</p>
-<ol>
-<li>config-client 连接 config-server，自动获取 config-server 的注册中心</li>
+<ol type="1">
+<li>config-client 连接 config-server，自动获取 config-server
+的注册中心</li>
 <li>设置注册中心，获取注册中心里的 config-server</li>
 </ol>
 <p>总之目的就是有一个统一的配置文件管理仓库，所有微服务启动时都能获取到最新的配置。</p>
-<h1 id="3-网关（Spring-Cloud-Gateway"><a href="#3-网关（Spring-Cloud-Gateway" class="headerlink" title="3 网关（Spring Cloud Gateway)"></a>3 网关（Spring Cloud Gateway)</h1><p>也是一个单独的应用。通过集成 Spring Cloud Gateway，可以在微服务架构中实现集中路由和过滤功能。</p>
+<h1 id="网关spring-cloud-gateway">3 网关（Spring Cloud Gateway)</h1>
+<p>也是一个单独的应用。通过集成 Spring Cloud
+Gateway，可以在微服务架构中实现集中路由和过滤功能。</p>
 <p>贴一下GPT的回答。</p>
-<h3 id="Spring-Cloud-Gateway-简介"><a href="#Spring-Cloud-Gateway-简介" class="headerlink" title="Spring Cloud Gateway 简介"></a>Spring Cloud Gateway 简介</h3><p>Spring Cloud Gateway 是一种基于 Spring Framework 5、Spring Boot 2 和 Project Reactor 的 API 网关，旨在为微服务架构提供路由、过滤、监控和安全功能。与 Zuul 不同，Spring Cloud Gateway 使用非阻塞的 WebFlux 框架，这使得它在处理高并发请求时更加高效。</p>
-<h3 id="集成-Spring-Cloud-Gateway"><a href="#集成-Spring-Cloud-Gateway" class="headerlink" title="集成 Spring Cloud Gateway"></a>集成 Spring Cloud Gateway</h3><h4 id="1-创建-Spring-Cloud-Gateway-项目"><a href="#1-创建-Spring-Cloud-Gateway-项目" class="headerlink" title="1. 创建 Spring Cloud Gateway 项目"></a>1. 创建 Spring Cloud Gateway 项目</h4><ol>
+<h3 id="spring-cloud-gateway-简介">Spring Cloud Gateway 简介</h3>
+<p>Spring Cloud Gateway 是一种基于 Spring Framework 5、Spring Boot 2 和
+Project Reactor 的 API
+网关，旨在为微服务架构提供路由、过滤、监控和安全功能。与 Zuul
+不同，Spring Cloud Gateway 使用非阻塞的 WebFlux
+框架，这使得它在处理高并发请求时更加高效。</p>
+<h3 id="集成-spring-cloud-gateway">集成 Spring Cloud Gateway</h3>
+<h4 id="创建-spring-cloud-gateway-项目">1. 创建 Spring Cloud Gateway
+项目</h4>
+<ol type="1">
 <li><strong>创建一个新的 Spring Boot 项目</strong>。</li>
 <li><strong>添加依赖</strong>：</li>
 </ol>
-<p>在 <code>pom.xml</code> 中添加 Spring Cloud Gateway 和 Eureka Client 的依赖：</p>
+<p>在 <code>pom.xml</code> 中添加 Spring Cloud Gateway 和 Eureka Client
+的依赖：</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-gateway<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-配置-Gateway"><a href="#2-配置-Gateway" class="headerlink" title="2. 配置 Gateway"></a>2. 配置 Gateway</h4><p>在 <code>src/main/resources/application.yml</code> 中配置 Gateway：</p>
+<h4 id="配置-gateway">2. 配置 Gateway</h4>
+<p>在 <code>src/main/resources/application.yml</code> 中配置
+Gateway：</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">gateway</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://localhost:8761/eureka/</span></span><br><span class="line"></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">provider-service</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://provider-service</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/provider/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">consumer-service</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://consumer-service</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/consumer/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span></span><br></pre></td></tr></table></figure>
-
-<p>以上配置定义了两个路由：</p>
-<ul>
-<li><code>/provider/**</code> 路径的请求将被转发到 <code>provider-service</code>。</li>
-<li><code>/consumer/**</code> 路径的请求将被转发到 <code>consumer-service</code>。</li>
-</ul>
-<p><code>StripPrefix=1</code> 表示在转发请求之前，将 URL 路径前缀 <code>/provider</code> 或 <code>/consumer</code> 去掉。</p>
-<h4 id="3-启动类"><a href="#3-启动类" class="headerlink" title="3. 启动类"></a>3. 启动类</h4><p>在主类中添加 <code>@SpringBootApplication</code> 和 <code>@EnableEurekaClient</code> 注解：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaClient</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GatewayApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(GatewayApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动和测试"><a href="#启动和测试" class="headerlink" title="启动和测试"></a>启动和测试</h3><ol>
+<p>以上配置定义了两个路由： - <code>/provider/**</code>
+路径的请求将被转发到 <code>provider-service</code>。 -
+<code>/consumer/**</code> 路径的请求将被转发到
+<code>consumer-service</code>。</p>
+<p><code>StripPrefix=1</code> 表示在转发请求之前，将 URL 路径前缀
+<code>/provider</code> 或 <code>/consumer</code> 去掉。</p>
+<h4 id="启动类">3. 启动类</h4>
+<p>在主类中添加 <code>@SpringBootApplication</code> 和
+<code>@EnableEurekaClient</code> 注解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaClient</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GatewayApplication</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {</span><br><span class="line">        SpringApplication.run(GatewayApplication.class, args);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="启动和测试">启动和测试</h3>
+<ol type="1">
 <li><strong>启动 Eureka Server</strong>。</li>
 <li><strong>启动 Config Server</strong>。</li>
 <li><strong>启动多个服务提供者实例</strong>。</li>
 <li><strong>启动服务消费者</strong>。</li>
 <li><strong>启动 Gateway</strong>。</li>
 </ol>
-<h3 id="测试-Gateway-路由"><a href="#测试-Gateway-路由" class="headerlink" title="测试 Gateway 路由"></a>测试 Gateway 路由</h3><p>访问 Gateway 路由以测试：</p>
-<ol>
-<li><p>测试服务提供者：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl http://localhost:8080/provider/hello</span><br></pre></td></tr></table></figure>
-<p>或在浏览器中访问：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://localhost:8080/provider/hello</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>测试服务消费者：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl http://localhost:8080/consumer/invoke</span><br></pre></td></tr></table></figure>
-<p>或在浏览器中访问：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://localhost:8080/consumer/invoke</span><br></pre></td></tr></table></figure></li>
+<h3 id="测试-gateway-路由">测试 Gateway 路由</h3>
+<p>访问 Gateway 路由以测试：</p>
+<ol type="1">
+<li><p>测试服务提供者： <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl http://localhost:8080/provider/hello</span><br></pre></td></tr></table></figure> 或在浏览器中访问：
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://localhost:8080/provider/hello</span><br></pre></td></tr></table></figure></p></li>
+<li><p>测试服务消费者： <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl http://localhost:8080/consumer/invoke</span><br></pre></td></tr></table></figure> 或在浏览器中访问：
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://localhost:8080/consumer/invoke</span><br></pre></td></tr></table></figure></p></li>
 </ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过集成 Spring Cloud Gateway，您可以在微服务架构中实现集中路由和过滤功能。它提供了强大的功能和灵活性，可以根据需要进行自定义和扩展。在上述配置中，我们实现了基本的服务路由，实际项目中可以根据需求增加更多的路由规则和过滤器。</p>
-<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>终于接触了微服务架构。初步了解了Spring Cloud的框架。总之就是进一步的分布，进一步的解耦。</p>
+<h3 id="总结">总结</h3>
+<p>通过集成 Spring Cloud
+Gateway，您可以在微服务架构中实现集中路由和过滤功能。它提供了强大的功能和灵活性，可以根据需要进行自定义和扩展。在上述配置中，我们实现了基本的服务路由，实际项目中可以根据需求增加更多的路由规则和过滤器。</p>
+<h1 id="总结-1">总结</h1>
+<p>终于接触了微服务架构。初步了解了Spring
+Cloud的框架。总之就是进一步的分布，进一步的解耦。</p>
 
     </div>
 
@@ -487,7 +629,7 @@ Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodW
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
 
 

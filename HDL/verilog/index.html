@@ -31,9 +31,9 @@
 <meta property="article:published_time" content="2024-08-18T16:00:00.000Z">
 <meta property="article:modified_time" content="2024-08-19T09:20:44.035Z">
 <meta property="article:author" content="Cishoon">
-<meta property="article:tag" content="学习笔记">
 <meta property="article:tag" content="HDL">
 <meta property="article:tag" content="FPGA">
+<meta property="article:tag" content="学习笔记">
 <meta name="twitter:card" content="summary">
 
 
@@ -61,7 +61,119 @@
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
 <link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -255,19 +367,29 @@
     <div class="post-body" itemprop="articleBody"><p>找老师问有什么东西可以给我先看起来，老师发来了Verilog……</p>
 <p>孽缘未了啊，这回重头认真学一学。</p>
 <p>记录一些之前没有考虑过的内容。</p>
-<p>参考这个网站<span class="exturl" data-url="aHR0cHM6Ly9oZGxiaXRzLjAxeHoubmV0Lw==">https://hdlbits.01xz.net/<i class="fa fa-external-link-alt"></i></span></p>
+<p>参考这个网站https://hdlbits.01xz.net/</p>
 <span id="more"></span>
-
-<h1 id="隐式声明"><a href="#隐式声明" class="headerlink" title="隐式声明"></a>隐式声明</h1><p>通常变量需要使用 <code>wire</code> 或 <code>reg</code> 声明。</p>
-<p>但是也可以直接使用 <code>wire t = a &amp; b;</code> 这样直接创建一个中间变量 <code>t</code> ，但是 <code>t</code> 的宽度<strong>一定是1bit</strong>。</p>
+<h1 id="隐式声明">隐式声明</h1>
+<p>通常变量需要使用 <code>wire</code> 或 <code>reg</code> 声明。</p>
+<p>但是也可以直接使用 <code>wire t = a &amp; b;</code>
+这样直接创建一个中间变量 <code>t</code> ，但是 <code>t</code>
+的宽度<strong>一定是1bit</strong>。</p>
 <p>这个在之前写CPU的时候错过无数遍了。</p>
-<h1 id="wire-和-reg"><a href="#wire-和-reg" class="headerlink" title="wire 和 reg"></a>wire 和 reg</h1><blockquote>
-<p>A note on wire vs. reg: The left-hand-side of an assign statement must be a <em>net</em> type (e.g., <code>wire</code>), while the left-hand-side of a procedural assignment (in an always block) must be a <em>variable</em> type (e.g., <code>reg</code>). These types (wire vs. reg) have nothing to do with what hardware is synthesized, and is just syntax left over from Verilog&#39;s use as a hardware <em>simulation</em> language.</p>
+<h1 id="wire-和-reg">wire 和 reg</h1>
+<blockquote>
+<p>A note on wire vs. reg: The left-hand-side of an assign statement
+must be a <em>net</em> type (e.g., <code>wire</code>), while the
+left-hand-side of a procedural assignment (in an always block) must be a
+<em>variable</em> type (e.g., <code>reg</code>). These types (wire vs.
+reg) have nothing to do with what hardware is synthesized, and is just
+syntax left over from Verilog's use as a hardware <em>simulation</em>
+language.</p>
 </blockquote>
 <p>其实没有本质区别。</p>
 <p>reg只能写在always里，wire只能写在外面通过assign或module连接。</p>
 <p>reg只是设计Verilog时的历史遗留问题。</p>
-<h1 id="避免锁存器"><a href="#避免锁存器" class="headerlink" title="避免锁存器"></a>避免锁存器</h1><p><span class="exturl" data-url="aHR0cHM6Ly9oZGxiaXRzLjAxeHoubmV0L3dpa2kvQWx3YXlzX2lmMg==">https://hdlbits.01xz.net/wiki/Always_if2<i class="fa fa-external-link-alt"></i></span></p>
+<h1 id="避免锁存器">避免锁存器</h1>
+<p>https://hdlbits.01xz.net/wiki/Always_if2</p>
 <blockquote>
 <p>一个常见的错误来源：如何避免生成锁存器（Latches）</p>
 <p>在设计电路时，你必须首先从电路的角度进行思考：</p>
@@ -278,9 +400,13 @@
 </ul>
 <p>你不能做的是：先写代码，然后希望它能生成一个合适的电路。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">If (cpu_overheated) then shut_off_computer = 1;</span><br><span class="line">If (~arrived) then keep_driving = ~gas_tank_empty;</span><br></pre></td></tr></table></figure>
-
-<p>语法正确的代码不一定会生成合理的电路（组合逻辑 + 触发器）。通常的问题是：&quot;在你未指定的情况下会发生什么？&quot;。Verilog 的回答是：保持输出不变。</p>
-<p>这种“保持输出不变”的行为意味着当前状态需要被记住，因此会产生一个锁存器（latch）。组合逻辑（例如逻辑门）无法记住任何状态。要留意 “Warning (10240): … inferring latch(es)” 警告消息。除非锁存器是故意设计的，否则它几乎总是表示一个错误。组合电路必须在所有情况下对所有输出赋值。这通常意味着你需要使用 <code>else</code> 子句或对输出赋予默认值。</p>
+<p>语法正确的代码不一定会生成合理的电路（组合逻辑 +
+触发器）。通常的问题是："在你未指定的情况下会发生什么？"。Verilog
+的回答是：保持输出不变。</p>
+<p>这种“保持输出不变”的行为意味着当前状态需要被记住，因此会产生一个锁存器（latch）。组合逻辑（例如逻辑门）无法记住任何状态。要留意
+“Warning (10240): … inferring latch(es)”
+警告消息。除非锁存器是故意设计的，否则它几乎总是表示一个错误。组合电路必须在所有情况下对所有输出赋值。这通常意味着你需要使用
+<code>else</code> 子句或对输出赋予默认值。</p>
 </blockquote>
 <p>一个最重要的思路，写HDL和其他高级语言是非常不一样的两个体系。</p>
 <p>其他编程语言描述过程，HDL如其名描述<strong>硬件结构</strong>。</p>
@@ -298,9 +424,9 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i> 学习笔记</a>
               <a href="/tags/HDL/" rel="tag"><i class="fa fa-tag"></i> HDL</a>
               <a href="/tags/FPGA/" rel="tag"><i class="fa fa-tag"></i> FPGA</a>
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i> 学习笔记</a>
           </div>
 
         
@@ -390,7 +516,7 @@ Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodW
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
 
 

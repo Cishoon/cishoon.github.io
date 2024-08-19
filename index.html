@@ -57,7 +57,119 @@
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
 <link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -250,7 +362,7 @@
           <p>找老师问有什么东西可以给我先看起来，老师发来了Verilog……</p>
 <p>孽缘未了啊，这回重头认真学一学。</p>
 <p>记录一些之前没有考虑过的内容。</p>
-<p>参考这个网站<span class="exturl" data-url="aHR0cHM6Ly9oZGxiaXRzLjAxeHoubmV0Lw==">https://hdlbits.01xz.net/<i class="fa fa-external-link-alt"></i></span></p>
+<p>参考这个网站https://hdlbits.01xz.net/</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/HDL/verilog/#more" rel="contents">
@@ -456,9 +568,14 @@
           <blockquote>
 <p>本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结</p>
 </blockquote>
-<p>实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud 开始。</p>
-<p><img src="/./spring-cloud/202408050942244.jpg" alt="31722821596_.pic" loading="lazy"></p>
-<p>总的来说，Spring Boot 提供构建应用的基础，Spring Cloud 在此基础上提供了分布式系统和微服务架构所需的工具和支持。</p>
+<p>实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud
+开始。</p>
+<figure>
+<img src="/cloud-native/spring-cloud/202408050942244.jpg" alt="31722821596_.pic">
+<figcaption aria-hidden="true">31722821596_.pic</figcaption>
+</figure>
+<p>总的来说，Spring Boot 提供构建应用的基础，Spring Cloud
+在此基础上提供了分布式系统和微服务架构所需的工具和支持。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/cloud-native/spring-cloud/#more" rel="contents">
@@ -539,7 +656,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.1k</span>
+      <span>3.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -657,7 +774,7 @@ Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodW
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
 
 

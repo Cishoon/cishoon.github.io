@@ -28,17 +28,17 @@
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
 <meta property="og:description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  本文记录了 Rust 所有权 (ownership) 相关的内容。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg">
-<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292223784.png">
-<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292253395-2850267.svg">
-<meta property="og:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292254851.svg">
+<meta property="og:image" content="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg">
+<meta property="og:image" content="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292223784.png">
+<meta property="og:image" content="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292253395-2850267.svg">
+<meta property="og:image" content="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292254851.svg">
 <meta property="article:published_time" content="2024-07-27T16:00:00.000Z">
 <meta property="article:modified_time" content="2024-08-05T09:31:18.693Z">
 <meta property="article:author" content="Cishoon">
-<meta property="article:tag" content="Rust">
 <meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="Rust">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cishoon.top/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg">
+<meta name="twitter:image" content="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg">
 
 
 <link rel="canonical" href="http://cishoon.top/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/">
@@ -65,7 +65,119 @@
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
 <link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -151,7 +263,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%8B%B7%E8%B4%9D%E4%B8%8E%E7%A7%BB%E5%8A%A8"><span class="nav-text">1 拷贝与移动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%BC%95%E7%94%A8%E5%92%8C%E5%80%9F%E7%94%A8"><span class="nav-text">2 引用和借用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E4%B8%8E%E7%A7%BB%E5%8A%A8"><span class="nav-text">1 拷贝与移动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E5%92%8C%E5%80%9F%E7%94%A8"><span class="nav-text">2 引用和借用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -239,7 +351,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.1k</span>
+      <span>3.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -261,74 +373,96 @@
 </blockquote>
 <p>本文记录了 Rust 所有权 (<em>ownership</em>) 相关的内容。</p>
 <span id="more"></span>
-
-
-
 <p>其他语言的内存管理机制基本分为两类：</p>
 <ul>
-<li>以 C 为代表的，显示分配和释放内存。<ul>
+<li>以 C 为代表的，显示分配和释放内存。
+<ul>
 <li>优点：内存管理完全由程序员负责，效率高</li>
 <li>缺点：显而易见，程序员会出错，容易发生内存泄漏、产生重复释放等Bug</li>
-</ul>
-</li>
-<li>以 Java 为代表的，垃圾回收机制自动管理内存。<ul>
+</ul></li>
+<li>以 Java 为代表的，垃圾回收机制自动管理内存。
+<ul>
 <li>优点：方便，程序员不需要在意内存何时释放，不会发生内存泄露</li>
 <li>缺点：需要频繁扫描追踪分配的对象，慢</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p> 而 Rust 为了同时实现安全和高效两个目标，提出了<strong>所有权</strong>的机制。</p>
+<p>而 Rust
+为了同时实现安全和高效两个目标，提出了<strong>所有权</strong>的机制。</p>
 <ul>
 <li>为了安全，就不能完全放任程序员负责内存分配，编写代码的过程中需要有所限制。</li>
-<li>为了高效，在运行阶段不能频繁进行内存检查，所以保证内存安全的算法必须在 <strong>编译</strong> 过程实现。</li>
+<li>为了高效，在运行阶段不能频繁进行内存检查，所以保证内存安全的算法必须在
+<strong>编译</strong> 过程实现。</li>
 </ul>
-<h1 id="1-拷贝与移动"><a href="#1-拷贝与移动" class="headerlink" title="1 拷贝与移动"></a>1 拷贝与移动</h1><p>首先，简单变量类型（整型、浮点数等，以及仅包含简单类型的元组和数组），他们的长度固定，直接压入栈中就行。只在栈上的数据赋值时进行的是<strong>拷贝（<em>copy</em>）</strong>操作。</p>
+<h1 id="拷贝与移动">1 拷贝与移动</h1>
+<p>首先，简单变量类型（整型、浮点数等，以及仅包含简单类型的元组和数组），他们的长度固定，直接压入栈中就行。只在栈上的数据赋值时进行的是<strong>拷贝（<em>copy</em>）</strong>操作。</p>
 <p>即每次赋值时都会在栈内压入一个新的值，就是最符合直觉的实现。</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此时栈中有两个 <code>5</code> ，分别所属于 <code>x</code> 和 <code>y</code>。</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"x = {}, y = {}"</span>, x, y);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>此时栈中有两个 <code>5</code> ，分别所属于 <code>x</code> 和
+<code>y</code>。</p>
 <blockquote>
 <p>这里说简单变量类型不够严谨，准确说是实现了 Copy trait 的类型。</p>
 </blockquote>
-<p>对于复杂类型的变量，例如 <code>String</code> ，需要在堆中分配空间，在栈中压入一个<strong>指针</strong>，指向堆中的空间。</p>
-<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg" alt="String in memory" loading="lazy"></p>
-<p>此类变量的类型在 Rust 中显示为 <code>&#123;unknown&#125;</code> ，</p>
-<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292223784.png" alt="image-20240729222344611" loading="lazy"></p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y); <span class="comment">// 报错，x无法使用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在执行 <code>let y = x;</code> 时，并不是像其他语言那样浅拷贝，创建了第二个指针 <code>y</code> 指向相同的内存空间。</p>
-<p>而是类似于执行：<code>y = std::move(x)</code> ，之后 <code>x</code> 就无法再使用了。</p>
-<p>这个特性使得可以确保字符串 <code>hello</code> 的内存空间<strong>仅所属于一个变量</strong>。</p>
-<p>这样做的好处是，堆空间的生命周期与变量的作用域强绑定。当 <code>y</code> 离开作用域时，就释放 <code>y</code> 所指的内存空间。</p>
+<p>对于复杂类型的变量，例如 <code>String</code>
+，需要在堆中分配空间，在栈中压入一个<strong>指针</strong>，指向堆中的空间。</p>
+<figure>
+<img src="/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292226831.svg" alt="String in memory">
+<figcaption aria-hidden="true">String in memory</figcaption>
+</figure>
+<p>此类变量的类型在 Rust 中显示为 <code>{unknown}</code> ，</p>
+<figure>
+<img src="/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292223784.png" alt="image-20240729222344611">
+<figcaption aria-hidden="true">image-20240729222344611</figcaption>
+</figure>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"x = {}, y = {}"</span>, x, y); <span class="comment">// 报错，x无法使用</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>在执行 <code>let y = x;</code>
+时，并不是像其他语言那样浅拷贝，创建了第二个指针 <code>y</code>
+指向相同的内存空间。</p>
+<p>而是类似于执行：<code>y = std::move(x)</code> ，之后 <code>x</code>
+就无法再使用了。</p>
+<p>这个特性使得可以确保字符串 <code>hello</code>
+的内存空间<strong>仅所属于一个变量</strong>。</p>
+<p>这样做的好处是，堆空间的生命周期与变量的作用域强绑定。当
+<code>y</code> 离开作用域时，就释放 <code>y</code> 所指的内存空间。</p>
 <p>同样的，默认的函数传参过程也是执行 <code>move</code>：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    <span class="title function_ invoke__">test</span>(y);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y); <span class="comment">// 报错，x、y均无法使用</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test</span>(s: <span class="type">String</span>) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>Rust 里没有浅拷贝的概念，并且默认情况下绝对不会隐式进行深拷贝，所以这种赋值操作都可以被认为是非常高效的。</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x;</span><br><span class="line">    <span class="title function_ invoke__">test</span>(y);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"x = {}, y = {}"</span>, x, y); <span class="comment">// 报错，x、y均无法使用</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test</span>(s: <span class="type">String</span>) {</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, s);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>Rust
+里没有浅拷贝的概念，并且默认情况下绝对不会隐式进行深拷贝，所以这种赋值操作都可以被认为是非常高效的。</p>
 <p>如果要深拷贝，使用 <code>clone</code> 方法。</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x.<span class="title function_ invoke__">clone</span>();</span><br><span class="line">    <span class="title function_ invoke__">test</span>(y.<span class="title function_ invoke__">clone</span>());</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;x = &#123;&#125;, y = &#123;&#125;&quot;</span>, x, y); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test</span>(s: <span class="type">String</span>) &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292253395-2850267.svg" alt="s1 and s2 to two places" loading="lazy"></p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x.<span class="title function_ invoke__">clone</span>();</span><br><span class="line">    <span class="title function_ invoke__">test</span>(y.<span class="title function_ invoke__">clone</span>());</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"x = {}, y = {}"</span>, x, y); </span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test</span>(s: <span class="type">String</span>) {</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, s);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292253395-2850267.svg" alt="s1 and s2 to two places">
+<figcaption aria-hidden="true">s1 and s2 to two places</figcaption>
+</figure>
 <p>总结一下，就是这个非常暴力、强硬的规则，保证了 Rust 的内存安全：</p>
 <ul>
 <li>一个内存空间，有且仅有一个变量具有其所有权</li>
 <li>当这个变量离开作用域时，自动销毁其内存空间</li>
 </ul>
-<p>在 Rust 里就不会有多个指针共同拥有一段空间的所有权，也不会有指向非法空间的指针，也不会有没有被指针指向的内存空间。</p>
-<p>这使得 Rust 不需要手动释放内存，也不需要运行时垃圾回收。Rust 为了内存安全做出的牺牲就是这套强硬的规则。</p>
-<h1 id="2-引用和借用"><a href="#2-引用和借用" class="headerlink" title="2 引用和借用"></a>2 引用和借用</h1><p>但是这个规则导致了某些情况非常麻烦，例如函数传参。</p>
+<p>在 Rust
+里就不会有多个指针共同拥有一段空间的所有权，也不会有指向非法空间的指针，也不会有没有被指针指向的内存空间。</p>
+<p>这使得 Rust 不需要手动释放内存，也不需要运行时垃圾回收。Rust
+为了内存安全做出的牺牲就是这套强硬的规则。</p>
+<h1 id="引用和借用">2 引用和借用</h1>
+<p>但是这个规则导致了某些情况非常麻烦，例如函数传参。</p>
 <p>这是非常可笑的，把一个变量的所有权传给了一个函数，函数结束后这个变量和对应的内存空间也就被销毁了。返回原逻辑后这个参数就无法使用了。</p>
-<p> 所以 Rust 还提供了 <strong>引用</strong> 的概念。</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">len</span> = <span class="title function_ invoke__">calculate_length</span>(&amp;s1);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;The length of &#x27;&#123;&#125;&#x27; is &#123;&#125;.&quot;</span>, s1, len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_length</span>(s: &amp;<span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">usize</span> &#123;</span><br><span class="line">    s.<span class="title function_ invoke__">len</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/./3-%E6%89%80%E6%9C%89%E6%9D%83/202407292254851.svg" alt="&amp;String s pointing at String s1" loading="lazy"></p>
-<p>这些 &amp; 符号就是 <strong>引用</strong>，它们允许你使用值但不获取其所有权。</p>
+<p>所以 Rust 还提供了 <strong>引用</strong> 的概念。</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s1</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">len</span> = <span class="title function_ invoke__">calculate_length</span>(&amp;s1);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"The length of '{}' is {}."</span>, s1, len);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">calculate_length</span>(s: &amp;<span class="type">String</span>) <span class="punctuation">-&gt;</span> <span class="type">usize</span> {</span><br><span class="line">    s.<span class="title function_ invoke__">len</span>()</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/rust/3-%E6%89%80%E6%9C%89%E6%9D%83/202407292254851.svg" alt="&String s pointing at String s1">
+<figcaption aria-hidden="true">&amp;String s pointing at String
+s1</figcaption>
+</figure>
+<p>这些 &amp; 符号就是
+<strong>引用</strong>，它们允许你使用值但不获取其所有权。</p>
 <p>应用的变量被离开作用域时，不会释放内存空间。这很正常，因为只有具有所有权的变量离开作用域时才会释放内存空间，而引用不具有所有权。</p>
-<p>同样的，默认情况下引用是 <strong>只读</strong> 的。必须显示的规定引用的 <strong>可写</strong> 性：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">change</span>(&amp;<span class="keyword">mut</span> s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">change</span>(some_string: &amp;<span class="keyword">mut</span> <span class="type">String</span>) &#123;</span><br><span class="line">    some_string.<span class="title function_ invoke__">push_str</span>(<span class="string">&quot;, world&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>首先，我们必须将 <code>s</code> 改为 <code>mut</code>。然后必须在调用 <code>change</code> 函数的地方创建一个可变引用 <code>&amp;mut s</code>，并更新函数签名以接受一个可变引用 <code>some_string: &amp;mut String</code>。这就非常清楚地表明，<code>change</code> 函数将改变它所借用的值。</p>
+<p>同样的，默认情况下引用是 <strong>只读</strong>
+的。必须显示的规定引用的 <strong>可写</strong> 性：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">change</span>(&amp;<span class="keyword">mut</span> s);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">change</span>(some_string: &amp;<span class="keyword">mut</span> <span class="type">String</span>) {</span><br><span class="line">    some_string.<span class="title function_ invoke__">push_str</span>(<span class="string">", world"</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>首先，我们必须将 <code>s</code> 改为 <code>mut</code>。然后必须在调用
+<code>change</code> 函数的地方创建一个可变引用
+<code>&amp;mut s</code>，并更新函数签名以接受一个可变引用
+<code>some_string: &amp;mut String</code>。这就非常清楚地表明，<code>change</code>
+函数将改变它所借用的值。</p>
 <p>这样的好处是，程序员可以非常清楚的知道我所调用的函数有没有可能会修改我提供的变量，能够使得函数调用更加的解耦。</p>
 <hr>
 <p>为了防止数据冲突，Rust 对引用和借用也有限制。简单来说，就是：</p>
@@ -337,15 +471,16 @@
 <li>读写冲突</li>
 </ul>
 <p>看下面两段代码：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = &amp;<span class="keyword">mut</span> x; 		<span class="comment">// y 的生命周期开始</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z</span> = &amp;x;				<span class="comment">// 报错，读写冲突</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z_mut</span> = &amp;<span class="keyword">mut</span> x;		<span class="comment">// 报错，写写冲突</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, y);		<span class="comment">// y 的生命周期结束</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = &amp;<span class="keyword">mut</span> x; 		<span class="comment">// y 的生命周期开始</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z</span> = &amp;x;				<span class="comment">// 报错，读写冲突</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z_mut</span> = &amp;<span class="keyword">mut</span> x;		<span class="comment">// 报错，写写冲突</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, y);		<span class="comment">// y 的生命周期结束</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 <p>在可变引用 <code>y</code> 的生命周期内，不能有任何其他引用。</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = &amp;x; 			<span class="comment">// y 的生命周期开始</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z</span> = &amp;x;				<span class="comment">// 不报错，可以同时读取不会造成冲突</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z_mut</span> = &amp;<span class="keyword">mut</span> x;		<span class="comment">// 报错，读写冲突</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, y);		<span class="comment">// y 的生命周期结束</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">"hello"</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = &amp;x; 			<span class="comment">// y 的生命周期开始</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z</span> = &amp;x;				<span class="comment">// 不报错，可以同时读取不会造成冲突</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">z_mut</span> = &amp;<span class="keyword">mut</span> x;		<span class="comment">// 报错，读写冲突</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"{}"</span>, y);		<span class="comment">// y 的生命周期结束</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 <p>在不可变引用 <code>y</code> 的生命周期内，不能有可变引用。</p>
-<p>总结一下，Rust 同样有一个严苛的规则，强行保证了变量不会发生访问冲突。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>现在 Rust 给我一种暴力美学的感觉，用非常严格的规则在编译阶段限制死了可能存在的安全问题。</p>
-<p>另外还有一个**切片(<em>slice</em>)**的概念，我感觉就是对数组的局部引用，很直观，是某种特殊的引用（不一定引用整体，可以引用局部），就没有什么值得单独写的。</p>
+<p>总结一下，Rust
+同样有一个严苛的规则，强行保证了变量不会发生访问冲突。</p>
+<h1 id="总结">总结</h1>
+<p>现在 Rust
+给我一种暴力美学的感觉，用非常严格的规则在编译阶段限制死了可能存在的安全问题。</p>
+<p>另外还有一个<strong>切片(<em>slice</em>)</strong>的概念，我感觉就是对数组的局部引用，很直观，是某种特殊的引用（不一定引用整体，可以引用局部），就没有什么值得单独写的。</p>
 
     </div>
 
@@ -355,8 +490,8 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Rust/" rel="tag"><i class="fa fa-tag"></i> Rust</a>
               <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i> 学习笔记</a>
+              <a href="/tags/Rust/" rel="tag"><i class="fa fa-tag"></i> Rust</a>
           </div>
 
         
@@ -449,7 +584,7 @@ Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodW
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
 
 
