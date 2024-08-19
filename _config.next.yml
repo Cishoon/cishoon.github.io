@@ -191,10 +191,25 @@ wavedrom:
 # ==================== External Libraries ===================== #
 # ============================================================= #
 
+# Math Formulas Render Support
+# Warning: Please install / uninstall the relevant renderer according to the documentation.
+# See: https://theme-next.js.org/docs/third-party-services/math-equations
+# Server-side plugin: https://github.com/next-theme/hexo-filter-mathjax
 math:
+  # Default (false) will load mathjax / katex script on demand.
+  # That is it only render those page which has `mathjax: true` in front-matter.
+  # If you set it to true, it will load mathjax / katex srcipt EVERY PAGE.
+  every_page: true            ---------------------> 设置为true
+
   mathjax:
-    enable: true
-    tags: ams
+    enable: true                   ---------------------> 设置为true
+    # Available values: none | ams | all
+    tags: none
+
+  katex:
+    enable: false
+    # See: https://github.com/KaTeX/KaTeX/tree/master/contrib/copy-tex
+    copy_tex: false
 
 pjax: true
 
@@ -242,3 +257,9 @@ vendors:
   internal: cdnjs
   plugins: cdnjs
 
+
+
+
+nprogress:
+  enable: true
+  spinner: true
