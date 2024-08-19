@@ -6,7 +6,7 @@
   <link href="http://cishoon.top/atom.xml" rel="self"/>
   
   <link href="http://cishoon.top/"/>
-  <updated>2024-08-05T09:39:01.575Z</updated>
+  <updated>2024-08-19T09:20:44.035Z</updated>
   <id>http://cishoon.top/</id>
   
   <author>
@@ -15,6 +15,66 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Verilog 部分特性整理</title>
+    <link href="http://cishoon.top/HDL/verilog/"/>
+    <id>http://cishoon.top/HDL/verilog/</id>
+    <published>2024-08-18T16:00:00.000Z</published>
+    <updated>2024-08-19T09:20:44.035Z</updated>
+    
+    <content type="html"><![CDATA[<p>找老师问有什么东西可以给我先看起来，老师发来了Verilog……</p><p>孽缘未了啊，这回重头认真学一学。</p><p>记录一些之前没有考虑过的内容。</p><p>参考这个网站<span class="exturl" data-url="aHR0cHM6Ly9oZGxiaXRzLjAxeHoubmV0Lw==">https://hdlbits.01xz.net/<i class="fa fa-external-link-alt"></i></span></p><span id="more"></span><h1 id="隐式声明"><a href="#隐式声明" class="headerlink" title="隐式声明"></a>隐式声明</h1><p>通常变量需要使用 <code>wire</code> 或 <code>reg</code> 声明。</p><p>但是也可以直接使用 <code>wire t = a &amp; b;</code> 这样直接创建一个中间变量 <code>t</code> ，但是 <code>t</code> 的宽度<strong>一定是1bit</strong>。</p><p>这个在之前写CPU的时候错过无数遍了。</p><h1 id="wire-和-reg"><a href="#wire-和-reg" class="headerlink" title="wire 和 reg"></a>wire 和 reg</h1><blockquote><p>A note on wire vs. reg: The left-hand-side of an assign statement must be a <em>net</em> type (e.g., <code>wire</code>), while the left-hand-side of a procedural assignment (in an always block) must be a <em>variable</em> type (e.g., <code>reg</code>). These types (wire vs. reg) have nothing to do with what hardware is synthesized, and is just syntax left over from Verilog&#39;s use as a hardware <em>simulation</em> language.</p></blockquote><p>其实没有本质区别。</p><p>reg只能写在always里，wire只能写在外面通过assign或module连接。</p><p>reg只是设计Verilog时的历史遗留问题。</p><h1 id="避免锁存器"><a href="#避免锁存器" class="headerlink" title="避免锁存器"></a>避免锁存器</h1><p><span class="exturl" data-url="aHR0cHM6Ly9oZGxiaXRzLjAxeHoubmV0L3dpa2kvQWx3YXlzX2lmMg==">https://hdlbits.01xz.net/wiki/Always_if2<i class="fa fa-external-link-alt"></i></span></p><blockquote><p>一个常见的错误来源：如何避免生成锁存器（Latches）</p><p>在设计电路时，你必须首先从电路的角度进行思考：</p><ul><li>我需要这个逻辑门</li><li>我需要一个组合逻辑块，它有这些输入并产生这些输出</li><li>我需要一个组合逻辑块，后面跟着一组触发器（flip-flops）</li></ul><p>你不能做的是：先写代码，然后希望它能生成一个合适的电路。</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">If (cpu_overheated) then shut_off_computer = 1;</span><br><span class="line">If (~arrived) then keep_driving = ~gas_tank_empty;</span><br></pre></td></tr></table></figure><p>语法正确的代码不一定会生成合理的电路（组合逻辑 + 触发器）。通常的问题是：&quot;在你未指定的情况下会发生什么？&quot;。Verilog 的回答是：保持输出不变。</p><p>这种“保持输出不变”的行为意味着当前状态需要被记住，因此会产生一个锁存器（latch）。组合逻辑（例如逻辑门）无法记住任何状态。要留意 “Warning (10240): … inferring latch(es)” 警告消息。除非锁存器是故意设计的，否则它几乎总是表示一个错误。组合电路必须在所有情况下对所有输出赋值。这通常意味着你需要使用 <code>else</code> 子句或对输出赋予默认值。</p></blockquote><p>一个最重要的思路，写HDL和其他高级语言是非常不一样的两个体系。</p><p>其他编程语言描述过程，HDL如其名描述<strong>硬件结构</strong>。</p><p>不管是写什么代码，都是在告诉编译器生成一个什么样的硬件结构。</p><p>这个问题就是如果不明确指明所有情况，则会产生锁存器，因为Verilog在没有指明的情况下会保持wire的输出不变。</p><p>总之：<strong>当使用分支语句时必须覆盖所有情况。</strong></p><hr><p>后续遇到继续补充</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;找老师问有什么东西可以给我先看起来，老师发来了Verilog……&lt;/p&gt;
+&lt;p&gt;孽缘未了啊，这回重头认真学一学。&lt;/p&gt;
+&lt;p&gt;记录一些之前没有考虑过的内容。&lt;/p&gt;
+&lt;p&gt;参考这个网站&lt;span class=&quot;exturl&quot; data-url=&quot;aHR0cHM6Ly9oZGxiaXRzLjAxeHoubmV0Lw==&quot;&gt;https://hdlbits.01xz.net/&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;&lt;/span&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="HDL" scheme="http://cishoon.top/categories/HDL/"/>
+    
+    
+    <category term="学习笔记" scheme="http://cishoon.top/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="HDL" scheme="http://cishoon.top/tags/HDL/"/>
+    
+    <category term="FPGA" scheme="http://cishoon.top/tags/FPGA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>浙软夏令营卓越营员面试复盘</title>
+    <link href="http://cishoon.top/interview/%E6%B5%99%E8%BD%AF%E5%A4%8F%E4%BB%A4%E8%90%A5%E5%8D%93%E8%B6%8A%E8%90%A5%E5%91%98%E9%9D%A2%E8%AF%95/"/>
+    <id>http://cishoon.top/interview/%E6%B5%99%E8%BD%AF%E5%A4%8F%E4%BB%A4%E8%90%A5%E5%8D%93%E8%B6%8A%E8%90%A5%E5%91%98%E9%9D%A2%E8%AF%95/</id>
+    <published>2024-08-14T16:00:00.000Z</published>
+    <updated>2024-08-19T01:03:16.716Z</updated>
+    
+    <content type="html"><![CDATA[<p>参加了浙软的面试，抽签抽到倒数第二个……在门口等了五个小时，非常热……</p><p>记录一下面试的内容，整理了一下经验。</p><p>整体来说老师的问题很有含金量很有启发性，没有一个水问题。</p><p>也暴露了我专业课准备不充分的问题。</p><p>之前完全没想到，会问这么多软件工程的专业问题，老师最感兴趣的尽然是济星云……</p><p>与我准备的内容大相径庭2333我只能尽量的说，感觉大错是没有的，个别题目回答不流利，让人感觉基础不扎实</p><span id="more"></span><h1 id="面试内容复盘"><a href="#面试内容复盘" class="headerlink" title="面试内容复盘"></a>面试内容复盘</h1><p>刚开始是一个很和蔼的老师，笑呵呵的，坐在正中间：</p><ol><li><p><strong>济星云和你名字一样，是为什么</strong></p><p> 热场小问题，开玩笑，讲讲就过去了</p></li><li><p><strong>ChatGLM和llama的区别</strong></p><p> 因为我讲了一下人工智能算法精英赛，项目做的是大语言模型</p><p> 但是真的不会，我直接说不是做大语言模型方向的，确实不了解</p></li></ol><p>然后换了一个最边上的老师，应该是负责软件工程的。</p><ol><li><p><strong>你的第一个项目，这个需求是真实的吗</strong></p><p> 这个项目就是夏令营做的《基于分布式数字身份的电影院售票系统》</p><p> 电影院的背景是强行加上去的，本身就不是实际的需求</p><p> 他讲了一些需求要从实际出发之类的问题，我频频点头2333</p></li><li><p><strong>济星云中的需求是怎么来的</strong></p><p> 一开始是组内大家自己根据日常需要提出的，之后有反馈和建议渠道，收集+评审，确定新需求</p><p> 追问，反馈渠道获得的需求都做吗？有什么其他的判断标准吗？（表述不太准确）</p><p> 我总结一下就是说这样不会导致这个项目很臃肿吗？（其实我觉得济星云确实是个有点臃肿的项目……）</p></li><li><p><strong>如何审查反馈渠道提供的需求</strong></p><p> 我回答，会再由产品组的同学审核一遍，判断是不是真的有需求，有没有必要加到我们的小程序里，有些也会做问卷征集意见。</p><p> 老师追问，能举一个例子，有哪些需求被舍弃了</p></li><li><p><strong>有哪些需求被舍弃了</strong></p><p> 我举了乌龙茶（实际上没有被舍弃，脑子一空）</p><p> 我说是在上面进行课程评价、老师评价的一个需求</p><p> 但是我们担心可能有同学会在上面发表一些过激言论，而且已经有了一些相同功能的产品</p><p> 老师补充比如学校的什么官网，我说对</p></li><li><p><strong>你觉得什么是软件工程</strong></p><p> ……扯了一点是一个保证项目稳定开发的方法（类似这样的）</p></li><li><p><strong>济星云的团队有多少人</strong></p><p> 我说产品组和研发组都有30~40人，（可能其实还更多）</p><p> 他就问这真的需要这么多人吗</p><p> 我说这是一个给同学们练手的平台，没有什么成本……</p><p> 他打断，交流也是成本，然后开始问下一个问题</p></li><li><p><strong>如何管理团队，保证产品的开发效率和质量</strong></p><p> 我说一个大型团队会根据项目分成多个小组，每组七八个人，每个小组有一个负责人</p><p> 他总结，一个两层的架构。追问，是如何分组的？</p><p> 我说根据项目需求分组的，每一个需求会拉一个群</p><p> 然后隔两三天定期进行沟通，跟踪进度。</p><p> 质量的话最后会有一个星期的测试环节，由团队里的同学们进行测试。</p><p> 他又追问：</p></li><li><p><strong>上过软件测试的课吗？有什么软件测试方法</strong></p><p> 我说白盒黑盒……然后这里愣了很久，突然忘了里面具体的测试方法了（黑盒有等价类，边界值，判定表……白盒有各种路径覆盖）</p><p> 这里很尴尬，我呃呃啊啊了一会儿，坐立不安2333</p><p> 他说你说的白盒黑盒是一种分类，还有其它分类</p><p> 我说噢，集成测试……他打断，集成测试是很后面的了，前面还有</p><p> 我就知道问什么了，说先是单元测试、功能测试、集成测试，最后还有性能测试</p><p> 只能说没记到烂熟于心的程度，脑子里有，但是一紧张讲不出来……</p></li><li><p><strong>济星云有使用什么协同工具吗</strong></p><p> 我说用阿里云云效，有代码仓库，有CICD，有类似飞书的共享文档，有任务看板</p></li><li><p><strong>熟悉什么设计模式？</strong></p><p>我说，就从我用到过的几个讲，把我一时间想到的都说了一遍</p></li><li><p><strong>讲一下单例模式和工厂模式在什么时候使用</strong></p><p> 就举了几个例子说明</p></li></ol><p>然后他开始问OJ了，就到了我觉得答的最不好的一个题目</p><ol><li><p><strong>讲一下从提交代码到判题完成的全流程</strong></p><p> 我一开始没get到，我以为讲一下OJ的工作过程就可以了。结果他想问的是“从浏览器输入地址到打开网页的全流程”这样的问题，要你讲出所有小细节。</p><p> 我都讲到开始评测的时候，他打断我，说直接就能评测吗？编译完直接就能评测吗？</p><p> 我蒙了，（不是吗？</p><p> 后来听明白了，他就是想我讲操作系统的细节。这就有点慌，没能慢慢思考，讲的有点磕巴</p><p> 相关的我好像只提到了进程切换的时候保存上下文，switch（我还口误说成io多路复用的select了），中断，其他我啥都没说出来。</p><p> 确实也没复习，有好多知识点分散在我脑子里，我串不起来，我觉得这个题扣大分，接下来就复习操作系统</p><p> 现在我复盘有好多可以讲的，从发送请求开始就有套接字，io多路复用这些。</p></li></ol><p>然后时间就已经到了，最后一个老师问我小胶质细胞的项目：</p><ol><li><p><strong>为什么要先分割再检测</strong></p><p> 我说因为认为可能分割会提供一些更有用的特征，作为检测的输入可以提供一些更好的依据（类似这个意思）</p><p> 他追问，有一个XXXX模型（名字忘了），可以同时分割和检测，有试过吗？</p><p> 之前我答辩的时候，问我的是Yolo本身就可以检测和分割，那个问题我准备好了，说实验过，yolo效果不如这样……就行了</p><p> 但是这个模型我名字都没听过，不敢多说，就直接说没用过了</p></li><li><p><strong>你提到了使用了Focal Loss，讲解一下Focal Loss的形式</strong></p><p> 我说损失函数外面套一个 $\frac 1 \gamma$ 次方</p></li></ol><p>另外问了我：</p><ol><li><p><strong>你自我介绍里提到，想要实现区块链和AI的结合，你觉得有哪些地方可以用上AI</strong></p><p> 我说比如现在区块链的排序算法，来控制这个请求应该在哪个节点上执行的调度算法，现在是用的传统的RIFT，也许可以使用AI的一些方式来优化这里的排序</p></li></ol><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>面试的时候嘴巴基本没停（有2个地方有磕巴：软件测试方法想不出来、OJ+操作系统底层），但是看第二个软工老师的反应并不是很好，看不出来他的态度。</p><p>问题密度非常大，我忘记看我自我介绍完还剩多少时间，应该大概还剩15分钟，上面一个老师就提了快15个问题，我语速也非常快，拼命讲拼命讲。</p><p>没想到会问这么多软件工程相关的内容……我以为他会侧重项目一些细节，我详细准备的地方他都没有问。自我介绍里有一些一笔带过的技术细节，其实就是希望老师提问的时候再问一点的，也可能是因为老师也没了解这一块内容不能判断我讲的对不对、或者他知道这种问题我肯定会准备的很充分，反而挑着我没准备的内容问。</p><p>以及面试前还会担心老师问一些水问题，比如为什么选择来浙大、为什么想做系统而不是AI等等，完全没问，15分钟提问时间非常扎实，全是干货，好评。</p><p>问题提的确实招招致命，济星云确实就不是一个很优秀的大型项目，更多的是同学们练手的平台。但是既然这个项目老师这么喜欢问，就留下来吧。</p><hr><p>需要再好好准备一下软件工程相关的内容：</p><ul><li>设计模式，直接全背熟</li><li>软件测试</li><li>需求提取</li><li>什么是软件工程</li><li>如何提升团队合作效率</li></ul><p>操作系统：</p><ul><li>进程管理，中断等等，好好复习</li><li>文件管理</li><li>网络编程，套接字这些</li></ul><p>其实面试前重点准备了文件管理（因为写在了简历里）和网络编程（特地复习了IO多路复用），都没用上……</p><p>其实也有机会，我可以在问OJ流程那个题里把网络编程加进去，但是没意识到老师问的是啥</p><p>自我介绍优化一下，不要提算法精英赛了，项目内的优化方式我能讲，项目外的其他AI常见知识真的不了解了。</p><p>然后开始复习，复习完把上面的问题重新回答一遍。预推免的ppt和自我介绍应该都不用重新准备了，基本上可以复用。</p><hr><p>最后总结个准备面试的经验：能准备的内容只有专业知识。</p><p>专业知识是问到了一定得答对，打错了很扣分的。而且专业知识被问到了，如果准备的好就有一连串保证不会错的内容可以输出，很加分且增加自信。</p><p>其他非专业知识的内容，面试前可能准备了好多，但是很小概率能被问到，而且被问到的时候受限于一个上下文的提问环境，可能没办法把准备的答案直接用上，还是得随机应变。所以干脆不准备了。</p><p>项目相关的细节本来其实就是很熟悉的，简单过一遍就可以，相信自己在面试的情况下可以讲得出来，编也可以编出来，具体的细节老师也不知道，只要自圆其说讲的合理就行。</p><h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>结果通过啦！感谢老师感谢学校</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;参加了浙软的面试，抽签抽到倒数第二个……在门口等了五个小时，非常热……&lt;/p&gt;
+&lt;p&gt;记录一下面试的内容，整理了一下经验。&lt;/p&gt;
+&lt;p&gt;整体来说老师的问题很有含金量很有启发性，没有一个水问题。&lt;/p&gt;
+&lt;p&gt;也暴露了我专业课准备不充分的问题。&lt;/p&gt;
+&lt;p&gt;之前完全没想到，会问这么多软件工程的专业问题，老师最感兴趣的尽然是济星云……&lt;/p&gt;
+&lt;p&gt;与我准备的内容大相径庭2333我只能尽量的说，感觉大错是没有的，个别题目回答不流利，让人感觉基础不扎实&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="面试" scheme="http://cishoon.top/categories/%E9%9D%A2%E8%AF%95/"/>
+    
+    
+    <category term="面试" scheme="http://cishoon.top/tags/%E9%9D%A2%E8%AF%95/"/>
+    
+    <category term="复盘" scheme="http://cishoon.top/tags/%E5%A4%8D%E7%9B%98/"/>
+    
+    <category term="浙大" scheme="http://cishoon.top/tags/%E6%B5%99%E5%A4%A7/"/>
+    
+    <category term="保研" scheme="http://cishoon.top/tags/%E4%BF%9D%E7%A0%94/"/>
+    
+  </entry>
   
   <entry>
     <title>Spring Cloud - 注册中心、中央配置、网关</title>
