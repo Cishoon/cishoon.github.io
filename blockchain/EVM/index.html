@@ -21,26 +21,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
 
-    <meta name="description" content="一条数学公式 + 一个简单的故事">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Cishoon&#39;s Blog">
-<meta property="og:url" content="http://cishoon.top/index.html">
+    <meta name="description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  老师安排的任务是EVM智能合约的加速计算，给我的论文提出了一个新的架构…… 但是我还不知道原始的EVM是怎么实现的，所以先学习一下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EVM 学习笔记">
+<meta property="og:url" content="http://cishoon.top/blockchain/EVM/index.html">
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
-<meta property="og:description" content="一条数学公式 + 一个简单的故事">
+<meta property="og:description" content="本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结  老师安排的任务是EVM智能合约的加速计算，给我的论文提出了一个新的架构…… 但是我还不知道原始的EVM是怎么实现的，所以先学习一下">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-08-25T06:09:50.613Z">
 <meta property="article:author" content="Cishoon">
-<meta property="article:tag" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://cishoon.top/">
+<link rel="canonical" href="http://cishoon.top/blockchain/EVM/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/blockchain/EVM/","path":"blockchain/EVM/","title":"EVM 学习笔记"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Cishoon's Blog</title>
+<title>EVM 学习笔记 | Cishoon's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -189,7 +192,7 @@ mjx-container[display="true"] + br {
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Cishoon's Blog</h1>
+      <p class="site-title">Cishoon's Blog</p>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -242,7 +245,7 @@ mjx-container[display="true"] + br {
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           目 录
@@ -255,6 +258,9 @@ mjx-container[display="true"] + br {
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#solidity"><span class="nav-text">1 Solidity</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%BD%8D%E7%BD%AE"><span class="nav-text">1.1 数据位置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-text">1.1.1 分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E4%BD%8D%E7%BD%AE"><span class="nav-text">1.1.2 默认位置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-text">1.2 函数调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E8%B0%83%E7%94%A8internal-call"><span class="nav-text">1. 内部调用（Internal
+Call）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E8%B0%83%E7%94%A8external-call"><span class="nav-text">2. 外部调用（External
+Call）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E6%88%90%E6%9C%AC"><span class="nav-text">3. 调用成本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E8%80%83%E8%99%91"><span class="nav-text">4. 安全性考虑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#evm"><span class="nav-text">2 EVM</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -284,16 +290,17 @@ mjx-container[display="true"] + br {
 
     </div>
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://cishoon.top/blockchain/EVM/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -307,13 +314,13 @@ mjx-container[display="true"] + br {
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Cishoon's Blog">
+      <meta itemprop="name" content="EVM 学习笔记 | Cishoon's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/blockchain/EVM/" class="post-title-link" itemprop="url">EVM 学习笔记</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          EVM 学习笔记<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ibG9ja2NoYWluL0VWTS5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -358,21 +365,94 @@ mjx-container[display="true"] + br {
     
     
     
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
+    <div class="post-body" itemprop="articleBody"><blockquote>
 <p>本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结</p>
 </blockquote>
 <p>老师安排的任务是EVM智能合约的加速计算，给我的论文提出了一个新的架构……</p>
 <p>但是我还不知道原始的EVM是怎么实现的，所以先学习一下</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/blockchain/EVM/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+<span id="more"></span>
+<h1 id="solidity">1 Solidity</h1>
+<p>Solidity 是一种为实现智能合约而创建的高级编程语言。</p>
+<p>最终跑在以太坊虚拟机(EVM)上的代码，就是由Solidity编译得到的。所以得先学一下Solidity是怎么写的。</p>
+<p>基本的运算规则、语法等等查阅文档：https://learnblockchain.cn/docs/solidity</p>
+<h2 id="数据位置">1.1 数据位置</h2>
+<h3 id="分类">1.1.1 分类</h3>
+<ul>
+<li><code>storage</code>：用于存储状态变量，即需要长期保存的数据，生命周期与合约相同。</li>
+<li><code>memory</code>：用于存储临时变量，可以读写，生命周期在函数执行期间。</li>
+<li><code>calldata</code>：用于存储函数输入参数，是只读的，生命周期在函数执行期间。</li>
+</ul>
+<p><code>storage</code> 存储在区块链上，<code>memory</code>
+在合约执行过程中的内存中，<code>calldata</code>
+中的数据来自执行的交易本身（所以不占据额外空间而且是只读的）</p>
+<p>通过 <code>msg.data</code> 可以获取完整的 <code>calldata</code></p>
+<h3 id="默认位置">1.1.2 默认位置</h3>
+<ul>
+<li><strong>状态变量</strong>：默认在<code>storage</code>中。</li>
+<li><strong>函数内部的局部变量</strong>：值类型默认在<code>memory</code>中。</li>
+<li><strong>函数参数</strong>：
+<ul>
+<li><code>external</code>函数的引用类型参数默认在<code>calldata</code>中。</li>
+<li>其他函数的引用类型参数需要显式指定<code>memory</code>或<code>storage</code>。</li>
+</ul></li>
+<li><strong>返回值</strong>：引用类型默认在<code>memory</code>中。</li>
+</ul>
+<h2 id="函数调用">1.2 函数调用</h2>
+<p>（GPT）</p>
+<p>内部调用和外部调用在Solidity的合约编程中都有不同的行为，在以太坊虚拟机（EVM）的实现中也有显著的区别。以下是这两种调用方式在EVM层面的差异：</p>
+<h3 id="内部调用internal-call">1. <strong>内部调用（Internal
+Call）</strong></h3>
+<p><strong>特点：</strong></p>
+<ul>
+<li><strong>直接调用</strong>：内部调用是通过直接跳转到目标函数的代码位置来实现的。这是因为内部调用发生在同一合约内部，EVM不需要额外的处理步骤，调用者和被调用者共享相同的上下文和存储。</li>
+<li><strong>无消息传递</strong>：内部调用不涉及消息传递，也没有额外的Gas消耗。因为调用在相同的合约上下文中进行，所有的状态变量和内存都是直接共享的。</li>
+<li><strong>编译优化</strong>：在内部调用时，Solidity编译器可以进行优化，如内联函数（inline
+functions），使得调用过程更加高效。</li>
+</ul>
+<p><strong>EVM行为：</strong></p>
+<ul>
+<li>EVM中的内部调用相当于一次代码跳转（jump），指令指针直接跳转到目标函数的起始位置。</li>
+<li>内部调用没有创建新的调用栈帧，保持相同的内存、堆栈和存储上下文。</li>
+<li>因为没有新的消息传递（即没有新的合约上下文被创建），内部调用的成本（Gas）相对较低。</li>
+</ul>
+<h3 id="外部调用external-call">2. <strong>外部调用（External
+Call）</strong></h3>
+<p><strong>特点：</strong></p>
+<ul>
+<li><strong>消息传递</strong>：外部调用涉及到向另一个合约（即使是调用自身的<code>external</code>函数）发送消息，这会创建一个新的合约执行上下文，包括新的堆栈、内存和存储访问。</li>
+<li><strong>新Gas限制</strong>：每次外部调用会分配一个新的Gas限制，这意味着被调用合约的执行有自己独立的Gas预算。如果这个调用消耗了超出分配的Gas，调用将失败并回滚。</li>
+<li><strong>EVM上下文切换</strong>：外部调用会在EVM中引发上下文切换，即从调用者的上下文切换到被调用合约的上下文。这种切换会涉及到堆栈的保存和恢复，以及传递调用数据。</li>
+</ul>
+<p><strong>EVM行为：</strong></p>
+<ul>
+<li>EVM在执行外部调用时，会创建一个新的消息调用（Message
+Call）。这包括构建一个新的堆栈帧，传递调用数据（包括函数选择器和参数），以及初始化一个新的存储和内存上下文。</li>
+<li>外部调用会触发EVM的CALL指令。该指令在EVM中相对昂贵，因为它涉及到一系列的操作，如设置新的Gas限制、管理新的堆栈帧、以及潜在的跨合约调用的风险管理（例如重入攻击的防范）。</li>
+<li>外部调用的结果（如返回值或状态变更）在调用结束后返回给调用者，这通常需要通过<code>abi.decode</code>等方法进行解码。</li>
+<li>在外部调用中，如果调用的合约抛出异常或耗尽Gas，调用者合约将会得到失败的结果，并且可以选择回滚操作。</li>
+</ul>
+<h3 id="调用成本">3. <strong>调用成本</strong></h3>
+<ul>
+<li><strong>内部调用</strong>：由于没有新的消息传递和上下文切换，内部调用的成本（Gas消耗）非常低。它是通过简单的跳转和共享上下文来实现的，因此更加高效。</li>
+<li><strong>外部调用</strong>：外部调用由于需要创建新的上下文、消息传递、处理潜在的返回数据等，成本较高。此外，外部调用可能带来安全风险，如重入攻击，这需要额外的防护措施。</li>
+</ul>
+<h3 id="安全性考虑">4. <strong>安全性考虑</strong></h3>
+<ul>
+<li><strong>内部调用</strong>：通常被认为是安全的，因为它们在相同的合约上下文中运行，没有额外的消息传递和上下文切换。</li>
+<li><strong>外部调用</strong>：外部调用则需要更多的安全性考虑，尤其是在涉及到第三方合约时。常见的攻击手段如重入攻击就是通过外部调用进行的。因此，开发者通常会使用<code>checks-effects-interactions</code>模式来防范这种风险。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<ul>
+<li><strong>内部调用</strong>：是一次简单的代码跳转，没有消息传递和上下文切换，效率高且Gas成本低。</li>
+<li><strong>外部调用</strong>：涉及到新的消息传递和上下文切换，消耗更多Gas，并且需要特别注意安全性，尤其是在跨合约调用时。</li>
+</ul>
+<p>理解这些差异对编写高效和安全的Solidity合约非常重要。开发者应根据实际需求选择合适的调用方式，以优化合约的性能和安全性。</p>
+<hr>
+<p>一个合约最终会编译成一段字节码，函数是字节码中的一个部分。内部调用就是直接把执行的代码跳转到另一个函数；外部调用是发起了一个新的消息，创建了新的上下文。</p>
+<h1 id="evm">2 EVM</h1>
+<p>看了这三篇文章：https://learnblockchain.cn/article/3779</p>
+<p>总而言之，了解了EVM中内存存储方式，以及栈式指令的执行过程。</p>
+
     </div>
 
     
@@ -380,323 +460,22 @@ mjx-container[display="true"] + br {
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+          </div>
 
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://cishoon.top/HDL/verilog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/cishoon.jpg">
-      <meta itemprop="name" content="Cishoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Cishoon's Blog">
-      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Cishoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/HDL/verilog/" class="post-title-link" itemprop="url">Verilog 部分特性整理</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-08-19 00:00:00" itemprop="dateCreated datePublished" datetime="2024-08-19T00:00:00+08:00">2024-08-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/HDL/" itemprop="url" rel="index"><span itemprop="name">HDL</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.3k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>找老师问有什么东西可以给我先看起来，老师发来了Verilog……</p>
-<p>孽缘未了啊，这回重头认真学一学。</p>
-<p>记录一些之前没有考虑过的内容。</p>
-<p>参考这个网站https://hdlbits.01xz.net/</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/HDL/verilog/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://cishoon.top/interview/%E6%B5%99%E8%BD%AF%E5%A4%8F%E4%BB%A4%E8%90%A5%E5%8D%93%E8%B6%8A%E8%90%A5%E5%91%98%E9%9D%A2%E8%AF%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/cishoon.jpg">
-      <meta itemprop="name" content="Cishoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Cishoon's Blog">
-      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Cishoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/interview/%E6%B5%99%E8%BD%AF%E5%A4%8F%E4%BB%A4%E8%90%A5%E5%8D%93%E8%B6%8A%E8%90%A5%E5%91%98%E9%9D%A2%E8%AF%95/" class="post-title-link" itemprop="url">浙软夏令营卓越营员面试复盘</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-08-15 00:00:00" itemprop="dateCreated datePublished" datetime="2024-08-15T00:00:00+08:00">2024-08-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>参加了浙软的面试，抽签抽到倒数第二个……在门口等了五个小时，非常热……</p>
-<p>记录一下面试的内容，整理了一下经验。</p>
-<p>整体来说老师的问题很有含金量很有启发性，没有一个水问题。</p>
-<p>也暴露了我专业课准备不充分的问题。</p>
-<p>之前完全没想到，会问这么多软件工程的专业问题，老师最感兴趣的尽然是济星云……</p>
-<p>与我准备的内容大相径庭2333我只能尽量的说，感觉大错是没有的，个别题目回答不流利，让人感觉基础不扎实</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/interview/%E6%B5%99%E8%BD%AF%E5%A4%8F%E4%BB%A4%E8%90%A5%E5%8D%93%E8%B6%8A%E8%90%A5%E5%91%98%E9%9D%A2%E8%AF%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
+          <div class="post-nav">
+            <div class="post-nav-item">
             </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://cishoon.top/cloud-native/spring-cloud/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/cishoon.jpg">
-      <meta itemprop="name" content="Cishoon">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Cishoon's Blog">
-      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Cishoon's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/cloud-native/spring-cloud/" class="post-title-link" itemprop="url">Spring Cloud - 注册中心、中央配置、网关</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-08-05 00:00:00" itemprop="dateCreated datePublished" datetime="2024-08-05T00:00:00+08:00">2024-08-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>5.9k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>本文属于学习笔记，内容可能有误、可能不全面，仅代表个人在学习这一特性时的理解和总结</p>
-</blockquote>
-<p>实习第一天，主要目的是学习云原生架构。今天先从 Spring Cloud
-开始。</p>
-<figure>
-<img src="/cloud-native/spring-cloud/202408050942244.jpg" alt="31722821596_.pic">
-<figcaption aria-hidden="true">31722821596_.pic</figcaption>
-</figure>
-<p>总的来说，Spring Boot 提供构建应用的基础，Spring Cloud
-在此基础上提供了分布式系统和微服务架构所需的工具和支持。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/cloud-native/spring-cloud/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
+            <div class="post-nav-item">
+                <a href="/HDL/verilog/" rel="next" title="Verilog 部分特性整理">
+                  Verilog 部分特性整理 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          </div>
     </footer>
   </article>
 </div>
@@ -704,9 +483,7 @@ mjx-container[display="true"] + br {
 
 
 
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
+
 
 </div>
   </main>
