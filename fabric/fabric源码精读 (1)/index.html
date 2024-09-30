@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="开坑，学习 Fabric 的源码。 思路是根据 fabric-sample 的 test-network 中的脚本，一行行分析。遇到里面使用的指令，看源码如何实现。 下面内容非常混乱，写的毫无逻辑，之后有空重新整理一遍。 一口气写完太长了，typora里会卡了，分章节发。 学习笔记，不保证内容正确性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hyperledger Fabric 源码精读（1）">
+<meta property="og:url" content="http://cishoon.top/fabric/fabric%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB%20(1)/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="开坑，学习 Fabric 的源码。 思路是根据 fabric-sample 的 test-network 中的脚本，一行行分析。遇到里面使用的指令，看源码如何实现。 下面内容非常混乱，写的毫无逻辑，之后有空重新整理一遍。 一口气写完太长了，typora里会卡了，分章节发。 学习笔记，不保证内容正确性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-15T09:02:54.355Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="fabric">
+<meta property="article:tag" content="超级账本">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/fabric/fabric%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB%20(1)/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/fabric/fabric%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB%20(1)/","path":"fabric/fabric源码精读 (1)/","title":"Hyperledger Fabric 源码精读（1）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hyperledger Fabric 源码精读（1） | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">20</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E6%A6%82%E8%A7%88"><span class="nav-text">0 文件结构概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#networkup"><span class="nav-text">1 networkUp</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%81%E4%B9%A6%E7%94%9F%E6%88%90%E4%B8%8Emsp"><span class="nav-text">1.1 证书生成与MSP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cryptogen"><span class="nav-text">1.1.1 cryptogen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msp"><span class="nav-text">1.1.2 MSP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-compose"><span class="nav-text">1.2 docker-compose</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%89%A7%E8%A1%8C%E5%86%85%E5%AE%B9"><span class="nav-text">1.2.1 具体执行内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fabric-orderer-fabric-peer-%E9%95%9C%E5%83%8F"><span class="nav-text">1.2.2
+fabric-orderer &#x2F; fabric-peer 镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#peer"><span class="nav-text">1.2.3 peer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orderer"><span class="nav-text">1.2.4 orderer</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/fabric/fabric%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB%20(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hyperledger Fabric 源码精读（1） | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hyperledger Fabric 源码精读（1）<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9mYWJyaWMvZmFicmlj5rqQ56CB57K+6K+7ICgxKS5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-09-09 00:00:00" itemprop="dateCreated datePublished" datetime="2024-09-09T00:00:00+08:00">2024-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><ul>
+<li><p>开坑，学习 Fabric 的源码。</p></li>
+<li><p>思路是根据 <code>fabric-sample</code> 的
+<code>test-network</code>
+中的脚本，一行行分析。遇到里面使用的指令，看源码如何实现。</p></li>
+<li><p>下面内容非常混乱，写的毫无逻辑，之后有空重新整理一遍。</p></li>
+<li><p>一口气写完太长了，typora里会卡了，分章节发。</p></li>
+<li><p>学习笔记，不保证内容正确性。</p></li>
+</ul>
+<span id="more"></span>
+<h1 id="文件结构概览">0 文件结构概览</h1>
+<ol type="1">
+<li><p>ccaas_builder:
+包含构建链代码即服务（CCaaS）相关命令的代码。</p></li>
+<li><p>ci:
+包含持续集成（CI）相关的脚本，用于自动化测试和构建过程。</p></li>
+<li><p><strong>cmd</strong>:
+包含Fabric项目中各种命令行工具的实现代码，如<code>configtxgen</code>、<code>cryptogen</code>、<code>peer</code>等。</p></li>
+<li><p><strong>common</strong>:
+包含Fabric项目中各模块通用的功能模块，如加密、配置、错误处理等。</p></li>
+<li><p><strong>core</strong>:
+实现了Fabric的核心功能，如ACL管理、链代码生命周期、提交人、账本管理、策略管理等。</p></li>
+<li><p><strong>discovery</strong>:
+处理Fabric中的服务发现功能，包括客户端、命令行工具、背书策略等。</p></li>
+<li><p>docs: 文档生成工具及相关资源文件。</p></li>
+<li><p><strong>gossip</strong>:
+包含实现Fabric中gossip协议的相关代码，用于网络节点间的数据传播与共识。</p></li>
+<li><p>images:
+包含Fabric各组件的Docker镜像构建文件，如<code>peer</code>、<code>orderer</code>等。</p></li>
+<li><p>integration:
+包含集成测试相关的代码，用于验证Fabric各组件间的相互作用。</p></li>
+<li><p><strong>internal</strong>:
+包含Fabric内部使用的一些模块和工具，如配置生成器、加密工具等。</p></li>
+<li><p><strong>msp</strong>:
+包含成员服务提供者（MSP）相关的代码，用于管理组织的身份和证书。</p></li>
+<li><p><strong>orderer</strong>:
+包含排序服务节点（Orderer）相关的功能模块，如共识机制实现、样例客户端等。</p></li>
+<li><p>pkg:
+包含一些通用的包和工具，如状态数据和交易处理相关的代码。</p></li>
+<li><p>protoutil: 包含与Protobuf相关的工具和测试文件。</p></li>
+<li><p>release_notes: 包含项目的发行说明，记录版本更新和变化。</p></li>
+<li><p>sampleconfig:
+包含一些样例配置文件，如MSP配置，用于演示和测试。</p></li>
+<li><p>scripts: 包含各种脚本文件，用于辅助项目的构建和部署。</p></li>
+<li><p>swagger:
+用于生成Swagger文档的文件，Swagger用于API文档的生成。</p></li>
+<li><p>tools: 包含一些额外的工具和实用程序。</p></li>
+<li><p>vagrant: 包含用于创建虚拟开发环境的Vagrant配置文件。</p></li>
+<li><p>vendor: 包含Fabric项目依赖的第三方库和包。</p></li>
+</ol>
+<h1 id="networkup">1 networkUp</h1>
+<h2 id="证书生成与msp">1.1 证书生成与MSP</h2>
+<p>启动网络首先会执行证书生成。</p>
+<p>fabric 提供三种证书生成的工具：<code>cryptogen</code>
+<code>cfssl</code> <code>Fabric CA</code>。这里先以
+<code>cryptogen</code> 为例，后续补充 <code>Fabric CA</code>
+的实现。</p>
+<h3 id="cryptogen">1.1.1 cryptogen</h3>
+<p><code>cryptogen</code> 是 fabric 提供的一个命令行工具。</p>
+<p>命令帮助：https://hyperledger-fabric.readthedocs.io/zh-cn/latest/commands/cryptogen.html</p>
+<p>它为测试提供了一种预配置网络的工具。
+通常它<strong>不应使用在生产环境中</strong>。</p>
+<p>networkUp中执行如下指令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output="organizations"</span><br><span class="line">cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output="organizations"</span><br><span class="line">cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml --output="organizations"</span><br></pre></td></tr></table></figure>
+<p><code>cryptogen generate</code>
+用于生成秘钥材料。指定两个参数，分别是配置文件和输出目录。</p>
+<p>配置文件结构如下：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># "OrdererOrgs" - 管理orderer节点的组织定义</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line"><span class="attr">OrdererOrgs:</span></span><br><span class="line">  <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">  <span class="comment"># Orderer</span></span><br><span class="line">  <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">Name:</span> <span class="string">Orderer</span></span><br><span class="line">    <span class="attr">Domain:</span> <span class="string">example.com</span></span><br><span class="line">    <span class="attr">EnableNodeOUs:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># "Specs" - 完整描述请参见下面的PeerOrgs</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="attr">Specs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">Hostname:</span> <span class="string">orderer</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># "PeerOrgs" - 管理peer节点的组织定义</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line"><span class="attr">PeerOrgs:</span></span><br><span class="line">  <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">  <span class="comment"># Org1</span></span><br><span class="line">  <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">Name:</span> <span class="string">Org1</span></span><br><span class="line">    <span class="attr">Domain:</span> <span class="string">org1.example.com</span></span><br><span class="line">    <span class="attr">EnableNodeOUs:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># "CA"</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># 取消注释这个部分以启用这个组织的CA的显式定义。</span></span><br><span class="line">    <span class="comment"># 这个条目是一个Spec。详细信息请参见下面的"Specs"部分。</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># CA:</span></span><br><span class="line">    <span class="comment">#    Hostname: ca # 默认为ca.org1.example.com</span></span><br><span class="line">    <span class="comment">#    Country: US</span></span><br><span class="line">    <span class="comment">#    Province: California</span></span><br><span class="line">    <span class="comment">#    Locality: San Francisco</span></span><br><span class="line">    <span class="comment">#    OrganizationalUnit: Hyperledger Fabric</span></span><br><span class="line">    <span class="comment">#    StreetAddress: org的地址 # 默认为nil</span></span><br><span class="line">    <span class="comment">#    PostalCode: org的邮政编码 # 默认为nil</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># "Specs"</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># 取消注释这个部分以在配置中启用主机的显式定义。</span></span><br><span class="line">    <span class="comment"># 大多数用户会使用下面的Template。</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Specs是Spec条目的数组。每个Spec条目由两个字段组成：</span></span><br><span class="line">    <span class="comment">#   - Hostname:   (必需) 期望的主机名，不包括域名部分。</span></span><br><span class="line">    <span class="comment">#   - CommonName: (可选) 指定CN的模板或显式覆盖。</span></span><br><span class="line">    <span class="comment">#                 默认情况下，这是一个模板：</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment">#                              "{{.Hostname}}.{{.Domain}}"</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment">#                 它的值分别从Spec.Hostname和Org.Domain中获取。</span></span><br><span class="line">    <span class="comment">#   - SANS:       (可选) 指定将在生成的x509中设置的一个或多个主题备用名称。</span></span><br><span class="line">    <span class="comment">#                 接受模板变量{{.Hostname}}, {{.Domain}}, {{.CommonName}}。</span></span><br><span class="line">    <span class="comment">#                 这里提供的IP地址将被正确识别。其他值将被视为DNS名称。</span></span><br><span class="line">    <span class="comment">#                 注意：会为你创建两个隐式条目：</span></span><br><span class="line">    <span class="comment">#                     - {{ .CommonName }}</span></span><br><span class="line">    <span class="comment">#                     - {{ .Hostname }}</span></span><br><span class="line">    <span class="comment">#                 即：SANS里定义的域名也会被指向这个节点，证书会认为这些域名是这个节点的合法别名。</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># Specs:</span></span><br><span class="line">    <span class="comment">#   - Hostname: foo # 默认为"foo.org1.example.com"</span></span><br><span class="line">    <span class="comment">#     CommonName: foo27.org5.example.com # 覆盖基于主机名的上面设置的FQDN</span></span><br><span class="line">    <span class="comment">#     SANS:</span></span><br><span class="line">    <span class="comment">#       - "bar.{{.Domain}}"</span></span><br><span class="line">    <span class="comment">#       - "altfoo.{{.Domain}}"</span></span><br><span class="line">    <span class="comment">#       - "{{.Hostname}}.org6.net"</span></span><br><span class="line">    <span class="comment">#       - 172.16.10.31</span></span><br><span class="line">    <span class="comment">#   - Hostname: bar</span></span><br><span class="line">    <span class="comment">#   - Hostname: baz</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># "Template"</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># 允许从模板中顺序生成一个或多个主机。</span></span><br><span class="line">    <span class="comment"># 默认情况下，这看起来像是从0到Count-1的"peer%d"。</span></span><br><span class="line">    <span class="comment"># 你可以覆盖节点数（Count）、起始索引（Start）或用于构建名称的模板（Hostname）。</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># 注意：Template和Specs不是互斥的。你可以定义这两个部分，系统会为你创建聚合的节点。</span></span><br><span class="line">    <span class="comment"># 注意名称冲突</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="attr">Template:</span></span><br><span class="line">      <span class="attr">Count:</span> <span class="number">1</span></span><br><span class="line">      <span class="comment"># Start: 5</span></span><br><span class="line">      <span class="comment"># Hostname: {{.Prefix}}{{.Index}} # 默认</span></span><br><span class="line">      <span class="comment"># SANS:</span></span><br><span class="line">      <span class="comment">#   - "{{.Hostname}}.alt.{{.Domain}}"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># "Users"</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="comment"># Count: 除Admin外的用户账户数量</span></span><br><span class="line">    <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">    <span class="attr">Users:</span></span><br><span class="line">      <span class="attr">Count:</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">  <span class="comment"># Org2: 完整规范请参见"Org1"</span></span><br><span class="line">  <span class="comment"># ---------------------------------------------------------------------------</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">Name:</span> <span class="string">Org2</span></span><br><span class="line">    <span class="attr">Domain:</span> <span class="string">org2.example.com</span></span><br><span class="line">    <span class="attr">EnableNodeOUs:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">Template:</span></span><br><span class="line">      <span class="attr">Count:</span> <span class="number">1</span></span><br><span class="line">    <span class="attr">Users:</span></span><br><span class="line">      <span class="attr">Count:</span> <span class="number">1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>执行 <code>cryptogen generate</code> 会遍历创建所有配置文件中定义的
+<code>Ordered</code> 和 <code>Peer</code>
+节点的<strong>组织</strong>。注意这里是组织，一个组织里面可以包含很多个节点。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">generate</span><span class="params">()</span></span> {</span><br><span class="line">	config, err := getConfig() <span class="comment">// 读取配置文件，反序列化成config</span></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">		fmt.Printf(<span class="string">"Error reading config: %s"</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, orgSpec := <span class="keyword">range</span> config.PeerOrgs {</span><br><span class="line">		err = renderOrgSpec(&amp;orgSpec, <span class="string">"peer"</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">			fmt.Printf(<span class="string">"Error processing peer configuration: %s"</span>, err)</span><br><span class="line">			os.Exit(<span class="number">-1</span>)</span><br><span class="line">		}</span><br><span class="line">		generatePeerOrg(*outputDir, orgSpec)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, orgSpec := <span class="keyword">range</span> config.OrdererOrgs {</span><br><span class="line">		err = renderOrgSpec(&amp;orgSpec, <span class="string">"orderer"</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">			fmt.Printf(<span class="string">"Error processing orderer configuration: %s"</span>, err)</span><br><span class="line">			os.Exit(<span class="number">-1</span>)</span><br><span class="line">		}</span><br><span class="line">		generateOrdererOrg(*outputDir, orgSpec)</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p><code>renderOrgSpec</code>：处理配置文件中的<code>OrgSpec</code>，完成配置文件中模板的处理。即完整定义一个组织中的所有节点。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">renderOrgSpec</span><span class="params">(orgSpec *OrgSpec, prefix <span class="type">string</span>)</span></span> <span class="type">error</span> {</span><br><span class="line">	<span class="comment">// 获取配置文件中定义的公钥算法，默认为ECDSA</span></span><br><span class="line">	publickKeyAlg := getPublicKeyAlg(orgSpec.Template.PublicKeyAlgorithm)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 首先处理Template的配置，自动根据模板生成Specs</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; orgSpec.Template.Count; i++ {</span><br><span class="line">		data := HostnameData{</span><br><span class="line">			Prefix: prefix,</span><br><span class="line">			Index:  i + orgSpec.Template.Start,</span><br><span class="line">			Domain: orgSpec.Domain,</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 生成完整的域名</span></span><br><span class="line">		hostname, err := parseTemplateWithDefault(orgSpec.Template.Hostname, defaultHostnameTemplate, data)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		spec := NodeSpec{</span><br><span class="line">			Hostname:           hostname,</span><br><span class="line">			SANS:               orgSpec.Template.SANS,</span><br><span class="line">			PublicKeyAlgorithm: publickKeyAlg,</span><br><span class="line">		}</span><br><span class="line">		orgSpec.Specs = <span class="built_in">append</span>(orgSpec.Specs, spec)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 再处理Specs中显式定义的Specs</span></span><br><span class="line">	<span class="keyword">for</span> idx, spec := <span class="keyword">range</span> orgSpec.Specs {</span><br><span class="line">		err := renderNodeSpec(orgSpec.Domain, &amp;spec)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		orgSpec.Specs[idx] = spec</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 同样处理CA节点</span></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(orgSpec.CA.Hostname) == <span class="number">0</span> {</span><br><span class="line">		orgSpec.CA.Hostname = <span class="string">"ca"</span></span><br><span class="line">	}</span><br><span class="line">	err := renderNodeSpec(orgSpec.Domain, &amp;orgSpec.CA)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> {</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p><code>generatePeerOrg</code> /
+<code>generateOrderedOrg</code>：Ordered与Peer类似，区别只在于生成的nodeType是PEER还是Ordered</p>
+<ul>
+<li><p><strong>生成Signing证书</strong></p></li>
+<li><p><strong>生成CA证书</strong></p>
+<p>生成证书的通过调用ca.NewCA方法，给定地址、街道等基本信息和加密算法，自动生成私钥和公钥</p>
+<p>证书的版本是X.509</p></li>
+<li><p><strong>生成验证 MSP</strong></p>
+<p><code>GenerateVerifyingMSP</code> 函数负责生成 Hyperledger Fabric
+中验证 MSP（Membership Service
+Provider）所需的工件。以下是其功能的简要说明：</p>
+<ol type="1">
+<li><p><strong>创建文件夹结构</strong>： 该函数首先通过
+<code>createFolderStructure</code> 创建所需的文件夹结构：
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">err := createFolderStructure(baseDir, <span class="literal">false</span>)</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>导出 CA 证书</strong>： 它将签名 CA 和 TLS CA
+证书导出到相应的目录： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">err = x509Export(filepath.Join(baseDir, <span class="string">"cacerts"</span>, x509Filename(signCA.Name)), signCA.SignCert)</span><br><span class="line">err = x509Export(filepath.Join(baseDir, <span class="string">"tlscacerts"</span>, x509Filename(tlsCA.Name)), tlsCA.SignCert)</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>生成 <code>config.yaml</code></strong>： 如果启用了
+<code>nodeOUs</code>，则生成 <code>config.yaml</code> 文件：
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> nodeOUs {</span><br><span class="line">    exportConfig(baseDir, <span class="string">"cacerts/"</span>+x509Filename(signCA.Name), <span class="literal">true</span>)</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>创建管理员证书</strong>： 如果未启用
+<code>nodeOUs</code>，则为单元测试创建一个临时的管理员证书：
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> !nodeOUs {</span><br><span class="line">    ksDir := filepath.Join(baseDir, <span class="string">"keystore"</span>)</span><br><span class="line">    err = os.Mkdir(ksDir, <span class="number">0o755</span>)</span><br><span class="line">    <span class="keyword">defer</span> os.RemoveAll(ksDir)</span><br><span class="line">    priv, err := csp.GeneratePrivateKey(ksDir, keyAlg)</span><br><span class="line">    _, err = signCA.SignCertificate(</span><br><span class="line">        filepath.Join(baseDir, <span class="string">"admincerts"</span>),</span><br><span class="line">        signCA.Name,</span><br><span class="line">        <span class="literal">nil</span>,</span><br><span class="line">        <span class="literal">nil</span>,</span><br><span class="line">        getPublicKey(priv),</span><br><span class="line">        x509.KeyUsageDigitalSignature,</span><br><span class="line">        []x509.ExtKeyUsage{},</span><br><span class="line">    )</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<p>该函数确保所有必要的 MSP
+工件都已生成并放置在正确的目录中，从而便于设置 Hyperledger Fabric
+中的验证 MSP。</p>
+<blockquote>
+<p>MSP 的功能是什么？</p>
+<p>nodeOUs是什么？</p>
+</blockquote></li>
+<li><p><strong>生成所有 PEER 节点</strong></p>
+<p>遍历 <code>orgSpec.Specs</code> ，给每一个节点调用
+<code>msp.GenerateLocalMSP</code> 生成 MSP</p>
+<p><code>GenerateLocalMSP</code> 函数用于生成本地 MSP（Membership
+Service Provider）身份和 TLS（Transport Layer
+Security）证书。以下是对该函数的简要解释：</p>
+<ol type="1">
+<li><p><strong>创建文件夹结构</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">mspDir := filepath.Join(baseDir, <span class="string">"msp"</span>)</span><br><span class="line">tlsDir := filepath.Join(baseDir, <span class="string">"tls"</span>)</span><br><span class="line">err := createFolderStructure(mspDir, <span class="literal">true</span>)</span><br><span class="line">err = os.MkdirAll(tlsDir, <span class="number">0o755</span>)</span><br></pre></td></tr></table></figure> 该部分代码创建
+MSP 和 TLS 所需的文件夹结构。</p></li>
+<li><p><strong>生成私钥</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">keystore := filepath.Join(mspDir, <span class="string">"keystore"</span>)</span><br><span class="line">priv, err := csp.GeneratePrivateKey(keystore, keyAlg)</span><br></pre></td></tr></table></figure> 生成 MSP 的私钥并存储在
+<code>keystore</code> 文件夹中。</p></li>
+<li><p><strong>生成 X509 证书</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">cert, err := signCA.SignCertificate(</span><br><span class="line">    filepath.Join(mspDir, <span class="string">"signcerts"</span>),</span><br><span class="line">    name,</span><br><span class="line">    ous,</span><br><span class="line">    <span class="literal">nil</span>,</span><br><span class="line">    getPublicKey(priv),</span><br><span class="line">    x509.KeyUsageDigitalSignature,</span><br><span class="line">    []x509.ExtKeyUsage{},</span><br><span class="line">)</span><br></pre></td></tr></table></figure> 使用签名 CA 生成
+X509 证书，并将其存储在 <code>signcerts</code> 文件夹中。</p></li>
+<li><p><strong>导出 CA 证书</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">err = x509Export(</span><br><span class="line">    filepath.Join(mspDir, <span class="string">"cacerts"</span>, x509Filename(signCA.Name)),</span><br><span class="line">    signCA.SignCert,</span><br><span class="line">)</span><br><span class="line">err = x509Export(</span><br><span class="line">    filepath.Join(mspDir, <span class="string">"tlscacerts"</span>, x509Filename(tlsCA.Name)),</span><br><span class="line">    tlsCA.SignCert,</span><br><span class="line">)</span><br></pre></td></tr></table></figure> 将签名 CA 和 TLS
+CA 的证书分别导出到 <code>cacerts</code> 和 <code>tlscacerts</code>
+文件夹中。</p></li>
+<li><p><strong>生成 config.yaml</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> nodeOUs {</span><br><span class="line">    exportConfig(mspDir, filepath.Join(<span class="string">"cacerts"</span>, x509Filename(signCA.Name)), <span class="literal">true</span>)</span><br><span class="line">}</span><br></pre></td></tr></table></figure> 如果启用了节点
+OU（Organizational Units），则生成 <code>config.yaml</code>
+配置文件。</p></li>
+<li><p><strong>生成 TLS 证书</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">tlsPrivKey, err := csp.GeneratePrivateKey(tlsDir, keyAlg)</span><br><span class="line">_, err = tlsCA.SignCertificate(</span><br><span class="line">    filepath.Join(tlsDir),</span><br><span class="line">    name,</span><br><span class="line">    <span class="literal">nil</span>,</span><br><span class="line">    sans,</span><br><span class="line">    getPublicKey(tlsPrivKey),</span><br><span class="line">    x509.KeyUsageDigitalSignature|x509.KeyUsageKeyEncipherment,</span><br><span class="line">    []x509.ExtKeyUsage{</span><br><span class="line">        x509.ExtKeyUsageServerAuth,</span><br><span class="line">        x509.ExtKeyUsageClientAuth,</span><br><span class="line">    },</span><br><span class="line">)</span><br></pre></td></tr></table></figure> 生成 TLS
+私钥和证书，并将其存储在 TLS 文件夹中。</p></li>
+<li><p><strong>重命名 TLS 证书</strong>：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">tlsFilePrefix := <span class="string">"server"</span></span><br><span class="line"><span class="keyword">if</span> nodeType == CLIENT || nodeType == ADMIN {</span><br><span class="line">    tlsFilePrefix = <span class="string">"client"</span></span><br><span class="line">}</span><br><span class="line">err = os.Rename(filepath.Join(tlsDir, x509Filename(name)),</span><br><span class="line">    filepath.Join(tlsDir, tlsFilePrefix+<span class="string">".crt"</span>))</span><br></pre></td></tr></table></figure>
+<p>根据节点类型重命名生成的 TLS 证书。</p></li>
+<li><p><strong>导出私钥</strong>： <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">err = keyExport(tlsDir, filepath.Join(tlsDir, tlsFilePrefix+<span class="string">".key"</span>))</span><br></pre></td></tr></table></figure>
+将私钥导出到指定文件中。</p></li>
+</ol>
+<p>该函数的主要目的是生成和配置 MSP 和 TLS
+所需的各种证书和密钥文件。</p>
+<blockquote>
+<p><code>GenerateLocalMSP</code> 和 <code>GenerateVerifyingMSP</code>
+函数的主要区别在于它们的用途和生成的内容：</p>
+<ol type="1">
+<li><strong><code>GenerateLocalMSP</code></strong>:
+<ul>
+<li>主要用于生成本地 MSP（Membership Service Provider）身份工件。</li>
+<li>创建文件夹结构并生成私钥。</li>
+<li>使用签名 CA 生成 X509 证书。</li>
+<li>将签名 CA 证书和 TLS CA 证书分别写入 <code>cacerts</code> 和
+<code>tlscacerts</code> 文件夹。</li>
+<li>如果启用了节点 OU（Organizational Units），则生成
+<code>config.yaml</code> 配置文件。</li>
+<li>生成 TLS 工件，包括私钥和 X509 证书。</li>
+<li>适用于需要完整 MSP 身份的节点，如客户端、排序节点或对等节点。</li>
+</ul></li>
+<li><strong><code>GenerateVerifyingMSP</code></strong>:
+<ul>
+<li>主要用于生成验证 MSP 工件。</li>
+<li>创建文件夹结构并写入签名 CA 和 TLS CA 证书。</li>
+<li>如果启用了节点 OU，则生成 <code>config.yaml</code> 配置文件。</li>
+<li>生成一个临时的管理员证书用于单元测试。</li>
+<li>适用于只需要验证 MSP 身份的场景，不需要生成完整的本地 MSP
+身份。</li>
+</ul></li>
+</ol>
+总结：
+<ul>
+<li><code>GenerateLocalMSP</code> 生成完整的本地 MSP
+身份，包括私钥和证书。</li>
+<li><code>GenerateVerifyingMSP</code> 生成用于验证的 MSP 工件，主要包含
+CA 证书和配置文件。</li>
+</ul>
+</blockquote></li>
+<li><p><strong>生成所有用户节点（CLIENT和ADMIN）</strong></p>
+<p>同上，给每一个节点调用 <code>msp.GenerateLocalMSP</code></p></li>
+<li><p><strong>复制管理员证书到相应的文件夹</strong></p></li>
+</ul>
+<h3 id="msp">1.1.2 MSP</h3>
+<p>可见上面的 <code>cryptogen generate</code>
+只干了两件事，生成各种CA证书和生成MSP。</p>
+<p>那MSP是什么？这几种类型有什么区别？<code>LocalMSP</code> 和
+<code>VerifyingMSP</code> 有什么区别？<code>nodeOUs</code>
+的作用是什么？</p>
+<p>身份认证机构（Certificate Authorities,
+CA）通过生成公钥和私钥对来发行身份，这对密钥可以用来证明身份。这个身份需要被网络识别，这时就需要用到会员服务提供者（Membership
+Service Provider,
+MSP）。例如，一个节点（peer）使用其私钥对交易进行数字签名或背书。MSP用来检查该节点是否有权背书交易。然后使用节点证书中的公钥来验证附加在交易上的签名是否有效。因此，MSP是允许该身份被网络其他成员信任和识别的机制。</p>
+<p>可以将CA比作信用卡提供商，它发行多种可验证的身份。而MSP则决定哪些信用卡提供商在商店被接受。</p>
+<p>CA 提供身份，MSP 验证你的身份能不能在我这里用。</p>
+<p>在 <code>fabric-samples</code> 的
+<code>asset-transfer-basic/application-gateway</code> 中，上面由
+<code>cryptogen</code> 生成的 MSP 证书和
+CA签名被用作创建身份和签名，与网关建立连接。</p>
+<p>可以推测，在初始构建区块链网络时，验证MSP会被作为配置加载到网络里。</p>
+<p>在 Hyperledger Fabric 中，<code>NodeOUs</code> 是 Membership Service
+Provider (MSP)
+配置的一部分，用于定义和区分网络中不同节点的角色（身份）类型。<code>OU</code>
+代表 "Organizational Unit"（组织单位），通过配置
+<code>NodeOUs</code>，你可以明确指定每个节点在网络中的角色，例如是 Peer
+节点、Orderer 节点，还是客户端等。</p>
+<p><code>NodeOUs</code> 的作用：</p>
+<ol type="1">
+<li><strong>角色区分</strong>：通过
+<code>NodeOUs</code>，可以在网络中区分不同的节点类型。例如，MSP
+可以配置哪些证书对应 Peer 节点，哪些证书对应 Orderer 节点。</li>
+<li><strong>访问控制</strong>：在 Hyperledger Fabric
+中，<code>NodeOUs</code>
+配置有助于实施更精细的访问控制策略。不同角色的节点可以被赋予不同的权限和职责，从而确保网络的安全性和有效性。</li>
+<li><strong>身份验证</strong>：当一个节点加入网络或执行操作时，MSP
+会使用 <code>NodeOUs</code>
+配置来验证该节点的身份，并确保它符合其配置的角色。例如，只有被正确标识为
+Orderer 的节点，才能参与共识过程。</li>
+</ol>
+<p>MSP 这部分感觉还没有完全理解。因为到这里，才刚刚完成了 MSP
+配置文件的创建，具体的验证逻辑等等还在后面。先留个印象，MSP
+的作用是验证用户身份的。</p>
+<h2 id="docker-compose">1.2 docker-compose</h2>
+<p>至此，test-network
+完成了组织的创建。得到的文件（证书和秘钥）都保存在本地的
+<code>organization</code> 文件夹中。</p>
+<p>接下来，就是使用 <code>docker-compose</code> 进行网络的创建。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker-compose -f compose/compose-test-net.yaml -f compose/docker/docker-compose-test-net.yaml</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在 <code>docker-compose</code> 中，你可以使用多个 <code>-f</code>
+选项来指定多个 YAML
+文件。这样做的目的是将这些文件的内容合并起来，以便更灵活地配置和管理
+Docker 服务。</p>
+</blockquote>
+<h3 id="具体执行内容">1.2.1 具体执行内容</h3>
+<p>具体来说，这个 <code>docker-compose</code> 文件启动了一个 Hyperledger
+Fabric 测试网络，它包括以下组件：</p>
+<ol type="1">
+<li><strong>网络和卷配置</strong></li>
+</ol>
+<ul>
+<li><strong>Volumes</strong>: 定义了三个卷，用于持久化
+<code>orderer.example.com</code>、<code>peer0.org1.example.com</code> 和
+<code>peer0.org2.example.com</code>
+节点的数据。这些卷确保了即使容器停止或重启，数据仍然可以保留。</li>
+<li><strong>Networks</strong>: 定义了一个名为 <code>fabric_test</code>
+的 Docker 网络，所有服务将会连接到这个网络中以便相互通信。</li>
+</ul>
+<ol start="2" type="1">
+<li><strong>服务（Services）</strong></li>
+</ol>
+<ul>
+<li><p><strong>Orderer 节点：orderer.example.com</strong></p>
+<ul>
+<li><p><strong>Container Name</strong>:
+<code>orderer.example.com</code></p></li>
+<li><p><strong>Image</strong>: 使用了最新版本的
+<code>hyperledger/fabric-orderer</code> 镜像。</p></li>
+<li><p><strong>Environment</strong>:</p>
+<ul>
+<li>配置了 Fabric 的日志级别为 <code>INFO</code>。</li>
+<li>配置了 Orderer 的监听地址和端口。</li>
+<li>使用 <code>OrdererMSP</code> 作为本地 MSP（Membership Service
+Provider）。</li>
+<li>启用了 TLS，并提供了 TLS 的证书和密钥路径。</li>
+<li>配置了 Orderer 的管理端口（7053）和操作端口（9443），以及相关的 TLS
+设置。</li>
+</ul></li>
+<li><p><strong>Volumes</strong>: 挂载了组织相关的 MSP 和 TLS
+证书目录，及 Orderer 的数据存储目录。</p></li>
+<li><p><strong>Ports</strong>: 暴露了 Orderer 的主要端口 7050、管理端口
+7053、以及操作端口 9443。</p></li>
+<li><p><strong>Networks</strong>: 连接到 <code>fabric_test</code>
+网络。</p></li>
+<li><p><strong>Command</strong>：<code>orderer</code></p></li>
+</ul></li>
+<li><p><strong>Peer 节点：peer0.org1.example.com</strong></p>
+<ul>
+<li><p><strong>Container Name</strong>:
+<code>peer0.org1.example.com</code></p></li>
+<li><p><strong>Image</strong>: 使用了最新版本的
+<code>hyperledger/fabric-peer</code> 镜像。</p></li>
+<li><p><strong>Environment</strong>:</p>
+<ul>
+<li>配置了 Fabric 的日志级别为 <code>INFO</code>。</li>
+<li>启用了 TLS，并提供了 TLS 的证书和密钥路径。</li>
+<li>设置了该节点的 ID 为
+<code>peer0.org1.example.com</code>，并配置了监听地址。</li>
+<li>配置了节点的 Gossip 协议启动节点和外部端点地址。</li>
+<li>使用 <code>Org1MSP</code> 作为本地 MSP。</li>
+<li>配置了节点的操作端口（9444）和链码执行超时（300秒）。</li>
+</ul></li>
+<li><p><strong>Volumes</strong>: 挂载了组织相关的 MSP 和 TLS
+证书目录，及节点的数据存储目录。</p></li>
+<li><p><strong>Ports</strong>: 暴露了 Peer 节点的主要端口 7051、操作端口
+9444。</p></li>
+<li><p><strong>Networks</strong>: 连接到 <code>fabric_test</code>
+网络。</p></li>
+<li><p><strong>Command</strong>：<code>peer node start</code></p></li>
+</ul></li>
+<li><p><strong>Peer 节点：peer0.org2.example.com</strong></p>
+<ul>
+<li>与上面org1的类似</li>
+</ul></li>
+</ul>
+<ol start="3" type="1">
+<li><strong>Additional Configuration in the Second Compose
+File</strong></li>
+</ol>
+<p>在第二个 <code>docker-compose</code> 文件中，针对
+<code>peer0.org1.example.com</code> 和
+<code>peer0.org2.example.com</code> 这两个节点，增加了一些额外的配置： -
+<strong>CORE_VM_ENDPOINT</strong>: 配置了 Docker 守护进程的 Unix
+套接字，用于管理容器内的虚拟机。 -
+<strong>CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE</strong>: 设置了 Docker
+网络模式为 <code>fabric_test</code>。</p>
+<h3 id="fabric-orderer-fabric-peer-镜像">1.2.2
+<code>fabric-orderer</code> / <code>fabric-peer</code> 镜像</h3>
+<p>源码仓库中 <code>fabric/image</code> 路径下可以找到他们的
+Dockerfile。</p>
+<p>简而言之，这个 Dockerfile 的设计分为两个阶段：</p>
+<ol type="1">
+<li>首先在构建阶段生成所需的二进制文件（包括
+<code>peer</code>/<code>orderer</code> 和 CCaaS 相关组件）</li>
+<li>然后在运行时阶段，将这些构建产物打包到一个精简的 Ubuntu
+镜像中，并配置好环境变量和默认启动命令</li>
+</ol>
+<p>那接下来主要关注的就是 <code>orderer</code> 和 <code>peer</code>
+的具体实现了。根据镜像启动的顺序，先看 <code>orderer</code>。</p>
+<h3 id="peer">1.2.3 peer</h3>
+<h3 id="orderer">1.2.4 orderer</h3>
+<p>暂时理解不了 <code>peer</code> 和 <code>orderer</code>
+是怎么进行网络通信的，先放一放，看看后面干了什么，确定一下这两个指令干的事情的范围</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/go/" rel="tag"><i class="fa fa-tag"></i> go</a>
+              <a href="/tags/fabric/" rel="tag"><i class="fa fa-tag"></i> fabric</a>
+              <a href="/tags/%E8%B6%85%E7%BA%A7%E8%B4%A6%E6%9C%AC/" rel="tag"><i class="fa fa-tag"></i> 超级账本</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/fabric/fabric%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB%20(2)/" rel="prev" title="Hyperledger Fabric 源码精读（2）">
+                  <i class="fa fa-angle-left"></i> Hyperledger Fabric 源码精读（2）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/AXI/" rel="next" title="AXI 系统总线">
+                  AXI 系统总线 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>
