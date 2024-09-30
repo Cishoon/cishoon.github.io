@@ -23,7 +23,7 @@
 
     <meta name="description" content="昨天配了一天环境，今天先解决昨天遗留的问题：  dbus-launch gnome-terminal 是什么指令？ optee 怎么启动？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="毕设02">
+<meta property="og:title" content="毕设02 - OP-TEE，Hello World">
 <meta property="og:url" content="http://cishoon.top/graduation-project/02/index.html">
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
 <meta property="og:description" content="昨天配了一天环境，今天先解决昨天遗留的问题：  dbus-launch gnome-terminal 是什么指令？ optee 怎么启动？">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="http://cishoon.top/graduation-project/02/image-20240930213254910.png">
 <meta property="og:image" content="http://cishoon.top/graduation-project/02/image-20240930213634738.png">
 <meta property="article:published_time" content="2024-09-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-09-30T17:26:43.585Z">
+<meta property="article:modified_time" content="2024-09-30T17:31:56.712Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="毕设">
 <meta property="article:tag" content="op-tee">
@@ -53,10 +53,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/02/","path":"graduation-project/02/","title":"毕设02"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/02/","path":"graduation-project/02/","title":"毕设02 - OP-TEE，Hello World"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>毕设02 | Cishoon's Blog</title>
+<title>毕设02 - OP-TEE，Hello World | Cishoon's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -72,7 +72,6 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
-<link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
 <style>mjx-container[jax="SVG"] {
   direction: ltr;
 }
@@ -185,7 +184,8 @@ mjx-container[display="true"] {
 mjx-container[display="true"] + br {
   display: none;
 }
-</style></head>
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -271,7 +271,7 @@ mjx-container[display="true"] + br {
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dbus-launch-gnome-terminal"><span class="nav-text">dbus-launch gnome-terminal</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8optee"><span class="nav-text">2 启动optee</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E6%93%8D%E4%BD%9C"><span class="nav-text">2.1 直接在虚拟机中操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87ssh%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%93%8D%E4%BD%9C"><span class="nav-text">2.2 通过ssh连接远程操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80xquartz"><span class="nav-text">方法一：XQuartz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Ctmux%E6%8E%A8%E8%8D%90"><span class="nav-text">方法二：tmux（推荐）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-text">3 运行测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#buildroot"><span class="nav-text">3.1 Buildroot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xtest"><span class="nav-text">3.2 xtest</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Chello-world"><span class="nav-text">3.3 运行hello world</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ta%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-text">4 TA文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%BA%E9%83%A8%E5%88%86"><span class="nav-text">3.1 主机部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E4%BF%A1%E9%83%A8%E5%88%86"><span class="nav-text">3.2 可信部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B1%82%E6%9E%84%E5%BB%BA%E5%8A%A9%E6%89%8B"><span class="nav-text">3.3 高层构建助手</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9hello-world"><span class="nav-text">5 修改Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%BA%E9%83%A8%E5%88%86%E4%BF%AE%E6%94%B9"><span class="nav-text">5.1 主机部分修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E4%BF%A1%E9%83%A8%E5%88%86%E4%BF%AE%E6%94%B9"><span class="nav-text">5.2 可信部分修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B1%82%E6%9E%84%E5%BB%BA%E5%8A%A9%E6%89%8B%E4%BF%AE%E6%94%B9"><span class="nav-text">5.3 高层构建助手修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%80%BB%E7%BB%93"><span class="nav-text">5.4 修改总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-text">5.5 编译</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91"><span class="nav-text">交叉编译</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dbus-launch-gnome-terminal"><span class="nav-text">1 dbus-launch gnome-terminal</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8optee"><span class="nav-text">2 启动optee</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E6%93%8D%E4%BD%9C"><span class="nav-text">2.1 直接在虚拟机中操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87ssh%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%93%8D%E4%BD%9C"><span class="nav-text">2.2 通过ssh连接远程操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80xquartz"><span class="nav-text">方法一：XQuartz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Ctmux%E6%8E%A8%E8%8D%90"><span class="nav-text">方法二：tmux（推荐）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-text">3 运行测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#buildroot"><span class="nav-text">3.1 Buildroot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xtest"><span class="nav-text">3.2 xtest</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Chello-world"><span class="nav-text">3.3 运行hello world</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ta%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-text">4 TA文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%BA%E9%83%A8%E5%88%86"><span class="nav-text">3.1 主机部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E4%BF%A1%E9%83%A8%E5%88%86"><span class="nav-text">3.2 可信部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B1%82%E6%9E%84%E5%BB%BA%E5%8A%A9%E6%89%8B"><span class="nav-text">3.3 高层构建助手</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9hello-world"><span class="nav-text">5 修改Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%BA%E9%83%A8%E5%88%86%E4%BF%AE%E6%94%B9"><span class="nav-text">5.1 主机部分修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E4%BF%A1%E9%83%A8%E5%88%86%E4%BF%AE%E6%94%B9"><span class="nav-text">5.2 可信部分修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B1%82%E6%9E%84%E5%BB%BA%E5%8A%A9%E6%89%8B%E4%BF%AE%E6%94%B9"><span class="nav-text">5.3 高层构建助手修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%80%BB%E7%BB%93"><span class="nav-text">5.4 修改总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-text">5.5 编译</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91"><span class="nav-text">交叉编译</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -325,12 +325,12 @@ mjx-container[display="true"] + br {
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="毕设02 | Cishoon's Blog">
+      <meta itemprop="name" content="毕设02 - OP-TEE，Hello World | Cishoon's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          毕设02<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDIubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+          毕设02 - OP-TEE，Hello World<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDIubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
         </h1>
 
         <div class="post-meta-container">
@@ -382,7 +382,7 @@ mjx-container[display="true"] + br {
 <li>optee 怎么启动？</li>
 </ul>
 <span id="more"></span>
-<h1 id="dbus-launch-gnome-terminal">dbus-launch gnome-terminal</h1>
+<h1 id="dbus-launch-gnome-terminal">1 dbus-launch gnome-terminal</h1>
 <ol type="1">
 <li><p><code>dbus-launch</code>: <code>dbus-launch</code> 是一个用于启动
 D-Bus 会话总线的命令。D-Bus 是 Linux
