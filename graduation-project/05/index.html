@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="单独编译 OPTEE 的 CA&#x2F;TA 的方法。 移植 WATZ 到现在的 OPTEE 中。 测试 WATZ 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设05">
+<meta property="og:url" content="http://cishoon.top/graduation-project/05/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="单独编译 OPTEE 的 CA&#x2F;TA 的方法。 移植 WATZ 到现在的 OPTEE 中。 测试 WATZ 。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241027205828402.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241027214514125.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028001128522.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028001149784.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028214310619.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028214222599.png">
+<meta property="article:published_time" content="2024-10-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-28T14:08:28.361Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="op-tee">
+<meta property="article:tag" content="TrustZone">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/graduation-project/05/image-20241027205828402.png">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/05/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/05/","path":"graduation-project/05/","title":"毕设05"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设05 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">18</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%87%E5%BF%98"><span class="nav-text">备忘</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#makefile%E4%B8%AD-debug-%E6%96%B9%E5%BC%8F"><span class="nav-text">MakeFile中 Debug 方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%BC%96%E8%AF%91-optee"><span class="nav-text">重新编译 OPTEE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E7%BC%96%E8%AF%91-cata"><span class="nav-text">手动编译 CA&#x2F;TA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#optee_client"><span class="nav-text">optee_client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ta"><span class="nav-text">TA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ca"><span class="nav-text">CA</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-watz-%E7%9A%84-cata"><span class="nav-text">编译 WATZ 的 CA&#x2F;TA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-optee_os"><span class="nav-text">移植 optee_os</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-libvmlib.a"><span class="nav-text">编译 libvmlib.a</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-cata"><span class="nav-text">移植 CA&#x2F;TA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E8%BF%90%E8%A1%8C-wamr"><span class="nav-text">调试运行 wamr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%BC%96%E8%AF%91"><span class="nav-text">1. 重新编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0-wasm-%E6%96%87%E4%BB%B6"><span class="nav-text">2. 上传 wasm 文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E4%BD%BF%E7%94%A8-scp"><span class="nav-text">方法一：使用 scp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Cqemu-%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-text">方法二：qemu 共享文件夹</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87-wasm-%E6%96%87%E4%BB%B6"><span class="nav-text">3. 准备 wasm 文件</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设05 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设05<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDUubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-10-26 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-26T00:00:00+08:00">2024-10-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><ul>
+<li>单独编译 OPTEE 的 CA/TA 的方法。</li>
+<li>移植 WATZ 到现在的 OPTEE 中。</li>
+<li>测试 WATZ 。</li>
+</ul>
+<span id="more"></span>
+<h1 id="备忘">备忘</h1>
+<h2 id="makefile中-debug-方式">MakeFile中 Debug 方式</h2>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line">log_to_file = <span class="variable">$(<span class="built_in">shell</span>  echo "Makefile Path     : $(<span class="built_in">realpath</span> $(<span class="built_in">lastword</span> <span class="variable">$(MAKEFILE_LIST)</span>)</span>)<span class="string">" &gt;&gt; /root/my-test.log &amp;&amp; \</span></span><br><span class="line"><span class="string">                       echo "</span>Parameter Name    : $(1)<span class="string">" &gt;&gt; /root/my-test.log &amp;&amp; \</span></span><br><span class="line"><span class="string">                       echo "</span>Parameter Value   : $(2)<span class="string">" &gt;&gt; /root/my-test.log &amp;&amp; \</span></span><br><span class="line"><span class="string">                       echo "</span>==============================<span class="string">" &gt;&gt; /root/my-test.log)</span></span><br><span class="line"><span class="string">$(call log_to_file, "</span>VAR_NAME<span class="string">", "</span><span class="variable">$(VAR_NAME)</span><span class="string">")</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>~/.bashrc</code> 中添加如下代码，可以在任何地方通过
+<code>viewlog</code> 快速查看日志：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">alias</span> viewlog=<span class="string">"cat /root/my-test.log"</span></span><br></pre></td></tr></table></figure>
+<h2 id="重新编译-optee">重新编译 OPTEE</h2>
+<p>在 <code>optee/build</code> 中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make  FORCE_UNSAFE_CONFIGURE=1 -j`<span class="built_in">nproc</span>`</span><br></pre></td></tr></table></figure>
+<h2 id="手动编译-cata">手动编译 CA/TA</h2>
+<h3 id="optee_client">optee_client</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /root/optee/optee_client</span><br><span class="line"><span class="built_in">rm</span> -rf build</span><br><span class="line">make clean</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> TA_DEV_KIT_DIR=/root/optee/build/../optee_os/out/arm/export-ta_arm64 </span><br><span class="line"><span class="built_in">export</span> CROSS_COMPILE=<span class="string">"/usr/bin/ccache /root/optee/build/../toolchains/aarch64/bin/aarch64-linux-gnu-"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<p>先手动编译 <code>optee_client</code> ，为了得到
+<code>libteec.so</code></p>
+<h3 id="ta">TA</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> TA_DEV_KIT_DIR=/root/optee/build/../optee_os/out/arm/export-ta_arm64 </span><br><span class="line"><span class="built_in">export</span> CROSS_COMPILE=<span class="string">"/usr/bin/ccache /root/optee/build/../toolchains/aarch64/bin/aarch64-linux-gnu-"</span></span><br><span class="line">make run</span><br></pre></td></tr></table></figure>
+<h3 id="ca">CA</h3>
+<p>修改 <code>optee/optee_examples</code> 中的
+<code>CMakeList.txt</code>：</p>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span> (VERSION <span class="number">3.2</span>)</span><br><span class="line"><span class="keyword">project</span> (optee_examples C)</span><br><span class="line"></span><br><span class="line"><span class="comment"># https://cmake.org/Wiki/CMake_Useful_Variables</span></span><br><span class="line"><span class="keyword">set</span> (CMAKE_TOOLCHAIN_FILE CMakeToolchain.txt)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 增加如下两行，改成对应的路径</span></span><br><span class="line"><span class="keyword">include_directories</span>(/root/optee/optee_client/libteec/<span class="keyword">include</span>)</span><br><span class="line"><span class="keyword">link_directories</span>(/root/optee/optee_client/out/libteec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(GNUInstallDirs)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_compile_options</span> (-Wall)</span><br><span class="line"><span class="comment">#add_compile_options (</span></span><br><span class="line"><span class="comment">#       -Wall -Wbad-function-cast -Wcast-align</span></span><br><span class="line"><span class="comment">#       -Werror-implicit-function-declaration -Wextra</span></span><br><span class="line"><span class="comment">#       -Wfloat-equal -Wformat-nonliteral -Wformat-security</span></span><br><span class="line"><span class="comment">#       -Wformat=2 -Winit-self -Wmissing-declarations</span></span><br><span class="line"><span class="comment">#       -Wmissing-format-attribute -Wmissing-include-dirs</span></span><br><span class="line"><span class="comment">#       -Wmissing-noreturn -Wmissing-prototypes -Wnested-externs</span></span><br><span class="line"><span class="comment">#       -Wpointer-arith -Wshadow -Wstrict-prototypes</span></span><br><span class="line"><span class="comment">#       -Wswitch-default -Wunsafe-loop-optimizations</span></span><br><span class="line"><span class="comment">#       -Wwrite-strings -Werror -fPIC</span></span><br><span class="line"><span class="comment">#)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">find_program</span>(CCACHE_FOUND ccache)</span><br><span class="line"><span class="keyword">if</span>(CCACHE_FOUND)</span><br><span class="line">        <span class="keyword">set_property</span>(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)</span><br><span class="line">        <span class="keyword">set_property</span>(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)</span><br><span class="line"><span class="keyword">endif</span>(CCACHE_FOUND)</span><br><span class="line"></span><br><span class="line"><span class="keyword">file</span>(GLOB dirs *)</span><br><span class="line"><span class="keyword">foreach</span>(dir <span class="variable">${dirs}</span>)</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">EXISTS</span> <span class="variable">${dir}</span>/CMakeLists.txt)</span><br><span class="line">                <span class="keyword">add_subdirectory</span>(<span class="variable">${dir}</span>)</span><br><span class="line">        <span class="keyword">endif</span>()</span><br><span class="line"><span class="keyword">endforeach</span>()</span><br></pre></td></tr></table></figure>
+<p>然后进行编译，最终得到 <code>optee_examples</code> 中所有的 CA：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -DCMAKE_C_COMPILER=<span class="string">"/root/optee/build/../toolchains/aarch64/bin/aarch64-linux-gnu-gcc"</span> ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<h1 id="编译-watz-的-cata">编译 WATZ 的 CA/TA</h1>
+<h2 id="移植-optee_os">移植 optee_os</h2>
+<p>由于 WATZ 基于老版本的 optee_os 进行了修改，想在最新的 optee_os
+中编译运行 CA/TA 需要修改部分代码。</p>
+<p>在 <code>/optee/optee_os/include/pta_system.h</code> 中添加：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * UNOFFICIAL API EXTENSION by WaTZ</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Change the protection of mapped memory pages</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTA_SYSTEM_MPROTECT		20</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>/optee/optee_os/include/tee_internal_api_extensions.h</code>
+中添加：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * UNOFFICIAL API EXTENSION by WaTZ</span></span><br><span class="line"><span class="comment"> * tee_mprotect() - Change the protection of mapped memory pages</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">TEE_Result <span class="title function_">tee_mprotect</span><span class="params">(<span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">uint32_t</span> prot)</span>;</span><br></pre></td></tr></table></figure>
+<p>在 <code>/optee/optee_os/tee_system_pta.c</code> 中添加：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">TEE_Result <span class="title function_">tee_mprotect</span><span class="params">(<span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">uint32_t</span> prot)</span></span><br><span class="line">{</span><br><span class="line">	TEE_Result res = TEE_SUCCESS;</span><br><span class="line">	<span class="type">uint32_t</span> param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					       TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					       TEE_PARAM_TYPE_NONE,</span><br><span class="line">					       TEE_PARAM_TYPE_NONE);</span><br><span class="line">	TEE_Param params[TEE_NUM_PARAMS] = { };</span><br><span class="line"></span><br><span class="line">	params[<span class="number">0</span>].value.a = len;</span><br><span class="line">	params[<span class="number">0</span>].value.b = prot;</span><br><span class="line">	reg_pair_from_64((<span class="type">vaddr_t</span>)buf, &amp;params[<span class="number">1</span>].value.a, &amp;params[<span class="number">1</span>].value.b);</span><br><span class="line"></span><br><span class="line">	res = invoke_system_pta(PTA_SYSTEM_MPROTECT, param_types, params);</span><br><span class="line">	<span class="keyword">if</span> (res)</span><br><span class="line">		EMSG(<span class="string">"Invoke PTA_SYSTEM_MPROTECT: buf %p, len %#zx, prot %u"</span>, buf, len, prot);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> res;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h2 id="编译-libvmlib.a">编译 libvmlib.a</h2>
+<p>这是 wamr 的静态库文件。wamr 的 <code>/product-mini/platforms</code>
+中提供了各个平台的编译代码。编译任何平台的 wamr 之前都需要先得到
+<code>libvmlib.a</code> 。</p>
+<p>WATZ 新增了 <code>linux-truxtzone</code> 目录，里面提供了一个
+<code>CMakeList.txt</code> 。（此外还有论文中描述的两个组件
+<code>verifier</code> 和 <code>attester</code>
+，但是此时用不到这两个组件）</p>
+<p>修改 <code>CMakeList.txt</code> ，增加：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">include_directories(/root/unine-watz/optee_os/lib/libutils/ext/include)</span><br><span class="line">include_directories(/root/unine-watz/optee_os/lib/libutee/include)</span><br></pre></td></tr></table></figure>
+<p>其中 <code>/root/unine-watz</code> 改为你的 WATZ 路径。</p>
+<p>然后执行代码：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<p>即可在 <code>build</code> 目录下得到 <code>libvmlib.a</code>。</p>
+<h2 id="移植-cata">移植 CA/TA</h2>
+<p>在 <code>/optee/optee_examples</code> 中新建 <code>optee_wamr</code>
+目录，将
+<code>/unine-watz/runtime/product-mini/platforms/linux-trustzone/vedliot_attester</code>
+中的代码移植过来。</p>
+<p>移植后的代码在我的 git 仓库中可以找到。</p>
+<p>为了即开即用，我将 wamr 中的部分文件和 <code>libvmlib.a</code>
+直接打包了进来。</p>
+<p>另外，我将源代码中的远程验证部分删除了。</p>
+<h2 id="调试运行-wamr">调试运行 wamr</h2>
+<h3 id="重新编译">1. 重新编译</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /root/optee/build</span><br><span class="line">make FORCE_UNSAFE_CONFIGURE=1 -j`<span class="built_in">nproc</span>`</span><br></pre></td></tr></table></figure>
+<p>启动 qemu 后，在 Normal World 中的 <code>/usr/bin</code>
+目录中可以找到 <code>optee_wamr</code> 。</p>
+<p><img src="/graduation-project/05/image-20241027205828402.png" alt="image-20241027205828402" style="zoom:50%;"></p>
+<h3 id="上传-wasm-文件">2. 上传 wasm 文件</h3>
+<h4 id="方法一使用-scp">方法一：使用 scp</h4>
+<p>要使用 scp 上传一个 wasm 文件到 Normal World 中，但是 optee 中的
+linux 系统没有安装 openssh 。</p>
+<p>所以先在修改 build 生成的根文件系统 <code>rootfs.cpio.gz</code>。</p>
+<p><strong>理论上</strong>，在 <code>buildroot</code> 目录中执行
+<code>make menuconfig</code> ，在菜单中找到并选择以下选项：</p>
+<ul>
+<li><strong>Target packages</strong> &gt; <strong>Networking
+applications</strong> &gt; <strong>openssh</strong></li>
+<li>勾选 <code>openssh</code> 以包含 SSH 服务。</li>
+<li>保存到 <code>.config</code></li>
+</ul>
+<p>然后重新编译即可。</p>
+<p><strong>但是不行！</strong>重新编译运行后，Normal World 中还是没有
+openssh。</p>
+<p>检查 <code>build/common.mk</code> 中的 <code>buildroot</code> ：</p>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># All BR2_* variables from the makefile or the environment are appended to</span></span><br><span class="line"><span class="comment"># ../out-br/extra.conf. All values are quoted "..." except y and n.   </span></span><br><span class="line">double-quote = <span class="string">"#"</span> <span class="comment"># This really sets the variable to " and avoids upsetting vim's syntax highlighting</span></span><br><span class="line">streq = <span class="variable">$(<span class="built_in">and</span> $(<span class="built_in">findstring</span> $(1)</span>,$(2)),<span class="variable">$(<span class="built_in">findstring</span> $(2)</span>,$(1)))</span><br><span class="line">y-or-n = <span class="variable">$(<span class="built_in">or</span> $(<span class="built_in">call</span> streq,y,$(1)</span>),<span class="variable">$(<span class="built_in">call</span> streq,n,$(1)</span>))</span><br><span class="line">append-var_ = echo '$(1)=$(3)'$($(1))'$(3)' &gt;&gt;$(2);</span><br><span class="line">append-var = <span class="variable">$(<span class="built_in">call</span> append-var_,$(1)</span>,$(2),<span class="variable">$(<span class="built_in">if</span> $(<span class="built_in">call</span> y-<span class="built_in">or</span>-n,$($(1)</span>)),,$(double-quote)))</span><br><span class="line">append-br2-vars = <span class="variable">$(<span class="built_in">foreach</span> var,$(<span class="built_in">filter</span> BR2_%,$(.VARIABLES)</span>),<span class="variable">$(<span class="built_in">call</span> append-var,<span class="variable">$(var)</span>,$(1)</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">ifneq</span> (y,<span class="variable">$(BR2_PER_PACKAGE_DIRECTORIES)</span>)</span><br><span class="line">br-make-flags := -j1</span><br><span class="line"><span class="keyword">endif</span></span><br><span class="line"></span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: buildroot</span></span><br><span class="line"></span><br><span class="line"><span class="section">buildroot: optee-os</span></span><br><span class="line">        @mkdir -p ../out-br</span><br><span class="line">        @rm -f ../out-br/build/optee_*/.stamp_*</span><br><span class="line">        @rm -f ../out-br/extra.conf</span><br><span class="line">        @<span class="variable">$(<span class="built_in">call</span> append-br2-vars,../out-br/extra.conf)</span></span><br><span class="line">        @(cd .. &amp;&amp; <span class="variable">$(PYTHON3)</span> build/br-ext/scripts/make_def_config.py \</span><br><span class="line">                --br buildroot --out out-br --br-ext build/br-ext \</span><br><span class="line">                --top-dir <span class="string">"<span class="variable">$(ROOT)</span>"</span> \</span><br><span class="line">                --br-defconfig build/br-ext/configs/optee_<span class="variable">$(BUILDROOT_ARCH)</span> \</span><br><span class="line">                --br-defconfig build/br-ext/configs/optee_generic \</span><br><span class="line">                <span class="variable">$(<span class="built_in">addprefix</span> --br-defconfig build/br-ext/configs/, \</span></span><br><span class="line"><span class="variable">                            <span class="variable">$(BUILDROOT_TOOLCHAIN)</span>)</span> \</span><br><span class="line">                <span class="variable">$(DEFCONFIG_GDBSERVER)</span> \</span><br><span class="line">                <span class="variable">$(DEFCONFIG_XEN)</span> \</span><br><span class="line">                <span class="variable">$(DEFCONFIG_TSS)</span> \</span><br><span class="line">                <span class="variable">$(DEFCONFIG_TPM_MODULE)</span> \</span><br><span class="line">                <span class="variable">$(DEFCONFIG_FTPM)</span> \</span><br><span class="line">                --br-defconfig out-br/extra.conf \</span><br><span class="line">                --make-cmd <span class="variable">$(MAKE)</span>)</span><br><span class="line">        @<span class="variable">$(MAKE)</span> $(br-make-flags) -C ../out-br all</span><br></pre></td></tr></table></figure>
+<p>所以最终使用的配置文件是脚本另外生成的。添加扩展的包，需要在编译的时候添加环境变量：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> BR2_PACKAGE_OPENSSH=y</span><br><span class="line"><span class="built_in">export</span> BR2_PACKAGE_OPENSSH_CLIENT=y</span><br><span class="line"><span class="built_in">export</span> BR2_PACKAGE_OPENSSH_SERVER=y</span><br><span class="line"><span class="built_in">export</span> BR2_PACKAGE_OPENSSH_KEY_UTILS=y</span><br><span class="line"><span class="built_in">export</span> BR2_PACKAGE_OPENSSH_SANDBOX=y</span><br></pre></td></tr></table></figure>
+<p>然后重新 make 即可。</p>
+<blockquote>
+<p>另外，我曾使用一个临时的方法解决了这个问题：<code>/out-br/.config</code>
+，再重新编译。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /optee/out-br</span><br><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Target packages</strong> &gt; <strong>Networking
+applications</strong> &gt; <strong>openssh</strong></li>
+<li>勾选 <code>openssh</code> 以包含 SSH 服务。</li>
+<li>保存到 <code>.config</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /optee/out-br</span><br><span class="line">make all</span><br></pre></td></tr></table></figure>
+<p>如果需要添加其他的包，用 make menuconfig 编辑后保存一个
+.config，在这个 .config 里搜索对应的包名。</p>
+</blockquote>
+<p>回到 <code>build</code> 目录，添加参数 <code>GDBSERVER=y</code> 启动
+qemu：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make GDBSERVER=y run-only</span><br></pre></td></tr></table></figure>
+<p>会增加 <code>hostfwd=tcp::12345-:12345</code>，将宿主机的
+<code>12345</code> 端口映射到 QEMU 虚拟机（Normal World）的
+<code>12345</code> 端口。</p>
+<figure>
+<img src="/graduation-project/05/image-20241027214514125.png" alt="image-20241027214514125">
+<figcaption aria-hidden="true">image-20241027214514125</figcaption>
+</figure>
+<p>输入 <code>c</code> 启动 OPTEE。</p>
+<p>在 Normal World 中，修改 ssh 端口号和允许Root用户密码登录：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sed -i <span class="string">'s/^#Port .*/Port 12345/'</span> /etc/ssh/sshd_config</span><br><span class="line">sed -i <span class="string">'s/^#PasswordAuthentication .*/PasswordAuthentication yes/'</span> /etc/ssh/sshd_config</span><br><span class="line">sed -i <span class="string">'s/^#PermitRootLogin .*/PermitRootLogin yes/'</span> /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<p>修改 root 用户密码，密码要记住之后需要用：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">passwd root</span><br></pre></td></tr></table></figure>
+<p>重新启用 ssh ：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/sbin/sshd</span><br></pre></td></tr></table></figure>
+<p>之后回到宿主机，使用如下指令上传文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp -P 12345 /path/to/local/file root@localhost:/path/to/remote/directory</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp -P 12345 /root/WebAssembly/hello.wasm root@localhost:/root/hello.wasm</span><br></pre></td></tr></table></figure>
+<p>之后即可上传文件：</p>
+<figure>
+<img src="/graduation-project/05/image-20241028001128522.png" alt="image-20241028001128522">
+<figcaption aria-hidden="true">image-20241028001128522</figcaption>
+</figure>
+<p><img src="/graduation-project/05/image-20241028001149784.png" alt="image-20241028001149784" style="zoom:50%;"></p>
+<h4 id="方法二qemu-共享文件夹">方法二：qemu 共享文件夹</h4>
+<p><code>QEMU_VIRTFS</code> 允许将主机上的一个目录作为虚拟文件系统（9p
+文件系统）挂载到 QEMU 的 Normal World。</p>
+<p><strong>配置步骤：</strong></p>
+<ol type="1">
+<li><p><strong>启用 <code>QEMU_VIRTFS</code></strong>：</p>
+<ul>
+<li>设置 <code>QEMU_VIRTFS_ENABLE</code> 为
+<code>y</code>，并指定要共享的宿主机目录路径，例如项目根目录。</li>
+</ul>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> QEMU_VIRTFS_ENABLE=y</span><br><span class="line"><span class="built_in">export</span> QEMU_VIRTFS_HOST_DIR=/path/to/your/project</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>自动挂载（可选）</strong>：</p>
+<ul>
+<li>如果希望 QEMU 在启动时自动挂载此目录，可以启用
+<code>QEMU_VIRTFS_AUTOMOUNT</code>：</li>
+</ul>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> QEMU_VIRTFS_AUTOMOUNT=y</span><br></pre></td></tr></table></figure></p>
+<p>文件已经自动挂载在 <code>/mnt/host</code> 中了。</p></li>
+<li><p><strong>启动 QEMU</strong>：</p>
+<ul>
+<li>启动 QEMU 时确保包含这些环境变量，通常可以通过
+<code>make QEMU_VIRTFS_ENABLE=y run</code> 启动。</li>
+</ul></li>
+<li><p><strong>手动挂载（如果未自动挂载）</strong>：</p>
+<ul>
+<li>如果未启用自动挂载，进入 QEMU 的 Normal World
+后，可以手动挂载该目录：</li>
+</ul>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /mnt/host</span><br><span class="line">mount -t 9p -o trans=virtio host /mnt/host</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>host</code> 是主机目录在 QEMU 内的标签名称，挂载点为
+<code>/mnt/host</code>。</li>
+</ul></li>
+</ol>
+<p>结果：</p>
+<p><img src="/graduation-project/05/image-20241028214310619.png" alt="image-20241028214310619" style="zoom:50%;"></p>
+<p><img src="/graduation-project/05/image-20241028214222599.png" alt="image-20241028214222599" style="zoom:50%;"></p>
+<p><strong>注意：</strong>
+这共享文件夹是<strong>实时共享</strong>的。也就是删除
+<code>/mnt/host</code> 中的文件，也会删除宿主机中的！</p>
+<h3 id="准备-wasm-文件">3. 准备 wasm 文件</h3>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/op-tee/" rel="tag"><i class="fa fa-tag"></i> op-tee</a>
+              <a href="/tags/TrustZone/" rel="tag"><i class="fa fa-tag"></i> TrustZone</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/OP-TEE/" rel="next" title="TrustZone 与 OP-TEE 技术详解">
+                  TrustZone 与 OP-TEE 技术详解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

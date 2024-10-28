@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="TSC-VEE 的 github 仓库中，没有提供 TA 的实现。 他的README里说，tsc-vee 这个目录里的就是 TA ，但是里面完全不是 TA 的结构，找不到 ta host ，甚至没有 UUID 。按照 README 提供的运行方法，也无法编译运行。 而且，on REE 和 tsc-vee 两个目录里的内容完全一致。想必是上传的时候传错文件了。 所以今天来看 WASM 。一个是为毕设">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设03 - WebAssembly（WASM）简述">
+<meta property="og:url" content="http://cishoon.top/graduation-project/03/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="TSC-VEE 的 github 仓库中，没有提供 TA 的实现。 他的README里说，tsc-vee 这个目录里的就是 TA ，但是里面完全不是 TA 的结构，找不到 ta host ，甚至没有 UUID 。按照 README 提供的运行方法，也无法编译运行。 而且，on REE 和 tsc-vee 两个目录里的内容完全一致。想必是上传的时候传错文件了。 所以今天来看 WASM 。一个是为毕设">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/graduation-project/03/image-20241001220144976.png">
+<meta property="article:published_time" content="2024-09-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-04T16:30:46.393Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="WASM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/graduation-project/03/image-20241001220144976.png">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/03/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/03/","path":"graduation-project/03/","title":"毕设03 - WebAssembly（WASM）简述"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设03 - WebAssembly（WASM）简述 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">18</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#webassemblywasm%E7%AE%80%E8%BF%B0"><span class="nav-text">1 WebAssembly（WASM）简述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%9E%E7%94%9F%E7%9B%AE%E7%9A%84"><span class="nav-text">1.1 诞生目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wasm-%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-text">1.2 WASM 的优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-wasm"><span class="nav-text">1.3 如何使用 WASM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#node.js-%E4%B8%8E-v8"><span class="nav-text">Node.js 与 V8</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#v8-%E5%BC%95%E6%93%8E"><span class="nav-text">1. V8 引擎：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#node.js"><span class="nav-text">2. Node.js：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%B5%84%E6%96%99"><span class="nav-text">其他资料</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设03 - WebAssembly（WASM）简述 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设03 - WebAssembly（WASM）简述<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDMubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-10-01 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-01T00:00:00+08:00">2024-10-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>TSC-VEE 的 github 仓库中，没有提供 TA 的实现。</p>
+<p>他的README里说，<code>tsc-vee</code> 这个目录里的就是 TA
+，但是里面完全不是 TA 的结构，找不到 <code>ta</code> <code>host</code>
+，甚至没有 <code>UUID</code> 。按照 README
+提供的运行方法，也无法编译运行。</p>
+<p>而且，<code>on REE</code> 和 <code>tsc-vee</code>
+两个目录里的内容完全一致。想必是上传的时候传错文件了。</p>
+<p>所以今天来看 WASM
+。一个是为毕设准备，同时也是为组里另一个项目准备。</p>
+<blockquote>
+<p>已经发邮件给一作和导师了，老师回复非常迅速，学长立刻附上了
+<code>tsc-vee</code>
+的关键代码！！非常感谢老师和学长对科研小白的包容！！再次感谢！！</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="webassemblywasm简述">1 WebAssembly（WASM）简述</h1>
+<blockquote>
+<p>参考内容：https://www.cnblogs.com/detectiveHLH/p/9928915.html</p>
+</blockquote>
+<h2 id="诞生目的">1.1 诞生目的</h2>
+<p>解决 Js 的性能瓶颈。</p>
+<figure>
+<img src="/graduation-project/03/image-20241001220144976.png" alt="image-20241001220144976">
+<figcaption aria-hidden="true">image-20241001220144976</figcaption>
+</figure>
+<p>Js 代码执行流程：</p>
+<ol type="1">
+<li>载入源码</li>
+<li>解析成 AST （抽象语法树）</li>
+<li>编译成字节码</li>
+<li>翻译成机器码</li>
+</ol>
+<p>其中使用到了 JIT (Just in Time)
+来检测热点代码，加入缓存以优化翻译次数。</p>
+<p>但是，由于 Js
+的动态变量类型，同一个函数中的变量类型不确定，导致翻译出的机器码也不确定。引擎的优化就失去了作用。</p>
+<p>为了解决这个问题，出现了 <code>asm.js</code> 。作为一个 Js
+的严格子集，所有 <code>asm.js</code> 的代码都是合法的 Js
+代码，但是是通过一些诡异的手段，限制函数里面的变量值类型确定。例如：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">asmJs</span>(<span class="params"></span>) {</span><br><span class="line">    <span class="string">'use asm'</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> myInt = <span class="number">0</span> | <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> myDouble = +<span class="number">1.1</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p><code>0 | 0</code> 一定是 int ，<code>+1.1</code> 一定是 double。</p>
+<p>但是这还有一些问题：</p>
+<ul>
+<li>写起来非常不优雅，太难看了</li>
+<li>只解决了 JIT 部分的加速，然而最慢的部分是 Js
+代码的语法解析和字节码编译。</li>
+</ul>
+<p>于是，提出了 WebAssembly</p>
+<h2 id="wasm-的优势">1.2 WASM 的优势</h2>
+<p>WASM 是编译器编译之后的中间代码，也就是可以直接从上面的
+<em>第4步-翻译成机器码</em> 开始执行。</p>
+<p>WASM
+编译得到的代码体积小，速度快，强制的强静态类型，有沙盒化的执行环境。可以直接由
+C/C++/Rust 编译得到。</p>
+<p>简言之：</p>
+<ul>
+<li><strong>执行效率</strong>：Web程序里可以直接调用由 C/C++/Rust
+编写的函数，这大大提高了Web项目的执行效率。测试表明，基本上可以优化至原速度的
+2 倍，最高甚至可以达到 6 倍。</li>
+<li><strong>移植性</strong>：一些原先由 C/C++/Rust
+编写、有高性能需求的项目，例如 Unity、Unreal 游戏引擎、谷歌地球
+等，可以直接将原来的项目编译成 WASM，移植到 Web 上。</li>
+</ul>
+<h2 id="如何使用-wasm">1.3 如何使用 WASM</h2>
+<p>开发工具：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Fzc2VtYmx5U2NyaXB0L2Fzc2VtYmx5c2NyaXB0">AssemblyScript<i class="fa fa-external-link-alt"></i></span>。支持直接将
+TypeScript 编译成 WebAssembly。</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2tyaXBrZW4vZW1zY3JpcHRlbg==">Emscripten<i class="fa fa-external-link-alt"></i></span>。可以将
+C/C++/Rust 等高级语言编译成 WebAssembly</li>
+</ul>
+<p>流程：</p>
+<ol type="1">
+<li><p>编写 C/C++/Rust 的原生函数</p>
+<p><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> {</span><br><span class="line">	<span class="keyword">return</span> a + b;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p></li>
+<li><p>编译成 wasm</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">emcc test.c -Os -s WASM=1 -s SIDE_MODULE=1 -o test.wasm</span><br></pre></td></tr></table></figure></p></li>
+<li><p>在 Node 中调用</p>
+<p><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">let</span> src = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(fs.<span class="title function_">readFileSync</span>(<span class="string">'./test.wasm'</span>));</span><br><span class="line"><span class="keyword">const</span> env = {</span><br><span class="line">	<span class="attr">memoryBase</span>: <span class="number">0</span>,</span><br><span class="line">	<span class="attr">tableBase</span>: <span class="number">0</span>,</span><br><span class="line">	<span class="attr">memory</span>: <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Memory</span>({</span><br><span class="line">		<span class="attr">initial</span>: <span class="number">256</span></span><br><span class="line">	}),</span><br><span class="line">	<span class="attr">table</span>: <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Table</span>({</span><br><span class="line">		<span class="attr">initial</span>: <span class="number">2</span>,</span><br><span class="line">		<span class="attr">element</span>: <span class="string">'anyfunc'</span></span><br><span class="line">	}),</span><br><span class="line">	<span class="attr">abort</span>: <span class="function">() =&gt;</span> {<span class="keyword">throw</span> <span class="string">'abort'</span>;}</span><br><span class="line">}</span><br><span class="line"><span class="title class_">WebAssembly</span>.<span class="title function_">instantiate</span>(src, {<span class="attr">env</span>: env})</span><br><span class="line">.<span class="title function_">then</span>(<span class="function"><span class="params">result</span> =&gt;</span> {</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(result.<span class="property">instance</span>.<span class="property">exports</span>.<span class="title function_">_add</span>(<span class="number">20</span>, <span class="number">89</span>));</span><br><span class="line">})</span><br><span class="line">.<span class="title function_">catch</span>(<span class="function"><span class="params">e</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(e));</span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<h1 id="附录">附录</h1>
+<h2 id="node.js-与-v8">Node.js 与 V8</h2>
+<p>Node.js 和 V8 之间的关系密切，Node.js 是一个基于 V8
+引擎构建的服务器端 JavaScript 运行时环境。</p>
+<h3 id="v8-引擎">1. <strong>V8 引擎：</strong></h3>
+<ul>
+<li><strong>V8</strong> 是由 Google 开发的开源 JavaScript
+引擎，它主要用于 Chrome 浏览器中解释和执行 JavaScript 代码。V8 将
+JavaScript 编译为机器代码，从而提高了 JavaScript 的执行速度。</li>
+<li>Node.js 使用 V8 作为其底层 JavaScript 引擎，这使得 Node.js
+能够在服务器端执行 JavaScript 代码，而不仅仅是在浏览器中使用。</li>
+</ul>
+<h3 id="node.js">2. <strong>Node.js：</strong></h3>
+<ul>
+<li><strong>Node.js</strong> 是一个开源、跨平台的运行时环境，它基于 V8
+引擎构建，旨在让开发者能够在服务器端使用 JavaScript
+编写高效的网络应用程序。Node.js
+提供了许多用于文件系统、网络、进程等操作的库，使得开发者无需依赖浏览器的
+API。</li>
+<li>Node.js 的架构不仅仅是 JavaScript，它还包含了一些原生 C++
+代码，来提供底层系统操作能力，如文件操作、网络请求等。</li>
+</ul>
+<p>V8 引擎现在已经支持了 WebAssembly。</p>
+<h2 id="其他资料">其他资料</h2>
+<p>非常入门的博客：https://xie.infoq.cn/article/0bb5ff2fa5d5d9db492c88a4c</p>
+<p>WebAssembly原理与核心技术：https://book.douban.com/subject/35233448/</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/WASM/" rel="tag"><i class="fa fa-tag"></i> WASM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blockchain/WASM/" rel="prev" title="WASM 学习">
+                  <i class="fa fa-angle-left"></i> WASM 学习
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/graduation-project/02/" rel="next" title="毕设02 - OP-TEE，Hello World">
+                  毕设02 - OP-TEE，Hello World <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>
