@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM 程序。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设06 - 在 TEE 中运行 WASM">
+<meta property="og:url" content="http://cishoon.top/graduation-project/06/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM 程序。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241029214618345.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241029221321275.png">
+<meta property="article:published_time" content="2024-10-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-29T16:15:48.217Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="op-tee">
+<meta property="article:tag" content="TrustZone">
+<meta property="article:tag" content="QEMU">
+<meta property="article:tag" content="TSC-VEE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/graduation-project/06/image-20241029214618345.png">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/06/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/06/","path":"graduation-project/06/","title":"毕设06 - 在 TEE 中运行 WASM"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设06 - 在 TEE 中运行 WASM | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">19</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%8F%82%E6%95%B0"><span class="nav-text">1 解析参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E7%BC%93%E5%AD%98%E7%A9%BA%E9%97%B4"><span class="nav-text">2 分配缓存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B9%B6%E6%89%93%E5%BC%80%E5%AF%B9%E8%AF%9D"><span class="nav-text">3 初始化上下文并打开对话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%A0%86%E7%A9%BA%E9%97%B4"><span class="nav-text">4 配置堆空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-wasm"><span class="nav-text">5 启动 wasm</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/06/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设06 - 在 TEE 中运行 WASM | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设06 - 在 TEE 中运行 WASM<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDYubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-10-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-07T00:00:00+08:00">2024-10-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>13k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM
+程序。</p>
+<span id="more"></span>
+<h2 id="解析参数">1 解析参数</h2>
+<p><code>optee_wamr</code> 参数：</p>
+<ul>
+<li><code>heap_size</code> ：堆大小</li>
+<li><code>wasm_path</code> ：wasm 文件路径（仅支持 aot 文件）</li>
+<li><code>[wasm_args]</code> ：wasm 的运行参数，不定长。</li>
+</ul>
+<p>示例，在 Normal World 中运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optee_wamr 4092 hello.aot</span><br></pre></td></tr></table></figure>
+<h2 id="分配缓存空间">2 分配缓存空间</h2>
+<p>在其他的 TA 中，tee_ctx 的结构如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">tee_ctx</span> {</span></span><br><span class="line">	TEEC_Context ctx;</span><br><span class="line">	TEEC_Session sess;</span><br><span class="line">};</span><br></pre></td></tr></table></figure>
+<p>WATZ 中，tee_ctx 的结构扩展为：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">tee_ctx</span></span></span><br><span class="line"><span class="class">{</span></span><br><span class="line">	TEEC_Context ctx;</span><br><span class="line">	TEEC_Session sess;</span><br><span class="line">	<span class="type">uint8_t</span> *output_buffer;</span><br><span class="line">	<span class="type">uint64_t</span> output_buffer_size;</span><br><span class="line">	<span class="type">uint8_t</span> *benchmark_buffer;</span><br><span class="line">	<span class="type">uint64_t</span> benchmark_buffer_size;</span><br><span class="line">} tee_ctx;</span><br></pre></td></tr></table></figure>
+<p>增加了 <code>output_buffer</code> 和 <code>benchmark_buffer</code>
+，后者应该是论文中的测试用的，之后可以删除。</p>
+<p>main 函数中执行了：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">tee_ctx ctx;</span><br><span class="line">allocate_buffers(&amp;ctx, <span class="number">5</span> * <span class="number">1024</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">allocate_buffers</span><span class="params">(tee_ctx *ctx, <span class="type">uint64_t</span> buffers_size)</span></span><br><span class="line">{</span><br><span class="line">	<span class="comment">// The output buffer is used to capture writes to stdout from the WASM</span></span><br><span class="line">	ctx-&gt;output_buffer = <span class="built_in">malloc</span>(buffers_size);</span><br><span class="line">	ctx-&gt;output_buffer_size = buffers_size;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// The benchmark buffer is used to capture benchmark information from the TA</span></span><br><span class="line">	ctx-&gt;benchmark_buffer = <span class="built_in">malloc</span>(buffers_size);</span><br><span class="line">	ctx-&gt;benchmark_buffer_size = buffers_size;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>分配了一个 5K 字节的空间用于捕获 WASM 对 stdout 的写入。</p>
+<h2 id="初始化上下文并打开对话">3 初始化上下文并打开对话</h2>
+<p>这一步就是标准的 TEE 启动流程。</p>
+<h2 id="配置堆空间">4 配置堆空间</h2>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">configure_heap_size(&amp;ctx, heap_size);</span><br></pre></td></tr></table></figure>
+<p>这一步调用了一个 TA Command：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">memset</span>(&amp;op, <span class="number">0</span>, <span class="keyword">sizeof</span>(op));</span><br><span class="line">op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);</span><br><span class="line">op.params[<span class="number">0</span>].value.a = size;</span><br><span class="line"></span><br><span class="line">res = TEEC_InvokeCommand(&amp;ctx-&gt;sess, COMMAND_CONFIGURE_HEAP, &amp;op, &amp;origin);</span><br></pre></td></tr></table></figure>
+<p>传递一个参数 <code>size</code> （即为输入的 <code>heap_size</code>
+）</p>
+<p>执行 TA 的函数：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">TA_SetHeapSize(params[<span class="number">0</span>].value.a); <span class="comment">// params[0].value.a = size</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">uint32_t</span> heap_size;</span><br><span class="line"><span class="type">static</span> TEE_Result <span class="title function_">TA_SetHeapSize</span><span class="params">(<span class="type">uint32_t</span> size)</span></span><br><span class="line">{</span><br><span class="line">    heap_size = size;</span><br><span class="line">    DMSG(<span class="string">"The heap set is set to %u"</span>, heap_size);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> TEE_SUCCESS;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>这里的 <code>heap_size</code> 是一个静态全局变量。</p>
+<h2 id="启动-wasm">5 启动 wasm</h2>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">success = start_wasm(&amp;ctx, wasm_path, arg);</span><br></pre></td></tr></table></figure>
+<p>输入 <code>wasm_path</code> 和启动参数。以下代码都是
+<code>start_wasm</code> 内部的片段：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">long</span> wasm_file_length;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">char</span> *wasm_bytecode;</span><br><span class="line"></span><br><span class="line">wasm_file = fopen(wasm_path, <span class="string">"rb"</span>);</span><br><span class="line"><span class="keyword">if</span> (wasm_file == <span class="literal">NULL</span>)</span><br><span class="line">{</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"ERROR: the file %s cannot be opened.\n"</span>, wasm_path);</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">}</span><br><span class="line"><span class="comment">// Jump to the end of the file</span></span><br><span class="line">fseek(wasm_file, <span class="number">0</span>, SEEK_END);</span><br><span class="line"><span class="comment">// Get the current byte offset in the file</span></span><br><span class="line">wasm_file_length = ftell(wasm_file);</span><br><span class="line"><span class="comment">// Allocate the buffer for the bytecode with the size of the file</span></span><br><span class="line">wasm_bytecode = <span class="built_in">malloc</span>(ftell(wasm_file) * <span class="keyword">sizeof</span>(<span class="type">unsigned</span> <span class="type">char</span>));</span><br><span class="line"><span class="comment">// Jump back to the beginning of the file</span></span><br><span class="line">rewind(wasm_file);</span><br><span class="line"><span class="comment">// Dump the bytecode into the buffer</span></span><br><span class="line">fread(wasm_bytecode, wasm_file_length, <span class="number">1</span>, wasm_file);</span><br><span class="line"><span class="comment">// Close the file</span></span><br><span class="line">fclose(wasm_file);</span><br></pre></td></tr></table></figure>
+<p>得到 wasm 文件的字节码和文件长度。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">memset</span>(&amp;op, <span class="number">0</span>, <span class="keyword">sizeof</span>(op));</span><br><span class="line">op.paramTypes = TEEC_PARAM_TYPES(TEEC_MEMREF_TEMP_INPUT,</span><br><span class="line">								 TEEC_MEMREF_TEMP_INPUT, </span><br><span class="line">                                    TEEC_MEMREF_TEMP_INOUT, </span><br><span class="line">                                    TEEC_MEMREF_TEMP_INOUT);</span><br><span class="line">op.params[<span class="number">0</span>].tmpref.buffer = wasm_bytecode;</span><br><span class="line">op.params[<span class="number">0</span>].tmpref.size = wasm_file_length;</span><br><span class="line">op.params[<span class="number">1</span>].tmpref.buffer = arg;</span><br><span class="line">op.params[<span class="number">1</span>].tmpref.size = arg != <span class="literal">NULL</span> ? <span class="built_in">strlen</span>(arg) : <span class="number">0</span>;</span><br><span class="line">op.params[<span class="number">2</span>].tmpref.buffer = ctx-&gt;output_buffer;</span><br><span class="line">op.params[<span class="number">2</span>].tmpref.size = ctx-&gt;output_buffer_size;</span><br><span class="line">op.params[<span class="number">3</span>].tmpref.buffer = ctx-&gt;benchmark_buffer;</span><br><span class="line">op.params[<span class="number">3</span>].tmpref.size = ctx-&gt;benchmark_buffer_size;</span><br><span class="line"></span><br><span class="line">res = TEEC_InvokeCommand(&amp;ctx-&gt;sess, COMMAND_RUN_WASM, &amp;op, &amp;origin);</span><br></pre></td></tr></table></figure>
+<p>执行 <code>COMMAND_RUN_WASM</code> ，参数：</p>
+<ul>
+<li>wasm 字节码</li>
+<li>参数</li>
+<li>输出缓冲区</li>
+<li>benchmark 缓冲区</li>
+</ul>
+<p>随后执行 TA 的函数：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">TA_RunWasm((<span class="type">unsigned</span> <span class="type">char</span> *)params[<span class="number">0</span>].memref.buffer, 	<span class="comment">// wasm_bytecode</span></span><br><span class="line">                          params[<span class="number">0</span>].memref.size,		<span class="comment">// wasm_file_length</span></span><br><span class="line">                          (<span class="type">char</span> *)params[<span class="number">1</span>].memref.buffer, <span class="comment">// args</span></span><br><span class="line">                          params[<span class="number">2</span>].memref.buffer, <span class="comment">// output_buffer</span></span><br><span class="line">                          params[<span class="number">2</span>].memref.size,</span><br><span class="line">                          params[<span class="number">3</span>].memref.buffer, <span class="comment">// benchmark_buffer</span></span><br><span class="line">                          params[<span class="number">3</span>].memref.size);</span><br></pre></td></tr></table></figure>
+<p>以下的代码都是 <code>TA_RunWasm</code> 内部的片段：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Allocate secure memory locations</span></span><br><span class="line"><span class="type">uint8_t</span> *global_heap_buf = TEE_Malloc(heap_size, TEE_USER_MEM_HINT_NO_FILL_ZERO);</span><br><span class="line"><span class="type">uint8_t</span> *trusted_wasm_bytecode = TEE_Malloc(wasm_bytecode_size, 		</span><br><span class="line">                                            TEE_USER_MEM_HINT_NO_FILL_ZERO);</span><br><span class="line"><span class="comment">// Copy the shared memory that contains the WASM bytecode into the secure memory</span></span><br><span class="line">TEE_MemMove(trusted_wasm_bytecode, wasm_bytecode, wasm_bytecode_size);</span><br></pre></td></tr></table></figure>
+<p>分配一个全局堆缓冲区和可信 wasm 字节码的空间。并将 wasm
+字节码的内容移动过来。</p>
+<p>这部分的空间都是 TEE_Malloc 分配的。</p>
+<blockquote>
+<p>在 OP-TEE 中，<code>TEE_Malloc</code>
+是用于内存分配的一个函数。它的主要作用是为 TrustZone 中的 Trusted
+Application (TA) 分配内存空间。<code>TEE_Malloc</code> 的用法和标准 C
+语言中的 <code>malloc</code>
+类似，但在安全性和内存管理方面有特殊的优化，以适应可信执行环境（TEE）的需求。以下是一些具体细节：</p>
+<p><strong>基本用法</strong></p>
+<ul>
+<li><strong>函数签名</strong>：<code>void* TEE_Malloc(size_t size, uint32_t hint);</code>
+<ul>
+<li><code>size</code>: 需要分配的字节数。</li>
+<li><code>hint</code>:
+内存分配的提示选项，可帮助优化内存分配策略。例如：
+<ul>
+<li><code>TEE_MALLOC_FILL_ZERO</code>：表示在分配内存时将其初始化为零。</li>
+<li><code>TEE_USER_MEM_HINT_NO_FILL</code>：表示无需填充，通常是为了加速内存分配。</li>
+</ul></li>
+</ul></li>
+<li><strong>返回值</strong>：返回分配的内存块的指针，如果分配失败则返回
+NULL。</li>
+</ul>
+<p><strong>内存管理的特点</strong></p>
+<ol type="1">
+<li><strong>隔离性</strong>：<code>TEE_Malloc</code> 所分配的内存位于 TA
+的隔离区域内，不可被普通世界访问。这保证了内存的安全性，使得 TA
+可以安全地存储敏感信息。</li>
+<li><strong>自动释放</strong>：在 TA 退出时，OP-TEE 会自动释放由
+<code>TEE_Malloc</code>
+分配的所有内存。开发者可以省去手动释放的步骤，但也可以在不需要时主动调用
+<code>TEE_Free</code> 来释放。</li>
+<li><strong>性能优化</strong>：OP-TEE
+使用专用的内存管理器来优化分配和释放性能，特别是在对小块内存频繁操作的场景下。</li>
+</ol>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Set the output buffer to gather the stdout once the application ended</span></span><br><span class="line">TA_SetOutputBuffer(output_buffer, output_buffer_size);</span><br></pre></td></tr></table></figure>
+<p>设置输出缓冲区，以便在应用程序结束时收集 stdout 。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// General settings for the runtime</span></span><br><span class="line">TEE_Result result;</span><br><span class="line">wamr_context context =</span><br><span class="line">    {</span><br><span class="line">        .heap_buf = global_heap_buf,</span><br><span class="line">        .heap_size = heap_size,</span><br><span class="line">        <span class="comment">// .native_symbols = wasi_ra_native_symbols,</span></span><br><span class="line">        <span class="comment">// .native_symbols_size = wasi_ra_native_symbols_size,</span></span><br><span class="line">        .wasm_bytecode = trusted_wasm_bytecode,</span><br><span class="line">        .wasm_bytecode_size = wasm_bytecode_size};</span><br></pre></td></tr></table></figure>
+<p>一些配置，注释掉的是远程验证的部分。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Hash the WASM bytecode for future RA quotes</span></span><br><span class="line">result = TA_HashWasmBytecode(&amp;context);</span><br></pre></td></tr></table></figure>
+<p>生成 WASM 字节码的哈希值，应该也是远程验证的一部分。TEE
+中的这部分输出就是该函数的运行结果。</p>
+<figure>
+<img src="/graduation-project/06/image-20241029214618345.png" alt="image-20241029214618345">
+<figcaption aria-hidden="true">image-20241029214618345</figcaption>
+</figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">DMSG(<span class="string">"TA_InitializeWamrRuntime\n"</span>);</span><br><span class="line"><span class="type">int</span> argc = arg_buff != <span class="literal">NULL</span> ? <span class="number">2</span> : <span class="number">1</span>;</span><br><span class="line"><span class="type">char</span> *argv[] = {(<span class="type">char</span> *)<span class="string">""</span>, arg_buff};</span><br><span class="line">result = TA_InitializeWamrRuntime(&amp;context, argc, argv);</span><br><span class="line"><span class="keyword">if</span> (result != TEE_SUCCESS)</span><br><span class="line">    <span class="keyword">goto</span> error;</span><br></pre></td></tr></table></figure>
+<p>初始化 Wamr 运行时。代码就是运行到 Initialize 报错的。</p>
+<figure>
+<img src="/graduation-project/06/image-20241029221321275.png" alt="image-20241029221321275">
+<figcaption aria-hidden="true">image-20241029221321275</figcaption>
+</figure>
+<p>下面详细看 TA_InitializeWamrRuntime 干了什么。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">RuntimeInitArgs init_args;</span><br><span class="line">TEE_MemFill(&amp;init_args, <span class="number">0</span>, <span class="keyword">sizeof</span>(RuntimeInitArgs));</span><br><span class="line"></span><br><span class="line">init_args.mem_alloc_type = Alloc_With_Pool;</span><br><span class="line">init_args.mem_alloc_option.pool.heap_buf = context-&gt;heap_buf;</span><br><span class="line">init_args.mem_alloc_option.pool.heap_size = context-&gt;heap_size;</span><br></pre></td></tr></table></figure>
+<p>运行时初始化参数，内存分配类型为 <code>Alloc_With_Pool</code>。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* 内存分配类型 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span> {</span></span><br><span class="line">    Alloc_With_Pool = <span class="number">0</span>,</span><br><span class="line">    Alloc_With_Allocator,</span><br><span class="line">    Alloc_With_System_Allocator,</span><br><span class="line">} <span class="type">mem_alloc_type_t</span>;</span><br></pre></td></tr></table></figure>
+<ol type="1">
+<li><p><code>Alloc_With_Pool</code></p>
+<p>这是池模式（pool
+mode），即从用户定义的堆缓冲区中分配内存。这种方式通常适用于应用有固定内存池的情况，有利于控制内存的总占用量并提高内存管理的效率。</p></li>
+<li><p><code>Alloc_With_Allocator</code></p>
+<p>用户分配器模式（user allocator mode），即从用户定义的
+<code>malloc</code>
+函数中分配内存。用户可以通过提供自定义的分配器函数来控制内存的分配方式，这样可以实现更灵活的内存管理。</p></li>
+<li><p><code>Alloc_With_System_Allocator</code></p>
+<p>系统分配器模式（system allocator mode），即使用系统分配器或平台的
+<code>os_malloc</code>
+函数进行内存分配。这是使用操作系统的默认内存分配器，通常是最简单的选择，但可能不如自定义的分配器那样高效。</p></li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (!wasm_runtime_full_init(&amp;init_args))</span><br><span class="line">{</span><br><span class="line">    EMSG(<span class="string">"Init runtime environment failed.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> TEE_ERROR_GENERIC;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Initialize the WASM runtime environment, and also initialize</span></span><br><span class="line"><span class="comment"> * the memory allocator and register native symbols, which are specified</span></span><br><span class="line"><span class="comment"> * with init arguments</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param init_args specifies the init arguments</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return return true if success, false otherwise</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">WASM_RUNTIME_API_EXTERN <span class="type">bool</span></span><br><span class="line"><span class="title function_">wasm_runtime_full_init</span><span class="params">(RuntimeInitArgs *init_args)</span>;</span><br></pre></td></tr></table></figure>
+<p>这个函数的主要作用是初始化 WASM
+运行时环境。它还会初始化内存分配器，并注册一些本地符号，这些符号是通过初始化参数
+<code>init_args</code> 指定的。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> error_buf[<span class="number">128</span>];</span><br><span class="line">context-&gt;module = wasm_runtime_load(context-&gt;wasm_bytecode, context-&gt;wasm_bytecode_size, error_buf, <span class="keyword">sizeof</span>(error_buf));</span><br><span class="line"><span class="keyword">if</span> (!context-&gt;module)</span><br><span class="line">{</span><br><span class="line">    EMSG(<span class="string">"Load wasm module failed. error: %s\n"</span>, error_buf); </span><br><span class="line">    <span class="keyword">return</span> TEE_ERROR_GENERIC;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>载入 wasm 字节码，返回一个 <code>WASMModuleCommon*</code> 指针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">WASMModuleCommon</span> {</span></span><br><span class="line">    <span class="comment">/* Module type, for module loaded from WASM bytecode binary,</span></span><br><span class="line"><span class="comment">       this field is Wasm_Module_Bytecode, and this structure should</span></span><br><span class="line"><span class="comment">       be treated as WASMModule structure;</span></span><br><span class="line"><span class="comment">       for module loaded from AOT binary, this field is</span></span><br><span class="line"><span class="comment">       Wasm_Module_AoT, and this structure should be treated as</span></span><br><span class="line"><span class="comment">       AOTModule structure. */</span></span><br><span class="line">    uint32 module_type;</span><br><span class="line">    uint8 module_data[<span class="number">1</span>];</span><br><span class="line">} WASMModuleCommon;</span><br></pre></td></tr></table></figure>
+<p>定义了 <code>WASMModuleCommon</code> 结构体，用于表示一个通用的 WASM
+模块。该结构体包含两个字段：</p>
+<ul>
+<li><code>module_type</code>：表示模块类型。对于从 WASM
+字节码加载的模块，该字段为 <code>Wasm_Module_Bytecode</code>；而对于从
+AOT（Ahead Of Time）二进制加载的模块，则为
+<code>Wasm_Module_AoT</code>。</li>
+<li><code>module_data[1]</code>：表示模块的数据，这个字段大小为 1
+字节，但在实际使用中可能作为指针或动态数组使用。</li>
+</ul>
+<p>下面看 <code>wasm_runtime_load</code> 的内容：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">module_common = (WASMModuleCommon*)</span><br><span class="line">		       aot_load_from_aot_file(buf, size, error_buf, error_buf_size);</span><br><span class="line"><span class="keyword">return</span> register_module_with_null_name(module_common,</span><br><span class="line">                                      error_buf, error_buf_size);</span><br></pre></td></tr></table></figure>
+<p>调用 <code>aot_load_from_aot_file</code> 载入 <code>aot</code>
+文件。下面的代码<strong>有所简化</strong>，删除了部分错误检查，分析见注释：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AOTModule</span> {</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 内容非常多，总而言之就是解析之后的AOT文件，内部结构的反序列化</span></span><br><span class="line">};</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">AOTModule* <span class="title function_">aot_load_from_aot_file</span><span class="params">(<span class="type">const</span> uint8 *buf, uint32 size,</span></span><br><span class="line"><span class="params">                       <span class="type">char</span> *error_buf, uint32 error_buf_size)</span></span><br><span class="line">{</span><br><span class="line">    AOTModule *module = create_module(error_buf, error_buf_size); <span class="comment">// 创建一个AOT module</span></span><br><span class="line">    load_from_sections(module, section_list,error_buf, error_buf_size));</span><br><span class="line">    LOG_VERBOSE(<span class="string">"Load module success.\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> module;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> AOTModule* <span class="title function_">create_module</span><span class="params">(<span class="type">char</span> *error_buf, uint32 error_buf_size)</span></span><br><span class="line">{</span><br><span class="line">    AOTModule *module =</span><br><span class="line">        loader_malloc(<span class="keyword">sizeof</span>(AOTModule), error_buf, error_buf_size); <span class="comment">// 分配内存空间</span></span><br><span class="line">    module-&gt;module_type = Wasm_Module_AoT; <span class="comment">// 指定类型</span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 给module中的字符串常量分配空间，结构是一个哈希表。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    module-&gt;const_str_set = bh_hash_map_create(<span class="number">32</span>, <span class="literal">false</span>, ...)))</span><br><span class="line">    <span class="keyword">return</span> module;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建一个哈希映射。C语言的哈希表实现。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param size: 哈希映射的初始大小</span></span><br><span class="line"><span class="comment"> * @param use_lock: 是否在操作哈希映射时加锁</span></span><br><span class="line"><span class="comment"> * @param hash_func: 键的哈希函数，必须指定</span></span><br><span class="line"><span class="comment"> * @param key_equal_func: 键相等判断函数，用于检查两个键是否相等，必须指定</span></span><br><span class="line"><span class="comment"> * @param key_destroy_func: 键销毁函数，当哈希元素被移除时调用，如果为 NULL 则不调用</span></span><br><span class="line"><span class="comment"> * @param value_destroy_func: 值销毁函数，当哈希元素被移除时调用，如果为 NULL 则不调用</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return 创建的哈希映射，如果失败则返回 NULL</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">HashMap* <span class="title function_">bh_hash_map_create</span><span class="params">(uint32 size, <span class="type">bool</span> use_lock,</span></span><br><span class="line"><span class="params">                           HashFunc hash_func,</span></span><br><span class="line"><span class="params">                           KeyEqualFunc key_equal_func,</span></span><br><span class="line"><span class="params">                           KeyDestroyFunc key_destroy_func,</span></span><br><span class="line"><span class="params">                           ValueDestroyFunc value_destroy_func)</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">bool</span></span><br><span class="line"><span class="title function_">load</span><span class="params">(<span class="type">const</span> uint8 *buf, uint32 size, AOTModule *module,</span></span><br><span class="line"><span class="params">     <span class="type">char</span> *error_buf, uint32 error_buf_size)</span></span><br><span class="line">{</span><br><span class="line">    <span class="type">const</span> uint8 *buf_end = buf + size;</span><br><span class="line">    <span class="type">const</span> uint8 *p = buf, *p_end = buf_end;</span><br><span class="line">    uint32 magic_number, version;</span><br><span class="line">    AOTSection *section_list = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="type">bool</span> ret;</span><br><span class="line"></span><br><span class="line">    read_uint32(p, p_end, magic_number); <span class="comment">// 读入 magic number</span></span><br><span class="line">    <span class="keyword">if</span> (magic_number != AOT_MAGIC_NUMBER) {</span><br><span class="line">        set_error_buf(error_buf, error_buf_size, <span class="string">"magic header not detected"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    read_uint32(p, p_end, version); <span class="comment">// 读入 version</span></span><br><span class="line">    <span class="keyword">if</span> (version != AOT_CURRENT_VERSION) {</span><br><span class="line">        set_error_buf(error_buf, error_buf_size, <span class="string">"unknown binary version"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    }</span><br><span class="line">	</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    create_sections实现了从给定的缓冲区 buf 中解析 AOT（Ahead of Time）二进制文件</span></span><br><span class="line"><span class="comment">    的各个部分（sections），并将其存储到一个链表中</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">if</span> (!create_sections(buf, size, &amp;section_list, error_buf, error_buf_size))</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    load_from_sections负责加载 AOT 模块中的各个部分（sections），</span></span><br><span class="line"><span class="comment">    并在模块中解析并初始化特定的函数，如 malloc、free 和 retain 等。</span></span><br><span class="line"><span class="comment">    成功完成则返回 true，否则返回 false</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    ret = load_from_sections(module, section_list, error_buf, error_buf_size);</span><br><span class="line">    <span class="keyword">if</span> (!ret) {</span><br><span class="line">        <span class="comment">/* If load_from_sections() fails, then aot text is destroyed</span></span><br><span class="line"><span class="comment">           in destroy_sections() */</span></span><br><span class="line">        destroy_sections(section_list, <span class="literal">true</span>);</span><br><span class="line">        <span class="comment">/* aot_unload() won't destroy aot text again */</span></span><br><span class="line">        module-&gt;code = <span class="literal">NULL</span>;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">else</span> {</span><br><span class="line">        <span class="comment">/* If load_from_sections() succeeds, then aot text is set to</span></span><br><span class="line"><span class="comment">           module-&gt;code and will be destroyed in aot_unload() */</span></span><br><span class="line">        destroy_sections(section_list, <span class="literal">false</span>);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">fail:</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>根据报错信息，可以定位到这行代码发生了错误：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">create_sections(buf, size, &amp;section_list, error_buf, error_buf_size)</span><br><span class="line">    </span><br><span class="line">    total_size = (uint64)section_size + aot_get_plt_table_size();</span><br><span class="line">    total_size = (total_size + <span class="number">3</span>) &amp; ~((uint64)<span class="number">3</span>);	</span><br><span class="line">    <span class="keyword">if</span> (total_size &gt;= UINT32_MAX</span><br><span class="line">        || !(aot_text = os_mmap(<span class="literal">NULL</span>, (uint32)total_size,</span><br><span class="line">                                map_prot, map_flags))) {</span><br><span class="line">        wasm_runtime_free(section);</span><br><span class="line">        set_error_buf(error_buf, error_buf_size,</span><br><span class="line">                      <span class="string">"mmap memory failed"</span>);</span><br><span class="line">        <span class="keyword">goto</span> fail;</span><br><span class="line">    }</span><br></pre></td></tr></table></figure>
+<p>有可能是 <code>total_size &gt;= UNIT32_MAX</code>，也可能是
+<code>os_mmap</code> 发生错误。</p>
+<p>输出一下 <code>total_size: 7700</code> ，所以是 <code>os_mmap</code>
+的问题。</p>
+<p>最终定位到 <code>os_mprotect</code> 中执行的
+<code>tee_mprotect</code> 发生了问题。</p>
+<p>这个好像是，移植 <code>optee_os</code> 时候做的东西……</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">TEE_Result <span class="title function_">tee_mprotect</span><span class="params">(<span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">uint32_t</span> prot)</span></span><br><span class="line">{</span><br><span class="line">	TEE_Result res = TEE_SUCCESS;</span><br><span class="line">	<span class="type">uint32_t</span> param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					       TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					       TEE_PARAM_TYPE_NONE,</span><br><span class="line">					       TEE_PARAM_TYPE_NONE);</span><br><span class="line">	TEE_Param params[TEE_NUM_PARAMS] = { };</span><br><span class="line"></span><br><span class="line">	params[<span class="number">0</span>].value.a = len;</span><br><span class="line">	params[<span class="number">0</span>].value.b = prot;</span><br><span class="line">	reg_pair_from_64((<span class="type">vaddr_t</span>)buf, &amp;params[<span class="number">1</span>].value.a, &amp;params[<span class="number">1</span>].value.b);</span><br><span class="line"></span><br><span class="line">	res = invoke_system_pta(PTA_SYSTEM_MPROTECT, param_types, params);</span><br><span class="line">	<span class="keyword">if</span> (res)</span><br><span class="line">		EMSG(<span class="string">"Invoke PTA_SYSTEM_MPROTECT: buf %p, len %#zx, prot %u"</span>, buf, len, prot);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> res;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTA_SYSTEM_MPROTECT		20</span></span><br></pre></td></tr></table></figure>
+<p>但是我 PTA_SYSTEM_MPROTECT
+好像没有被任何地方使用过，应该是有一个系统调用函数表的，找一找别的
+<code>PTA_SYSTEM</code> 宏定义在哪里被使用。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> TEE_Result <span class="title function_">invoke_system_pta</span><span class="params">(<span class="type">uint32_t</span> cmd_id, <span class="type">uint32_t</span> param_types,</span></span><br><span class="line"><span class="params">				    TEE_Param params[TEE_NUM_PARAMS])</span></span><br><span class="line">{</span><br><span class="line">	<span class="type">static</span> TEE_TASessionHandle sess = TEE_HANDLE_NULL;</span><br><span class="line">	<span class="type">static</span> <span class="type">const</span> TEE_UUID uuid = PTA_SYSTEM_UUID;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (sess == TEE_HANDLE_NULL) {</span><br><span class="line">		TEE_Result res = TEE_OpenTASession(&amp;uuid, TEE_TIMEOUT_INFINITE,</span><br><span class="line">						   <span class="number">0</span>, <span class="literal">NULL</span>, &amp;sess, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (res)</span><br><span class="line">			<span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> TEE_InvokeTACommand(sess, TEE_TIMEOUT_INFINITE, cmd_id,</span><br><span class="line">				   param_types, params, <span class="literal">NULL</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">TEE_Result <span class="title function_">TEE_InvokeTACommand</span><span class="params">(TEE_TASessionHandle session,</span></span><br><span class="line"><span class="params">				<span class="type">uint32_t</span> cancellationRequestTimeout,</span></span><br><span class="line"><span class="params">				<span class="type">uint32_t</span> commandID, <span class="type">uint32_t</span> paramTypes,</span></span><br><span class="line"><span class="params">				TEE_Param params[TEE_NUM_PARAMS],</span></span><br><span class="line"><span class="params">				<span class="type">uint32_t</span> *returnOrigin)</span></span><br><span class="line">{</span><br><span class="line">	TEE_Result res = TEE_SUCCESS;</span><br><span class="line">	<span class="type">uint32_t</span> ret_origin = TEE_ORIGIN_TEE;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">utee_params</span> <span class="title">up</span> =</span> { };</span><br><span class="line">	<span class="type">void</span> *tmp_buf = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="type">size_t</span> tmp_len = <span class="number">0</span>;</span><br><span class="line">	<span class="type">void</span> *tmp_va[TEE_NUM_PARAMS] = { <span class="literal">NULL</span> };</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (paramTypes) {</span><br><span class="line">		__utee_check_inout_annotation(params,</span><br><span class="line">					      <span class="keyword">sizeof</span>(TEE_Param) *</span><br><span class="line">					      TEE_NUM_PARAMS);</span><br><span class="line">		check_invoke_param(paramTypes, params);</span><br><span class="line">	}</span><br><span class="line">	<span class="keyword">if</span> (returnOrigin)</span><br><span class="line">		__utee_check_out_annotation(returnOrigin,</span><br><span class="line">					    <span class="keyword">sizeof</span>(*returnOrigin));</span><br><span class="line"></span><br><span class="line">	copy_param(&amp;up, paramTypes, params);</span><br><span class="line">	res = map_tmp_param(&amp;up, &amp;tmp_buf, &amp;tmp_len, tmp_va);</span><br><span class="line">	<span class="keyword">if</span> (res)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	res = _utee_invoke_ta_command((<span class="type">uintptr_t</span>)session,</span><br><span class="line">				      cancellationRequestTimeout,</span><br><span class="line">				      commandID, &amp;up, &amp;ret_origin);</span><br><span class="line">	update_out_param(params, tmp_va, &amp;up);</span><br><span class="line">	<span class="keyword">if</span> (tmp_buf) {</span><br><span class="line">		TEE_Result res2 = tee_unmap(tmp_buf, tmp_len);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (res2)</span><br><span class="line">			TEE_Panic(res2);</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">	<span class="keyword">if</span> (returnOrigin != <span class="literal">NULL</span>)</span><br><span class="line">		*returnOrigin = ret_origin;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ret_origin == TEE_ORIGIN_TRUSTED_APP)</span><br><span class="line">		<span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (res != TEE_SUCCESS &amp;&amp;</span><br><span class="line">	    res != TEE_ERROR_OUT_OF_MEMORY &amp;&amp;</span><br><span class="line">	    res != TEE_ERROR_TARGET_DEAD)</span><br><span class="line">		TEE_Panic(res);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> res;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>现在把系统调用添加进去了，重新试一次……修改的地方已经更新进了 毕设05
+。</p>
+<p>OK！现在是下一个错了！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/op-tee/" rel="tag"><i class="fa fa-tag"></i> op-tee</a>
+              <a href="/tags/TrustZone/" rel="tag"><i class="fa fa-tag"></i> TrustZone</a>
+              <a href="/tags/QEMU/" rel="tag"><i class="fa fa-tag"></i> QEMU</a>
+              <a href="/tags/TSC-VEE/" rel="tag"><i class="fa fa-tag"></i> TSC-VEE</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/graduation-project/04/" rel="prev" title="毕设04 - 阶段性总结，明确题目">
+                  <i class="fa fa-angle-left"></i> 毕设04 - 阶段性总结，明确题目
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/WASM/" rel="next" title="WASM 学习">
+                  WASM 学习 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

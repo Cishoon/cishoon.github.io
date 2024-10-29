@@ -23,7 +23,7 @@
 
     <meta name="description" content="单独编译 OPTEE 的 CA&#x2F;TA 的方法。 移植 WATZ 到现在的 OPTEE 中。 测试 WATZ 。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="毕设05">
+<meta property="og:title" content="毕设05 - WATZ 迁移">
 <meta property="og:url" content="http://cishoon.top/graduation-project/05/index.html">
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
 <meta property="og:description" content="单独编译 OPTEE 的 CA&#x2F;TA 的方法。 移植 WATZ 到现在的 OPTEE 中。 测试 WATZ 。">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028214310619.png">
 <meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028214222599.png">
 <meta property="article:published_time" content="2024-10-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-10-28T14:08:28.361Z">
+<meta property="article:modified_time" content="2024-10-29T16:04:17.061Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="毕设">
 <meta property="article:tag" content="op-tee">
@@ -48,10 +48,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/05/","path":"graduation-project/05/","title":"毕设05"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/05/","path":"graduation-project/05/","title":"毕设05 - WATZ 迁移"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>毕设05 | Cishoon's Blog</title>
+<title>毕设05 - WATZ 迁移 | Cishoon's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -215,7 +215,7 @@ mjx-container[display="true"] + br {
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">18</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">19</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -266,7 +266,8 @@ mjx-container[display="true"] + br {
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%87%E5%BF%98"><span class="nav-text">备忘</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#makefile%E4%B8%AD-debug-%E6%96%B9%E5%BC%8F"><span class="nav-text">MakeFile中 Debug 方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%BC%96%E8%AF%91-optee"><span class="nav-text">重新编译 OPTEE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E7%BC%96%E8%AF%91-cata"><span class="nav-text">手动编译 CA&#x2F;TA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#optee_client"><span class="nav-text">optee_client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ta"><span class="nav-text">TA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ca"><span class="nav-text">CA</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-watz-%E7%9A%84-cata"><span class="nav-text">编译 WATZ 的 CA&#x2F;TA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-optee_os"><span class="nav-text">移植 optee_os</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-libvmlib.a"><span class="nav-text">编译 libvmlib.a</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-cata"><span class="nav-text">移植 CA&#x2F;TA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E8%BF%90%E8%A1%8C-wamr"><span class="nav-text">调试运行 wamr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%BC%96%E8%AF%91"><span class="nav-text">1. 重新编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0-wasm-%E6%96%87%E4%BB%B6"><span class="nav-text">2. 上传 wasm 文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E4%BD%BF%E7%94%A8-scp"><span class="nav-text">方法一：使用 scp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Cqemu-%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-text">方法二：qemu 共享文件夹</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87-wasm-%E6%96%87%E4%BB%B6"><span class="nav-text">3. 准备 wasm 文件</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%87%E5%BF%98"><span class="nav-text">备忘</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#makefile%E4%B8%AD-debug-%E6%96%B9%E5%BC%8F"><span class="nav-text">MakeFile中 Debug 方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%BC%96%E8%AF%91-optee"><span class="nav-text">重新编译 OPTEE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E7%BC%96%E8%AF%91-cata"><span class="nav-text">手动编译 CA&#x2F;TA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#optee_client"><span class="nav-text">optee_client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ta"><span class="nav-text">TA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ca"><span class="nav-text">CA</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-watz-%E7%9A%84-cata"><span class="nav-text">编译 WATZ 的 CA&#x2F;TA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-optee_os"><span class="nav-text">移植 optee_os</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-libvmlib.a"><span class="nav-text">编译 libvmlib.a</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-cata"><span class="nav-text">移植 CA&#x2F;TA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E8%BF%90%E8%A1%8C-wamr"><span class="nav-text">调试运行 wamr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E7%BC%96%E8%AF%91"><span class="nav-text">1. 重新编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0-wasm-%E6%96%87%E4%BB%B6"><span class="nav-text">2. 上传 wasm 文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E4%BD%BF%E7%94%A8-scp"><span class="nav-text">方法一：使用 scp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8Cqemu-%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6%E5%A4%B9%E8%BE%83%E6%96%B9%E4%BE%BF"><span class="nav-text">方法二：qemu
+共享文件夹(较方便)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87-wasm-%E6%96%87%E4%BB%B6"><span class="nav-text">3. 准备 wasm 文件</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -320,12 +321,12 @@ mjx-container[display="true"] + br {
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="毕设05 | Cishoon's Blog">
+      <meta itemprop="name" content="毕设05 - WATZ 迁移 | Cishoon's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          毕设05<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDUubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+          毕设05 - WATZ 迁移<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDUubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
         </h1>
 
         <div class="post-meta-container">
@@ -354,14 +355,14 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>7.4k</span>
+      <span>9.2k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>7 分钟</span>
+      <span>8 分钟</span>
     </span>
 </div>
 
@@ -403,15 +404,25 @@ mjx-container[display="true"] + br {
 <h2 id="移植-optee_os">移植 optee_os</h2>
 <p>由于 WATZ 基于老版本的 optee_os 进行了修改，想在最新的 optee_os
 中编译运行 CA/TA 需要修改部分代码。</p>
-<p>在 <code>/optee/optee_os/include/pta_system.h</code> 中添加：</p>
+<p>在 <code>/optee/optee_os/lib/libutee/include/pta_system.h</code>
+中添加：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * UNOFFICIAL API EXTENSION by WaTZ</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Change the protection of mapped memory pages</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTA_SYSTEM_MPROTECT		20</span></span><br></pre></td></tr></table></figure>
-<p>在 <code>/optee/optee_os/include/tee_internal_api_extensions.h</code>
+<p>在
+<code>/optee/optee_os/lib/libutee/include/tee_internal_api_extensions.h</code>
 中添加：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * UNOFFICIAL API EXTENSION by WaTZ</span></span><br><span class="line"><span class="comment"> * tee_mprotect() - Change the protection of mapped memory pages</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">TEE_Result <span class="title function_">tee_mprotect</span><span class="params">(<span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">uint32_t</span> prot)</span>;</span><br></pre></td></tr></table></figure>
-<p>在 <code>/optee/optee_os/tee_system_pta.c</code> 中添加：</p>
+<p>在 <code>/optee/optee_os/lib/libutee/tee_system_pta.c</code>
+中添加：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">TEE_Result <span class="title function_">tee_mprotect</span><span class="params">(<span class="type">void</span> *buf, <span class="type">size_t</span> len, <span class="type">uint32_t</span> prot)</span></span><br><span class="line">{</span><br><span class="line">	TEE_Result res = TEE_SUCCESS;</span><br><span class="line">	<span class="type">uint32_t</span> param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					       TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					       TEE_PARAM_TYPE_NONE,</span><br><span class="line">					       TEE_PARAM_TYPE_NONE);</span><br><span class="line">	TEE_Param params[TEE_NUM_PARAMS] = { };</span><br><span class="line"></span><br><span class="line">	params[<span class="number">0</span>].value.a = len;</span><br><span class="line">	params[<span class="number">0</span>].value.b = prot;</span><br><span class="line">	reg_pair_from_64((<span class="type">vaddr_t</span>)buf, &amp;params[<span class="number">1</span>].value.a, &amp;params[<span class="number">1</span>].value.b);</span><br><span class="line"></span><br><span class="line">	res = invoke_system_pta(PTA_SYSTEM_MPROTECT, param_types, params);</span><br><span class="line">	<span class="keyword">if</span> (res)</span><br><span class="line">		EMSG(<span class="string">"Invoke PTA_SYSTEM_MPROTECT: buf %p, len %#zx, prot %u"</span>, buf, len, prot);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> res;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>之后增加系统调用：</p>
+<p>在 <code>core/pta/system.c</code> 中添加：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> TEE_Result <span class="title function_">system_mprotect</span><span class="params">(<span class="keyword">struct</span> user_mode_ctx *uctx, <span class="type">uint32_t</span> param_types,</span></span><br><span class="line"><span class="params">			       TEE_Param params[TEE_NUM_PARAMS])</span></span><br><span class="line">{</span><br><span class="line">	<span class="type">uint32_t</span> exp_pt = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					  TEE_PARAM_TYPE_VALUE_INPUT,</span><br><span class="line">					  TEE_PARAM_TYPE_NONE,</span><br><span class="line">					  TEE_PARAM_TYPE_NONE);</span><br><span class="line">	TEE_Result res = TEE_SUCCESS;</span><br><span class="line">	<span class="type">uint32_t</span> vm_flags = <span class="number">0</span>;</span><br><span class="line">	<span class="type">vaddr_t</span> end_va = <span class="number">0</span>;</span><br><span class="line">	<span class="type">vaddr_t</span> va = <span class="number">0</span>;</span><br><span class="line">	<span class="type">size_t</span> sz = <span class="number">0</span>;</span><br><span class="line">	<span class="type">uint32_t</span> prot = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (exp_pt != param_types)</span><br><span class="line">		<span class="keyword">return</span> TEE_ERROR_BAD_PARAMETERS;</span><br><span class="line"></span><br><span class="line">	va = reg_pair_to_64(params[<span class="number">1</span>].value.a, params[<span class="number">1</span>].value.b);</span><br><span class="line">	sz = ROUNDUP(params[<span class="number">0</span>].value.a, SMALL_PAGE_SIZE);</span><br><span class="line">	prot = params[<span class="number">0</span>].value.b;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * The vm_get_flags() and vm_unmap() are supposed to detect or</span></span><br><span class="line"><span class="comment">	 * handle overflow directly or indirectly. However, this function</span></span><br><span class="line"><span class="comment">	 * an API function so an extra guard here is in order. If nothing</span></span><br><span class="line"><span class="comment">	 * else to make it easier to review the code.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (ADD_OVERFLOW(va, sz, &amp;end_va))</span><br><span class="line">		<span class="keyword">return</span> TEE_ERROR_BAD_PARAMETERS;</span><br><span class="line"></span><br><span class="line">	res = vm_get_flags(uctx, va, sz, &amp;vm_flags);</span><br><span class="line">	<span class="keyword">if</span> (res)</span><br><span class="line">		<span class="keyword">return</span> res;</span><br><span class="line">	<span class="keyword">if</span> (vm_flags &amp; VM_FLAG_PERMANENT)</span><br><span class="line">		<span class="keyword">return</span> TEE_ERROR_ACCESS_DENIED;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> vm_set_prot(uctx, va, sz, prot);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>在 <code>core/pta/system.c</code> 的
+<code>TEE_Result invoke_command()</code> 函数中添加新增的枚举：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> PTA_SYSTEM_MPROTECT:</span><br><span class="line">	<span class="keyword">return</span> system_mprotect(uctx, param_types, params);</span><br></pre></td></tr></table></figure>
 <h2 id="编译-libvmlib.a">编译 libvmlib.a</h2>
-<p>这是 wamr 的静态库文件。wamr 的 <code>/product-mini/platforms</code>
+<p>这是 wamr 的静态库文件。wamr 的
+<code>/unine-watz/runtime/product-mini/platforms</code>
 中提供了各个平台的编译代码。编译任何平台的 wamr 之前都需要先得到
 <code>libvmlib.a</code> 。</p>
 <p>WATZ 新增了 <code>linux-truxtzone</code> 目录，里面提供了一个
@@ -422,20 +433,29 @@ mjx-container[display="true"] + br {
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">include_directories(/root/unine-watz/optee_os/lib/libutils/ext/include)</span><br><span class="line">include_directories(/root/unine-watz/optee_os/lib/libutee/include)</span><br></pre></td></tr></table></figure>
 <p>其中 <code>/root/unine-watz</code> 改为你的 WATZ 路径。</p>
 <p>然后执行代码：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
 <p>即可在 <code>build</code> 目录下得到 <code>libvmlib.a</code>。</p>
 <h2 id="移植-cata">移植 CA/TA</h2>
 <p>在 <code>/optee/optee_examples</code> 中新建 <code>optee_wamr</code>
 目录，将
 <code>/unine-watz/runtime/product-mini/platforms/linux-trustzone/vedliot_attester</code>
-中的代码移植过来。</p>
-<p>移植后的代码在我的 git 仓库中可以找到。</p>
+中的代码移植过来，并删除了远程验证的部分代码。</p>
+<p>修改的内容较多，移植后的代码在我的 git 仓库中可以找到。</p>
 <p>为了即开即用，我将 wamr 中的部分文件和 <code>libvmlib.a</code>
 直接打包了进来。</p>
-<p>另外，我将源代码中的远程验证部分删除了。</p>
+<p>另外，如果你直接修改我提供的代码中的 <code>/ta/core</code>
+中的内容，但是重新编译后却没有应用更改，很可能是因为这部分代码被直接打包进了
+<code>libvmlib.a</code> ，请参考上一步，修改
+<code>/unine-watz/runtime</code> 中的代码并重新并覆盖
+<code>/ta/build/libvmlib.a</code> 。</p>
 <h2 id="调试运行-wamr">调试运行 wamr</h2>
 <h3 id="重新编译">1. 重新编译</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /root/optee/build</span><br><span class="line">make FORCE_UNSAFE_CONFIGURE=1 -j`<span class="built_in">nproc</span>`</span><br></pre></td></tr></table></figure>
+<p>清除之前编译的缓存：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make clean</span><br></pre></td></tr></table></figure>
+<p>或只删除 optee_examples 的缓存：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">rm</span> -rf /root/optee/out-br/build/optee_examples*</span><br></pre></td></tr></table></figure>
+<p>重新编译：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /root/optee/build</span><br><span class="line">make FORCE_UNSAFE_CONFIGURE=1 run -j`<span class="built_in">nproc</span>`</span><br></pre></td></tr></table></figure>
 <p>启动 qemu 后，在 Normal World 中的 <code>/usr/bin</code>
 目录中可以找到 <code>optee_wamr</code> 。</p>
 <p><img src="/graduation-project/05/image-20241027205828402.png" alt="image-20241027205828402" style="zoom:50%;"></p>
@@ -500,7 +520,8 @@ qemu：</p>
 <figcaption aria-hidden="true">image-20241028001128522</figcaption>
 </figure>
 <p><img src="/graduation-project/05/image-20241028001149784.png" alt="image-20241028001149784" style="zoom:50%;"></p>
-<h4 id="方法二qemu-共享文件夹">方法二：qemu 共享文件夹</h4>
+<h4 id="方法二qemu-共享文件夹较方便">方法二：qemu
+共享文件夹(较方便)</h4>
 <p><code>QEMU_VIRTFS</code> 允许将主机上的一个目录作为虚拟文件系统（9p
 文件系统）挂载到 QEMU 的 Normal World。</p>
 <p><strong>配置步骤：</strong></p>
@@ -540,7 +561,15 @@ qemu：</p>
 <p><strong>注意：</strong>
 这共享文件夹是<strong>实时共享</strong>的。也就是删除
 <code>/mnt/host</code> 中的文件，也会删除宿主机中的！</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> QEMU_VIRTFS_ENABLE=y</span><br><span class="line"><span class="built_in">export</span> QEMU_VIRTFS_HOST_DIR=/root/WebAssembly</span><br><span class="line"><span class="built_in">export</span> QEMU_VIRTFS_AUTOMOUNT=y</span><br><span class="line">make QEMU_VIRTFS_AUTOMOUNT=y run-only</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /mnt/host</span><br><span class="line">mount -t 9p -o trans=virtio host /mnt/host</span><br></pre></td></tr></table></figure>
 <h3 id="准备-wasm-文件">3. 准备 wasm 文件</h3>
+<p>默认情况下，WATZ 只支持运行 aot 格式的文件。如果希望支持 JIT 和
+interpret ，需要修改 <code>/unine-watz/runtime/core</code>
+中的部分配置，并重新编译 <code>libvmlib.a</code> 。（修改我项目中
+<code>ta/core/</code> 中的文件是没有用的）</p>
+<p>这部分留给下一节博客。目标是慢慢试错，通过阅读源码解决问题，最终运行一个
+wasm 程序。</p>
 
     </div>
 
