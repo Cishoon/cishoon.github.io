@@ -21,17 +21,21 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
 
-    <meta name="description" content="截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM 程序。">
+    <meta name="description" content="截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM 程序。 本文是 debug 的记录，大多数内容都是废话2333，只看总结就好。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="毕设06 - 在 TEE 中运行 WASM">
 <meta property="og:url" content="http://cishoon.top/graduation-project/06/index.html">
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
-<meta property="og:description" content="截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM 程序。">
+<meta property="og:description" content="截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM 程序。 本文是 debug 的记录，大多数内容都是废话2333，只看总结就好。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241029214618345.png">
 <meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241029221321275.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241030152722875.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241030164512775.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241030210559791.png">
+<meta property="og:image" content="http://cishoon.top/graduation-project/06/image-20241030222255649.png">
 <meta property="article:published_time" content="2024-10-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-10-29T16:15:48.217Z">
+<meta property="article:modified_time" content="2024-10-30T14:53:43.887Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="毕设">
 <meta property="article:tag" content="op-tee">
@@ -264,7 +268,7 @@ mjx-container[display="true"] + br {
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%8F%82%E6%95%B0"><span class="nav-text">1 解析参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E7%BC%93%E5%AD%98%E7%A9%BA%E9%97%B4"><span class="nav-text">2 分配缓存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B9%B6%E6%89%93%E5%BC%80%E5%AF%B9%E8%AF%9D"><span class="nav-text">3 初始化上下文并打开对话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%A0%86%E7%A9%BA%E9%97%B4"><span class="nav-text">4 配置堆空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-wasm"><span class="nav-text">5 启动 wasm</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%8F%82%E6%95%B0"><span class="nav-text">1 解析参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E7%BC%93%E5%AD%98%E7%A9%BA%E9%97%B4"><span class="nav-text">2 分配缓存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B9%B6%E6%89%93%E5%BC%80%E5%AF%B9%E8%AF%9D"><span class="nav-text">3 初始化上下文并打开对话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%A0%86%E7%A9%BA%E9%97%B4"><span class="nav-text">4 配置堆空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-wasm"><span class="nav-text">5 启动 wasm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#wasm-%E4%B8%8E-aot-%E7%9A%84%E8%A1%A5%E5%85%85"><span class="nav-text">WASM 与 AOT 的补充</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -352,14 +356,14 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>13k</span>
+      <span>16k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>11 分钟</span>
+      <span>15 分钟</span>
     </span>
 </div>
 
@@ -371,6 +375,7 @@ mjx-container[display="true"] + br {
     
     <div class="post-body" itemprop="articleBody"><p>截止目前已经编译成功了 WATZ。接下来尝试如何使用 WATZ 运行一个 WASM
 程序。</p>
+<p>本文是 debug 的记录，大多数内容都是废话2333，只看总结就好。</p>
 <span id="more"></span>
 <h2 id="解析参数">1 解析参数</h2>
 <p><code>optee_wamr</code> 参数：</p>
@@ -536,6 +541,106 @@ AOT（Ahead Of Time）二进制加载的模块，则为
 <p>现在把系统调用添加进去了，重新试一次……修改的地方已经更新进了 毕设05
 。</p>
 <p>OK！现在是下一个错了！</p>
+<figure>
+<img src="/graduation-project/06/image-20241030152722875.png" alt="image-20241030152722875">
+<figcaption aria-hidden="true">image-20241030152722875</figcaption>
+</figure>
+<p><code>wasm_runtime_load</code> → <code>aot_load_from_aot_file</code>
+→ <code>load</code> → <code>load_from_sections</code> →
+<code>load_target_info_section</code></p>
+<p><code>load_from_sections</code> 函数的参数：<code>section_list</code>
+是由 <code>create_sections</code>
+生成的，所以还是得把这两个函数的具体实现看一下。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">read_uint16(p, p_end, target_info.bin_type);</span><br><span class="line">read_uint16(p, p_end, target_info.abi_type);</span><br><span class="line">read_uint16(p, p_end, target_info.e_type);</span><br><span class="line">read_uint16(p, p_end, target_info.e_machine);</span><br><span class="line">read_uint32(p, p_end, target_info.e_version);</span><br><span class="line">read_uint32(p, p_end, target_info.e_flags);</span><br><span class="line">read_uint32(p, p_end, target_info.reserved);</span><br><span class="line">read_byte_array(p, p_end, target_info.arch, <span class="keyword">sizeof</span>(target_info.arch));</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (p != buf_end) {</span><br><span class="line">    <span class="comment">// set_error_buf(error_buf, error_buf_size, "invalid section size");</span></span><br><span class="line">    set_error_buf_v(error_buf, error_buf_size, <span class="string">"invalid section size, "</span></span><br><span class="line">                    <span class="string">"p=%p, buf_end=%p, buf=%p"</span>, p, buf_end, buf);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/graduation-project/06/image-20241030164512775.png" alt="image-20241030164512775">
+<figcaption aria-hidden="true">image-20241030164512775</figcaption>
+</figure>
+<p>差了 12 位。</p>
+<p>说明是在读取 <code>AOT_SECTION_TYPE_TARGET_INFO</code> 即 AOT 的
+<strong>Target Info Section</strong>（目标信息段）的时候发生的错误。</p>
+<p>这个段的主要作用是提供以下关于目标平台的信息，以确保 AOT
+模块的代码可以正确加载并运行：</p>
+<ol type="1">
+<li><strong>平台字节序</strong>：是否为小端序（Little-endian）或大端序（Big-endian）。</li>
+<li><strong>架构位数</strong>：是否为 32 位或 64 位平台。</li>
+<li><strong>目标处理器架构类型</strong>：比如 x86、ARM、MIPS
+等，确保编译出的代码与处理器架构匹配。</li>
+<li><strong>ABI（Application Binary
+Interface）类型</strong>：不同平台可能会使用不同的
+ABI，确保函数调用、数据传递等方式正确。</li>
+<li><strong>额外标识</strong>：包含与特定平台相关的附加信息，如编译时的标志等。</li>
+</ol>
+<p>我看了一下现在的 <code>wasm</code>
+的代码，发现这里的数据结构变了！！</p>
+<p>现在的：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Target info, read from ELF header of object file */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AOTTargetInfo</span> {</span></span><br><span class="line">    <span class="comment">/* Binary type, elf32l/elf32b/elf64l/elf64b */</span></span><br><span class="line">    uint16 bin_type;</span><br><span class="line">    <span class="comment">/* ABI type */</span></span><br><span class="line">    uint16 abi_type;</span><br><span class="line">    <span class="comment">/* Object file type */</span></span><br><span class="line">    uint16 e_type;</span><br><span class="line">    <span class="comment">/* Architecture */</span></span><br><span class="line">    uint16 e_machine;</span><br><span class="line">    <span class="comment">/* Object file version */</span></span><br><span class="line">    uint32 e_version;</span><br><span class="line">    <span class="comment">/* Processor-specific flags */</span></span><br><span class="line">    uint32 e_flags;</span><br><span class="line">    <span class="comment">/* Specify wasm features supported */</span></span><br><span class="line">    uint64 feature_flags;</span><br><span class="line">    <span class="comment">/* Reserved */</span></span><br><span class="line">    uint64 reserved;</span><br><span class="line">    <span class="comment">/* Arch name */</span></span><br><span class="line">    <span class="type">char</span> arch[<span class="number">16</span>];</span><br><span class="line">} AOTTargetInfo;</span><br></pre></td></tr></table></figure>
+<p>之前的：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Target info, read from ELF header of object file */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AOTTargetInfo</span> {</span></span><br><span class="line">    <span class="comment">/* Binary type, elf32l/elf32b/elf64l/elf64b */</span></span><br><span class="line">    uint16 bin_type;</span><br><span class="line">    <span class="comment">/* ABI type */</span></span><br><span class="line">    uint16 abi_type;</span><br><span class="line">    <span class="comment">/* Object file type */</span></span><br><span class="line">    uint16 e_type;</span><br><span class="line">    <span class="comment">/* Architecture */</span></span><br><span class="line">    uint16 e_machine;</span><br><span class="line">    <span class="comment">/* Object file version */</span></span><br><span class="line">    uint32 e_version;</span><br><span class="line">    <span class="comment">/* Processor-specific flags */</span></span><br><span class="line">    uint32 e_flags;</span><br><span class="line">    <span class="comment">/* Reserved */</span></span><br><span class="line">    uint32 reserved;</span><br><span class="line">    <span class="comment">/* Arch name */</span></span><br><span class="line">    <span class="type">char</span> arch[<span class="number">16</span>];</span><br><span class="line">} AOTTargetInfo;</span><br></pre></td></tr></table></figure>
+<p>也就是说，<code>WATZ</code> 的代码只支持运行老版本的 wasm
+程序，新版本的 wasm 就会类型不匹配。</p>
+<p>现在有两个方法：</p>
+<ol type="1">
+<li>移植 runtime，以适应最新的版本.</li>
+<li>直接使用 watz 里的 runtime 进行 wasm 的编译，编译得到老版本的
+wasm.</li>
+</ol>
+<p>根据 <a href="##WASM%20与%20AOT%20的补充">附录-WASM 与 AOT 的补充</a>
+，方案二更合理，相当于我们基于的就是老版本的 wamr
+，使用我这个项目必须用我们的 <code>wasmc</code> 将 <code>wasm</code>
+文件转换为 <code>aot</code>。</p>
+<p>目测了一下变化不小，我先用方法二测试一下 watz
+移植的有没有问题吧。</p>
+<p>下载 <code>WATZ</code> 使用的 <code>wasm-micro-runtime</code>
+版本：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">git clone --no-checkout https:<span class="comment">//github.com/bytecodealliance/wasm-micro-runtime.git wasm-micro-runtime-cba4c782</span></span><br><span class="line">cd wasm-micro-runtime-cba4c782</span><br><span class="line">git checkout cba4c782</span><br></pre></td></tr></table></figure>
+<p>编译 <code>wamrc</code> 详细内容见<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2J5dGVjb2RlYWxsaWFuY2Uvd2FzbS1taWNyby1ydW50aW1lL2Jsb2IvbWFpbi93YW1yLWNvbXBpbGVyL1JFQURNRS5tZA==">官方文档<i class="fa fa-external-link-alt"></i></span>
+：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> wamr-compiler</span><br><span class="line">./build_llvm.sh (or <span class="string">"./build_llvm_xtensa.sh"</span> to support xtensa target)</span><br><span class="line"><span class="built_in">mkdir</span> build &amp;&amp; <span class="built_in">cd</span> build</span><br><span class="line">cmake .. (or <span class="string">"cmake .. -DWAMR_BUILD_PLATFORM=darwin"</span> <span class="keyword">for</span> MacOS)</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<p>重新编译 <code>aot</code> 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./wamrc --target=aarch64 -o hello_aarch64.aot hello.wasm</span><br></pre></td></tr></table></figure>
+<p>很遗憾，报了新的错：</p>
+<figure>
+<img src="/graduation-project/06/image-20241030210559791.png" alt="image-20241030210559791">
+<figcaption aria-hidden="true">image-20241030210559791</figcaption>
+</figure>
+<p>但是已经从 load failed 变成了 instantiate failed 了，进了一步233</p>
+<p>定位错误位置：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">wasm_runtime_instantiate_internal -&gt; aot_instantiate -&gt; memories_instantiate -&gt; memory_instantiate</span><br></pre></td></tr></table></figure>
+<p>沃趣，de了半天 bug，发现是 heap_size 设置的大小不合适：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">optee_wamr 4096000 hello_aarch64.aot </span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/graduation-project/06/image-20241030222255649.png" alt="image-20241030222255649">
+<figcaption aria-hidden="true">image-20241030222255649</figcaption>
+</figure>
+<p>经过二分的测试，上下界：<code>[408340, 12573936]</code></p>
+<p>所以截止当前！已经可以在 OPTEE 中运行 wasm 的程序了！</p>
+<h1 id="总结">总结</h1>
+<ol type="1">
+<li>提供的 <code>aot</code> 文件，必须由老版本的
+<code>wasm-micro-runtime</code> 的 <code>wasmc</code> 编译得到。</li>
+<li>提供的 <code>wasm</code> 文件可以任选编译器，因为 <code>wasm</code>
+有官方标准，而 <code>aot</code> 每个编译器有自己的标准。</li>
+<li>运行时的堆空间上下界为
+<code>[408340, 12573936]</code>。可能不同的环境中，这个数值会有所不同，还不太清楚。
+总之取一个中间数比较稳，例如 1000000 一百万。</li>
+</ol>
+<p>明天的工作：</p>
+<p>整理一遍 WATZ 的移植，并开源一个项目。</p>
+<p>然后思考接下来的工作，wasm + 智能合约。</p>
+<h1 id="附录">附录</h1>
+<h2 id="wasm-与-aot-的补充">WASM 与 AOT 的补充</h2>
+<p><code>wasm</code> 是有一个标准的，不同的 <code>wasm</code> 编译器（如
+Emscripten、AssemblyScript、WasmEdge）可能会有不同的优化，生成的
+<code>wasm</code>
+文件不完全一样，但是最终的执行效果应该是等价的。并且编译出来的
+<code>wasm</code> 文件能被任何运行时理解。</p>
+<p>但是 <code>AOT</code> 不同。<code>AOT</code> 是由特定的编译器，将
+<code>wasm</code> 文件转换成对应的 <code>aot</code> 文件。每个编译器生成
+<code>aot</code> 文件的格式都是不一样的。</p>
+<p>因此，我移植了老版的 <code>wasm-micro-runtime</code>
+运行时，就必须用老版运行时中提供的 <code>wamrc</code> 将
+<code>wasm</code> 文件编译成 <code>aot</code> 文件才能使用。</p>
 
     </div>
 

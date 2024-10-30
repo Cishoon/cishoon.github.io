@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028214310619.png">
 <meta property="og:image" content="http://cishoon.top/graduation-project/05/image-20241028214222599.png">
 <meta property="article:published_time" content="2024-10-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-10-29T16:04:17.061Z">
+<meta property="article:modified_time" content="2024-10-30T14:53:47.679Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="毕设">
 <meta property="article:tag" content="op-tee">
@@ -355,7 +355,7 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>9.2k</span>
+      <span>9.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -420,6 +420,11 @@ mjx-container[display="true"] + br {
 <p>在 <code>core/pta/system.c</code> 的
 <code>TEE_Result invoke_command()</code> 函数中添加新增的枚举：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> PTA_SYSTEM_MPROTECT:</span><br><span class="line">	<span class="keyword">return</span> system_mprotect(uctx, param_types, params);</span><br></pre></td></tr></table></figure>
+<p>在 <code>utee_defines.h</code> 中 修改
+<code>HW_UNIQUE_KEY_LENGTH</code> :</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> HW_UNIQUE_KEY_LENGTH     (32)</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>trach.h</code> 中修改 <code>MAX_PRINT_SIZE</code> :</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_PRINT_SIZE      512</span></span><br></pre></td></tr></table></figure>
 <h2 id="编译-libvmlib.a">编译 libvmlib.a</h2>
 <p>这是 wamr 的静态库文件。wamr 的
 <code>/unine-watz/runtime/product-mini/platforms</code>
