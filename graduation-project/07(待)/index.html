@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="截止目前，已经成功在 optee 中运行 wasm 程序。 接下来要尝试怎么用 wasm 实现智能合约。 技术选型为 Cosmos。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设08 - Cosmos 简介与 Cosmos SDK 模块详解">
+<meta property="og:url" content="http://cishoon.top/graduation-project/07(%E5%BE%85)/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="截止目前，已经成功在 optee 中运行 wasm 程序。 接下来要尝试怎么用 wasm 实现智能合约。 技术选型为 Cosmos。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-10-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-12T03:43:02.861Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="Cosmos">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/07(%E5%BE%85)/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/07(%E5%BE%85)/","path":"graduation-project/07(待)/","title":"毕设08 - Cosmos 简介与 Cosmos SDK 模块详解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设08 - Cosmos 简介与 Cosmos SDK 模块详解 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">26</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">34</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#cosmos-%E4%BB%8B%E7%BB%8D"><span class="nav-text">1 Cosmos 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%B7%A5%E5%85%B7"><span class="nav-text">2 其他工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ignite-cli"><span class="nav-text">Ignite CLI</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#cosmos-sdk-%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3"><span class="nav-text">3 Cosmos SDK 模块详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#staking"><span class="nav-text">1 staking</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pow-%E4%B8%8E-pos-%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-text">1.1 PoW 与 PoS 的对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5"><span class="nav-text">1.2 关键概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bft-%E4%B8%8E-staking"><span class="nav-text">1.3 BFT 与 staking</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bank-%E6%A8%A1%E5%9D%97"><span class="nav-text">2 bank 模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E6%A6%82%E8%BF%B0"><span class="nav-text">2.1 模块概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-text">2.2 主要功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E7%B1%BB%E5%9E%8B"><span class="nav-text">2.3 账户类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E8%B4%A6%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6"><span class="nav-text">2.4 转账权限控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-text">2.5 关键操作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E4%BB%96%E6%A8%A1%E5%9D%97%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="nav-text">2.6 与其他模块的交互</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gov"><span class="nav-text">3 gov</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E6%A6%82%E8%BF%B0-1"><span class="nav-text">3.1 模块概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E6%A1%88%E7%B1%BB%E5%9E%8B"><span class="nav-text">3.2 提案类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E6%A1%88%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-text">3.3 提案生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%95%E7%A5%A8%E6%9C%BA%E5%88%B6"><span class="nav-text">3.4 投票机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#section"><span class="nav-text"></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E6%AC%BE%E6%9C%BA%E5%88%B6"><span class="nav-text">3.5 存款机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E5%85%B6%E4%BB%96%E6%A8%A1%E5%9D%97%E7%9A%84%E4%BA%A4%E4%BA%92-1"><span class="nav-text">3.6 与其他模块的交互</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E6%A1%88%E6%B5%81%E7%A8%8B%E7%A4%BA%E4%BE%8B"><span class="nav-text">3.7 提案流程示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#slashing"><span class="nav-text">4 slashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#distribution"><span class="nav-text">5 distribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#auth"><span class="nav-text">6 auth</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/07(%E5%BE%85)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设08 - Cosmos 简介与 Cosmos SDK 模块详解 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设08 - Cosmos 简介与 Cosmos SDK 模块详解<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDco5b6FKS5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-10-30 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-30T00:00:00+08:00">2024-10-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>截止目前，已经成功在 optee 中运行 wasm 程序。</p>
+<p>接下来要尝试怎么用 wasm 实现智能合约。</p>
+<p>技术选型为 Cosmos。</p>
+<span id="more"></span>
+<h1 id="cosmos-介绍">1 Cosmos 介绍</h1>
+<p>https://zhuanlan.zhihu.com/p/59651447</p>
+<p>待补充，先进行代码的实验。</p>
+<h1 id="其他工具">2 其他工具</h1>
+<h2 id="ignite-cli">Ignite CLI</h2>
+<p><strong>Ignite</strong> 是一个用于快速构建基于 <strong>Cosmos
+SDK</strong>
+的区块链应用的开发工具。它提供了从模板生成、模块添加、代码生成到应用部署的一整套功能，帮助开发者简化开发流程。</p>
+<h1 id="cosmos-sdk-模块详解">3 Cosmos SDK 模块详解</h1>
+<h2 id="staking">1 staking</h2>
+<p>用于实现权益委托证明（PoS）公式机制。Pos
+取代的是工作量证明（PoW）机制。对区块的证明不再使用大量的计算——挖矿来实现，而是让用户把自己的代币（Token）作为质押，以获得验证资格。</p>
+<h3 id="pow-与-pos-的对比">1.1 PoW 与 PoS 的对比</h3>
+<p><strong>PoW（Proof of Work，工作量证明）：</strong></p>
+<ul>
+<li>产生一个新的区块的过程依赖于矿工的计算能力（算力）。</li>
+<li>矿工通过大量计算，寻找一个符合难度目标的哈希值（例如开头为多个零的哈希值，常用的是
+SHA-256）。这一过程称为“挖矿”。</li>
+<li>一旦矿工成功找到符合条件的哈希值，就将这个新的区块及其哈希值提交到区块链网络。</li>
+<li>网络会验证该哈希值，若有效，则将区块加入主链，且矿工获得奖励（通常是代币奖励和交易手续费的组合）。</li>
+</ul>
+<p><strong>PoS（Proof of Stake，权益证明）：</strong></p>
+<ul>
+<li>用户通过质押代币来获得验证资格，质押的代币越多，被选为验证人的机会越大。</li>
+<li>当一个新的区块产生时，系统会从有验证资格的用户（验证人）中选择一个或多个用户来验证和打包该区块。</li>
+<li>验证人在验证区块后，将区块信息发送至网络。</li>
+<li>一旦区块得到确认，验证人获得奖励，通常以质押的代币奖励形式。</li>
+</ul>
+<h3 id="关键概念">1.2 关键概念</h3>
+<ul>
+<li><p><strong>验证人（Validators）</strong>：</p>
+<ul>
+<li>验证人是运行节点并负责验证区块的用户。</li>
+<li>需要将自身或其他用户委托的代币作为抵押来获得验证资格。</li>
+<li>验证人会根据所抵押的代币数量来竞争进入“活跃验证人集合”，即质押的代币越多越容易被选中。</li>
+<li>验证人需要保持节点的高可用性和诚实性，若出现双签、宕机等情况会受到惩罚。</li>
+</ul></li>
+<li><p><strong>委托人（Delegators）</strong>：</p>
+<ul>
+<li>委托人是持有代币的用户，可以将代币委托给他们信任的验证人，以参与网络的共识过程。</li>
+<li>委托人将代币交给验证人后，便与验证人共同承担网络的安全性责任。验证人获得的奖励和惩罚也会按照比例分配给委托人。</li>
+<li>委托人有权选择撤回委托（即“解锁”），但是解锁过程通常需要经过一个解锁期，防止系统因频繁的资金移动而失稳。</li>
+</ul></li>
+<li><p><strong>抵押和解锁机制（Bonding and Unbonding）</strong>：</p>
+<ul>
+<li>当用户（无论是验证人还是委托人）将代币锁定在 staking
+模块中时，这些代币即被抵押。抵押的代币使验证人有资格进入活跃验证人集合。</li>
+<li>抵押的代币要解除时会经历一个“解锁期”（通常为几周），在这期间用户无法动用这部分代币。解锁期可以防止网络因大量代币突然解锁而失去安全性。</li>
+</ul></li>
+<li><p><strong>奖励分配（Reward Distribution）</strong>：</p>
+<ul>
+<li>staking 模块与分配奖励的 <strong>distribution</strong>
+模块协同工作，为验证人和委托人分配奖励。</li>
+<li>验证人可以设置佣金费率（即奖励的某一比例作为其运营费用），其余部分则分配给委托人。</li>
+<li>奖励的来源通常是区块链的通胀部分（增发代币）或交易手续费。</li>
+</ul></li>
+<li><p><strong>惩罚机制（Slashing）</strong></p>
+<ul>
+<li><p>为保障网络的安全，staking 模块配合 <strong>slashing</strong>
+模块引入了惩罚机制，旨在对不诚信或表现不佳的验证人进行惩罚。</p></li>
+<li><p>常见的惩罚行为有双签（Double Signing）和宕机（Downtime）。</p>
+<blockquote>
+<p>双签的例子：</p>
+<p>假设区块链网络发生了短暂分叉。验证人 A 在区块高度 100 签署了区块
+A_100。与此同时，网络中的另一部分在同一高度 100 也签署了另一个区块
+B_100。</p>
+<p>如果验证人 A 无意中在网络恢复后又对 B_100
+进行了签名，网络就会记录到验证人 A 在高度 100 发生了双签。</p>
+</blockquote></li>
+</ul></li>
+<li><p><strong>治理（Governance）参与</strong></p>
+<ul>
+<li>staking
+模块中的验证人和委托人都有权参与链上治理，即投票表决提案。这些提案可能包括升级链的参数或添加新功能。</li>
+<li>委托人通常会继承他们所选择的验证人的投票意向，但也可以自主投票，确保自身权益得到更好保障。</li>
+</ul></li>
+</ul>
+<h3 id="bft-与-staking">1.3 BFT 与 staking</h3>
+<ul>
+<li>他们并不是同一层级的概念，BFT 共识协议在 Tendermint
+的共识层中实现。</li>
+<li>staking
+机制作用于<strong>验证人选拔和激励层</strong>，决定哪些验证人可以参与共识，并通过奖励和惩罚保障验证人的行为。</li>
+<li>BFT
+共识作用于<strong>共识层</strong>，解决已选出的验证人如何就区块内容达成一致的问题。</li>
+</ul>
+<h2 id="bank-模块">2 bank 模块</h2>
+<p>Cosmos SDK 的 <code>bank</code>
+模块是一个核心模块，专门用于在账户之间实现可替代代币（fungible
+tokens）的转账。该模块提供了基本的代币管理功能，包括发送、接收、查询余额等，是
+Cosmos SDK 应用中资金流转的基础。以下是 <code>bank</code>
+模块的详细介绍：</p>
+<h3 id="模块概述">2.1 <strong>模块概述</strong></h3>
+<ul>
+<li><code>bank</code> 模块负责管理账户中的可替代代币（如 Cosmos 的 ATOM
+或应用链自定义的代币）。</li>
+<li>提供了基本的转账功能，允许账户之间进行代币转移。</li>
+<li>支持自定义多个代币（多资产）和配置转账权限（如黑名单、白名单等）。</li>
+</ul>
+<h3 id="主要功能">2.2 <strong>主要功能</strong></h3>
+<ul>
+<li><strong>转账（Transfers）</strong>：实现账户之间的代币转移，并通过权限控制（如
+<code>send_enabled</code>）设置哪些代币可以进行转账。</li>
+<li><strong>查询余额（Balance
+Queries）</strong>：允许查询指定账户的代币余额，并支持查询所有代币余额。</li>
+<li><strong>多资产支持（Multi-Asset
+Support）</strong>：支持在链上创建和管理多个类型的代币，每种代币都可以独立操作。</li>
+</ul>
+<h3 id="账户类型">2.3 <strong>账户类型</strong></h3>
+<ul>
+<li>Cosmos SDK 的 <code>bank</code>
+模块将每个账户的代币余额存储在账户模块（<code>auth</code>）的
+<code>Account</code>
+对象中。每个账户有一个唯一的地址和一个与之关联的余额。</li>
+<li>账户类型通常有：
+<ul>
+<li><strong>BaseAccount</strong>：标准账户，用于存储基本的余额和公钥信息。</li>
+<li><strong>ModuleAccount</strong>：模块账户，通常用于协议或模块操作的资金池，比如治理模块的储备资金。</li>
+</ul></li>
+</ul>
+<h3 id="转账权限控制">2.4 <strong>转账权限控制</strong></h3>
+<ul>
+<li><code>bank</code>
+模块允许设置特定代币的转账权限，主要用于控制哪些代币可以转账、是否暂停某类代币的转账等。</li>
+<li>通过 <code>SendEnabled</code>
+配置参数，可以启用或禁用某种特定代币的转账功能。这对于防止恶意代币或临时冻结某些代币具有重要意义。</li>
+</ul>
+<h3 id="关键操作流程">2.5 <strong>关键操作流程</strong></h3>
+<ul>
+<li><strong>发送代币流程</strong>：
+<ul>
+<li>用户通过提交 <code>MsgSend</code> 消息请求发送代币。</li>
+<li><code>bank</code>
+模块验证发送者的余额是否充足，并确保接收者的地址有效。</li>
+<li>代币成功从发送者账户转移到接收者账户，事件系统记录该转账事件。</li>
+</ul></li>
+<li><strong>批量转账流程</strong>：
+<ul>
+<li>用户通过提交 <code>MsgMultiSend</code>
+消息请求多个账户之间的批量转账。</li>
+<li>模块会验证所有发送方的余额是否足够，并在验证成功后批量执行转账操作。</li>
+</ul></li>
+</ul>
+<h3 id="与其他模块的交互">2.6 <strong>与其他模块的交互</strong></h3>
+<ul>
+<li><code>bank</code> 模块通常会与以下模块交互：
+<ul>
+<li><strong>auth 模块</strong>：管理账户结构及其权限，与
+<code>bank</code> 模块协作存储和读取账户的余额信息。</li>
+<li><strong>staking
+模块</strong>：当用户将代币抵押给验证人时，这些代币会从
+<code>bank</code>
+模块中“冻结”，不可转账，形成一种账户余额的“锁定”状态。</li>
+<li><strong>distribution
+模块</strong>：用于将奖励分配给验证人和委托人，资金通过
+<code>bank</code> 模块进行流转。</li>
+</ul></li>
+</ul>
+<h2 id="gov">3 gov</h2>
+<h3 id="模块概述-1">3.1 模块概述</h3>
+<ul>
+<li><code>gov</code>
+模块是一个链上治理系统，允许任何代币持有者发起提案，并通过社区投票来决定提案是否通过。</li>
+<li>主要功能包括提案创建、投票过程、提案生效与否的判定等。</li>
+<li><code>gov</code>
+模块使区块链变得更具弹性和适应性，代币持有者可以直接参与协议的变更。</li>
+</ul>
+<h3 id="提案类型">3.2 提案类型</h3>
+<p><code>gov</code>
+模块支持多种提案类型，每种类型对应链上不同的管理事项：</p>
+<ul>
+<li><strong>文本提案（Text
+Proposal）</strong>：仅供讨论和表决的提案，没有直接操作链上参数的权限，通常用于提出改进建议或社区讨论。</li>
+<li><strong>参数变更提案（Parameter Change
+Proposal）</strong>：提议修改链上的参数配置（如交易费用、质押参数等），通过后自动更新链上参数。</li>
+<li><strong>软件升级提案（Software Upgrade
+Proposal）</strong>：提议进行链上软件升级。通过后链上的升级模块会执行更新。</li>
+<li><strong>社区资金提案（Community Pool Spend
+Proposal）</strong>：提议从社区资金池中提取资金，支持对某些项目或社区活动进行资助。</li>
+</ul>
+<h3 id="提案生命周期">3.3 <strong>提案生命周期</strong></h3>
+<ul>
+<li><strong>提交提案</strong>：用户提交提案并支付一定数量的代币作为押金，押金可防止垃圾提案泛滥。若提案未通过押金将被扣除。</li>
+<li><strong>存款阶段（Deposit
+Period）</strong>：提案需要达到一定的存款门槛（通常是由其他用户补充押金），才能进入投票阶段。</li>
+<li><strong>投票阶段（Voting
+Period）</strong>：提案进入投票阶段后，所有有投票权的代币持有者都可以对其进行投票。</li>
+<li><strong>投票结果</strong>：在投票阶段结束后，系统根据预设的通过标准判断提案是否通过。</li>
+<li><strong>提案结果执行</strong>：若提案通过，则根据提案的类型执行相应操作；若未通过，则押金会被退还或销毁。</li>
+</ul>
+<h3 id="投票机制">3.4 <strong>投票机制</strong></h3>
+<p><code>gov</code>
+模块允许所有拥有投票权的代币持有者对提案进行投票。投票方式通常包括以下几种：</p>
+<ul>
+<li><p><strong>Yes</strong>：赞成提案。</p></li>
+<li><p><strong>No</strong>：反对提案。</p></li>
+<li><p><strong>NoWithVeto</strong>：强烈反对提案并主张否决，若此选项票数达到一定比例，提案将被直接拒绝，且押金会被销毁。</p></li>
+<li><p><strong>Abstain</strong>：弃权，表示中立意见，弃权票不影响提案通过率的计算。</p></li>
+<li><p><strong>通过标准</strong>：提案的通过率由参数控制，通常包括最低投票参与率、赞成票占比等。只有满足这些标准，提案才会被视为通过。</p></li>
+</ul>
+<h3 id="section"></h3>
+<h3 id="存款机制">3.5 <strong>存款机制</strong></h3>
+<ul>
+<li>提案发起时需要支付一定数量的押金（Deposit），押金的数量和形式由治理参数决定。</li>
+<li>如果提案未达到存款门槛，提案将不会进入投票阶段；未达到存款门槛的提案在一定时间后会被自动关闭，押金返还。</li>
+<li>若提案被否决或否决比例超过特定标准，押金可能会被销毁，以减少恶意提案的产生。</li>
+</ul>
+<h3 id="与其他模块的交互-1">3.6 与其他模块的交互</h3>
+<ul>
+<li><strong>bank
+模块</strong>：在用户支付提案押金、提取社区资金等操作时，需要与
+<code>bank</code> 模块交互来转移代币。</li>
+<li><strong>distribution
+模块</strong>：在社区资金提案通过后，<code>gov</code> 模块会调用
+<code>distribution</code> 模块以分配社区资金。</li>
+<li><strong>staking 模块</strong>：治理模块与 staking
+模块交互，以决定未投票用户的投票意向是否与其所委托的验证人一致。</li>
+</ul>
+<h3 id="提案流程示例">3.7 提案流程示例</h3>
+<ul>
+<li>用户创建一个新提案并支付最小押金。</li>
+<li>其他用户可以为该提案增加押金，直到达到最低存款要求。</li>
+<li>达到要求后提案进入投票阶段，代币持有者在 <code>VotingPeriod</code>
+内可以对提案进行投票。</li>
+<li>投票结束后，系统依据投票结果判断提案是否通过，并触发相应的操作（如更改参数、升级软件等）。</li>
+</ul>
+<h2 id="slashing">4 slashing</h2>
+<h2 id="distribution">5 distribution</h2>
+<h2 id="auth">6 auth</h2>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/Cosmos/" rel="tag"><i class="fa fa-tag"></i> Cosmos</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/graduation-project/06/" rel="prev" title="毕设06 - 在 TEE 中运行 WASM">
+                  <i class="fa fa-angle-left"></i> 毕设06 - 在 TEE 中运行 WASM
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/graduation-project/05/" rel="next" title="毕设05 - WATZ 迁移">
+                  毕设05 - WATZ 迁移 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

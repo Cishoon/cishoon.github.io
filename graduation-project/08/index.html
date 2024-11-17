@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="根据 https:&#x2F;&#x2F;docs.ignite.com&#x2F;guide&#x2F;getting-started 中的教程，实现一个 Cosmos 区块链的搭建。 使用 ignite 提供的自动化构建脚本，实现 Cosmos 区块链的搭建和模块设计。 内容不全面，详细的看链接网站。 但是因为 ignite 封装太多了，没完全明白如何继承模块。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设08 - Cosmos 构建自己的区块链">
+<meta property="og:url" content="http://cishoon.top/graduation-project/08/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="根据 https:&#x2F;&#x2F;docs.ignite.com&#x2F;guide&#x2F;getting-started 中的教程，实现一个 Cosmos 区块链的搭建。 使用 ignite 提供的自动化构建脚本，实现 Cosmos 区块链的搭建和模块设计。 内容不全面，详细的看链接网站。 但是因为 ignite 封装太多了，没完全明白如何继承模块。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-15T03:34:25.021Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="Cosmos">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/08/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/08/","path":"graduation-project/08/","title":"毕设08 - Cosmos 构建自己的区块链"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设08 - Cosmos 构建自己的区块链 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">26</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">34</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="nav-text">前置准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E5%8C%BA%E5%9D%97%E9%93%BE"><span class="nav-text">1 创建一个新的区块链</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-text">1.1 目录结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E7%94%A8%E9%A1%B9%E7%9B%AE"><span class="nav-text">2 启用项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hello-world"><span class="nav-text">3 Hello World!</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E9%93%BE"><span class="nav-text">3.1 创建一个新的链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%9F%A5%E8%AF%A2%E4%BB%A3%E7%A0%81"><span class="nav-text">3.2 生成查询代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#proto"><span class="nav-text">3.2.1 proto</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cli"><span class="nav-text">3.2.2 cli</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#keeper"><span class="nav-text">3.2.3 keeper</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%9F%A5%E8%AF%A2%E5%93%8D%E5%BA%94"><span class="nav-text">3.3 自定义查询响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E5%B9%B6%E6%B5%8B%E8%AF%95"><span class="nav-text">3.4 启动区块链并测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%9A%E5%AE%A2%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5"><span class="nav-text">4 博客（增删改查）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ignite-%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="nav-text">4.1 Ignite 参数类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#codec.binarycodeccdc"><span class="nav-text">4.2 codec.BinaryCodec（cdc）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#proto-%E7%AE%80%E8%A6%81%E6%95%99%E7%A8%8B"><span class="nav-text">proto 简要教程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E5%A3%B0%E6%98%8Esyntax-declaration"><span class="nav-text">1. 语法声明（Syntax
+Declaration）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%85%E5%A3%B0%E6%98%8Epackage-declaration"><span class="nav-text">2. 包声明（Package
+Declaration）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5imports"><span class="nav-text">3. 导入（Imports）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89message-definition"><span class="nav-text">4. 消息定义（Message
+Definition）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%AE%9A%E4%B9%89service-definition"><span class="nav-text">5. 服务定义（Service
+Definition）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8Benum-definition"><span class="nav-text">6. 枚举类型（Enum
+Definition）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-.proto-%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-text">示例 .proto 文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#keeper-1"><span class="nav-text">Keeper</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#keeper-%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-text">1. Keeper 结构体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">2. 构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E9%80%BB%E8%BE%91"><span class="nav-text">3. 查询逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86%E9%80%BB%E8%BE%91"><span class="nav-text">4. 消息处理逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="nav-text">5. 状态管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E8%AE%B0%E5%BD%95"><span class="nav-text">6. 事件记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/08/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设08 - Cosmos 构建自己的区块链 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设08 - Cosmos 构建自己的区块链<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMDgubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-11-08 00:00:00" itemprop="dateCreated datePublished" datetime="2024-11-08T00:00:00+08:00">2024-11-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>12k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>根据 https://docs.ignite.com/guide/getting-started 中的教程，实现一个
+Cosmos 区块链的搭建。</p>
+<p>使用 ignite 提供的自动化构建脚本，实现 Cosmos
+区块链的搭建和模块设计。</p>
+<p>内容不全面，详细的看链接网站。</p>
+<p>但是因为 ignite 封装太多了，没完全明白如何继承模块。</p>
+<span id="more"></span>
+<h1 id="前置准备">前置准备</h1>
+<ul>
+<li><p>安装 go (1.21+)</p>
+<p>https://ubuntuhandbook.org/index.php/2024/02/how-to-install-go-golang-1-22-in-ubuntu-22-04/#google_vignette</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget -c https://go.dev/dl/go1.23.1.linux-amd64.tar.gz</span><br><span class="line">tar -C /usr/local/ -xzf go1.23.1.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></p>
+<p>在 <code>~/.bashrc</code> 中添加：</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -d <span class="string">"/usr/local/go/bin"</span> ] ; <span class="keyword">then</span></span><br><span class="line">    PATH=<span class="string">"/usr/local/go/bin:<span class="variable">$PATH</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
+<p>重新载入 <code>~/.bashrc</code>：</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure></p>
+<p>设置中国代理：</p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">go env -w GO111MODULE=on</span><br><span class="line">go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct</span><br></pre></td></tr></table></figure></p></li>
+<li><p>安装 Ignite CLI</p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo snap set system proxy.http="http://192.168.3.56:21882"</span><br><span class="line">sudo snap set system proxy.https="http://192.168.3.56:21882"</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo systemctl restart snapd</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">snap install ignite --classic</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h1 id="创建一个新的区块链">1 创建一个新的区块链</h1>
+<p>要使用 Ignite 创建一个新的区块链项目，需要运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ignite scaffold chain example</span><br></pre></td></tr></table></figure>
+<p>在国内，安装过程中可能会有很多报错，都是代理的问题。安装成功之后输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[root@cishoon-virtual-machine:~/go]# ignite scaffold chain example</span><br><span class="line"></span><br><span class="line">⭐️ Successfully created a new blockchain 'example'.</span><br><span class="line">👉 Get started with the following commands:</span><br><span class="line"></span><br><span class="line"> % cd example</span><br><span class="line"> % ignite chain serve</span><br><span class="line"></span><br><span class="line">Documentation: https://docs.ignite.com</span><br></pre></td></tr></table></figure>
+<p>新目录 example 中创建一个新的基于 Cosmos SDK
+的区块链。默认导入了多个标准模块：</p>
+<ul>
+<li><strong>staking</strong>：用于实现 PoS 共识机制。</li>
+<li><strong>bank</strong>：用于实现代币的转账。</li>
+<li><strong>gov</strong>：用于链上治理。</li>
+</ul>
+<h2 id="目录结构">1.1 目录结构</h2>
+<ul>
+<li><strong>app/
+目录</strong>：包含连接区块链各部分的文件。该目录中最重要的文件是
+<code>app.go</code>，它包含区块链的类型定义以及创建和初始化区块链的函数。此文件负责将区块链的各个组件连接在一起，并定义它们之间的交互方式。</li>
+<li><strong>cmd/
+目录</strong>：包含负责已编译二进制文件的命令行接口（CLI）的主程序包。此程序包定义了可以通过
+CLI
+运行的命令以及它们的执行方式。它是区块链项目的重要组成部分，为开发人员和用户提供了一种与区块链交互的方式，例如查询区块链状态或发送交易。</li>
+<li><strong>proto/ 目录</strong>：包含协议缓冲区（protocol
+buffer）文件，用于描述区块链的数据结构。协议缓冲区是一种语言和平台无关的机制，用于序列化结构化数据，通常用于分布式系统（如区块链网络）的开发。<code>proto/</code>
+目录中的协议缓冲区文件定义了区块链使用的数据结构和消息，并用于生成可用于与区块链交互的各种编程语言的代码。在
+Cosmos SDK
+中，协议缓冲区文件用于定义可以被区块链发送和接收的特定数据类型，以及可用于访问区块链功能的特定
+RPC 端点。</li>
+<li><strong>testutil/
+目录</strong>：包含用于测试的辅助函数。这些函数提供了一种方便的方式来执行编写区块链测试时所需的常见任务，例如创建测试账户、生成交易以及检查区块链状态。使用
+<code>testutil/</code>
+目录中的辅助函数，开发人员可以更快速、高效地编写测试，并确保测试全面而有效。</li>
+<li><strong>x/ 目录</strong>：包含添加到区块链的自定义 Cosmos SDK
+模块。标准的 Cosmos SDK 模块是预构建的组件，提供了 Cosmos SDK
+区块链的常见功能，例如质押和治理支持。另一方面，自定义模块是专门为区块链项目开发的模块，用于提供特定的项目功能。</li>
+<li><strong>config.yml
+文件</strong>：是一个配置文件，用于在开发过程中自定义区块链。该文件包含控制区块链各方面的设置，例如网络
+ID、账户余额和节点参数等。</li>
+</ul>
+<h1 id="启用项目">2 启用项目</h1>
+<p>执行以下命令启用区块链：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ignite chain serve</span><br></pre></td></tr></table></figure>
+<p><code>ignite chain serve</code>
+命令用于在开发模式下启动区块链节点。该命令首先使用
+<code>ignite chain build</code> 编译并安装二进制文件，然后使用
+<code>ignite chain init</code>
+初始化单个验证人的区块链数据目录。之后，它会在本地启动节点，并启用自动代码重载功能，使代码的更改可以直接反映在运行中的区块链上，而无需重启节点。这样可以加快区块链的开发和测试进程。</p>
+<h1 id="hello-world">3 Hello World!</h1>
+<p>在本教程中，你将使用 Ignite CLI
+构建一个简单的区块链，该区块链响应一个自定义查询并返回 "Hello %s!"，其中
+"%s" 是查询中传入的名字。通过此教程，你将更深入地了解如何在 Cosmos SDK
+区块链中<strong>创建自定义查询</strong>。</p>
+<h2 id="创建一个新的链">3.1 创建一个新的链</h2>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ignite scaffold chain hello</span><br><span class="line"><span class="built_in">cd</span> hello</span><br></pre></td></tr></table></figure>
+<h2 id="生成查询代码">3.2 生成查询代码</h2>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ignite scaffold query say-hello name --response name</span></span><br><span class="line"></span><br><span class="line">modify proto/hello/hello/query.proto</span><br><span class="line">create x/hello/keeper/query_say_hello.go</span><br><span class="line">modify x/hello/module/autocli.go</span><br><span class="line"></span><br><span class="line">🎉 Created a query `say-hello`.</span><br></pre></td></tr></table></figure>
+<p>此命令会为一个新的查询 <code>say-hello</code> 生成代码，该查询接受
+<code>name</code> 作为输入，并将它返回在响应中。</p>
+<p><strong>生成的代码</strong>：</p>
+<ul>
+<li><code>proto/hello/hello/query.proto</code>：定义请求和响应结构。</li>
+<li><code>x/hello/module/autocli.go</code>：包含查询的 CLI 命令。</li>
+<li><code>x/hello/keeper/query_say_hello.go</code>：存放查询响应的逻辑。</li>
+</ul>
+<h3 id="proto">3.2.1 proto</h3>
+<p>增加了一个查询接口：</p>
+<figure class="highlight protobuf"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Queries a list of SayHello items.</span></span><br><span class="line"><span class="function"><span class="keyword">rpc</span> SayHello (QuerySayHelloRequest) <span class="keyword">returns</span> (QuerySayHelloResponse) </span>{</span><br><span class="line">	<span class="keyword">option</span> (google.api.http).get = <span class="string">"/hello/hello/say_hello/{name}"</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">QuerySayHelloRequest</span> {</span><br><span class="line">  <span class="type">string</span> name = <span class="number">1</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">QuerySayHelloResponse</span> {</span><br><span class="line">  <span class="type">string</span> name = <span class="number">1</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="cli">3.2.2 cli</h3>
+<p>新增了一个请求接口，但是没有包括具体实现代码，应该是封装进 Cosmos SDK
+中的 autocliv1 了。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">Query: &amp;autocliv1.ServiceCommandDescriptor{</span><br><span class="line">    Service: modulev1.Query_ServiceDesc.ServiceName,</span><br><span class="line">    RpcCommandOptions: []*autocliv1.RpcCommandOptions{</span><br><span class="line">        {</span><br><span class="line">            RpcMethod: <span class="string">"Params"</span>,</span><br><span class="line">            Use:       <span class="string">"params"</span>,</span><br><span class="line">            Short:     <span class="string">"Shows the parameters of the module"</span>,</span><br><span class="line">        },</span><br><span class="line">        {</span><br><span class="line">            RpcMethod:      <span class="string">"SayHello"</span>,</span><br><span class="line">            Use:            <span class="string">"say-hello [name]"</span>,</span><br><span class="line">            Short:          <span class="string">"Query say-hello"</span>,</span><br><span class="line">            PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: <span class="string">"name"</span>}},</span><br><span class="line">        },</span><br><span class="line"></span><br><span class="line">        <span class="comment">// this line is used by ignite scaffolding # autocli/query</span></span><br><span class="line">    },</span><br><span class="line">},</span><br></pre></td></tr></table></figure>
+<h3 id="keeper">3.2.3 keeper</h3>
+<p>新增了 <code>query_say_hello.go</code> 文件：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> keeper</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"context"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">    <span class="string">"hello/x/hello/types"</span></span><br><span class="line"></span><br><span class="line">    sdk <span class="string">"github.com/cosmos/cosmos-sdk/types"</span></span><br><span class="line">    <span class="string">"google.golang.org/grpc/codes"</span></span><br><span class="line">    <span class="string">"google.golang.org/grpc/status"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(q queryServer)</span></span> SayHello(ctx context.Context, req *types.QuerySayHelloRequest) (*types.QuerySayHelloResponse, <span class="type">error</span>) {</span><br><span class="line">    <span class="keyword">if</span> req == <span class="literal">nil</span> {</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, status.Error(codes.InvalidArgument, <span class="string">"invalid request"</span>)</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 验证和上下文解包</span></span><br><span class="line">    ctx := sdk.UnwrapSDKContext(ctx)</span><br><span class="line"></span><br><span class="line">    _ = ctx</span><br><span class="line">    <span class="comment">// 自定义响应</span></span><br><span class="line">    <span class="keyword">return</span> &amp;types.QuerySayHelloResponse{Name: fmt.Sprintf(<span class="string">"Hello %s!"</span>, req.Name)}, <span class="literal">nil</span></span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="自定义查询响应">3.3 自定义查询响应</h2>
+<p>修改 <code>query_say_hello.go</code>：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(k Keeper)</span></span> SayHello(goCtx context.Context, req *types.QuerySayHelloRequest) (*types.QuerySayHelloResponse, <span class="type">error</span>) {</span><br><span class="line">	<span class="keyword">if</span> req == <span class="literal">nil</span> {</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, status.Error(codes.InvalidArgument, <span class="string">"invalid request"</span>)</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	ctx := sdk.UnwrapSDKContext(goCtx)</span><br><span class="line"></span><br><span class="line">	_ = ctx</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;types.QuerySayHelloResponse{Name: fmt.Sprintf(<span class="string">"Hello %s!"</span>, req.Name)}, <span class="literal">nil</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h2 id="启动区块链并测试">3.4 启动区块链并测试</h2>
+<p><strong>启动区块链</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ignite chain serve</span></span><br><span class="line"></span><br><span class="line">  Blockchain is running</span><br><span class="line"></span><br><span class="line">  Blockchain is running</span><br><span class="line"></span><br><span class="line">  Blockchain is running</span><br><span class="line">  </span><br><span class="line">  ✔ Added account alice with address cosmos1h2tqat8zme35fmkvk7yhp6r7r54edkg8eg0x43 and mnemonic:</span><br><span class="line">  coffee coffee female clap cake kind pledge lamp give lens accuse reopen captain poverty program reward music trust transfer ski heavy husband </span><br><span class="line">  </span><br><span class="line">  ✔ Added account bob with address cosmos1g7eamf74zkg629sd8wc0hdj88sqas8pfgrga7l and mnemonic:</span><br><span class="line">  deputy fix marble merge toy rice traffic <span class="built_in">wait</span> wife arrive laptop injury twelve doll shrimp guilt issue ripple position cereal width consider s</span><br><span class="line">  </span><br><span class="line">  🌍 Tendermint node: http://0.0.0.0:26657</span><br><span class="line">  🌍 Blockchain API: http://0.0.0.0:1317</span><br><span class="line">  🌍 Token faucet: http://0.0.0.0:4500</span><br><span class="line">  </span><br><span class="line">  ⋆ Data directory: /root/.hello</span><br><span class="line">  ⋆ App binary: /root/go/bin/hellod</span><br><span class="line">  </span><br><span class="line">  Press the <span class="string">'q'</span> key to stop serve</span><br></pre></td></tr></table></figure>
+<p><strong>运行测试</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># cd /root/go/bin/hellod</span></span><br><span class="line"><span class="comment"># ./hellod q hello say-hello world</span></span><br><span class="line">name: Hello world!</span><br></pre></td></tr></table></figure>
+<h1 id="博客增删改查">4 博客（增删改查）</h1>
+<p>https://docs.ignite.com/guide/blog</p>
+<p>不细写了，直接看原文吧，底下记录一点关键代码。</p>
+<h2 id="ignite-参数类型">4.1 Ignite 参数类型</h2>
+<blockquote>
+<p>Ignite CLI 支持在 Cosmos SDK
+区块链中定义多种数据类型，以下是常用的数据类型：</p>
+<p><strong>基本数据类型</strong></p>
+<ul>
+<li><strong><code>string</code></strong>：字符串类型，用于存储文本。</li>
+<li><strong><code>bool</code></strong>：布尔类型，值为 <code>true</code>
+或 <code>false</code>。</li>
+<li><strong><code>int</code></strong>：有符号整数类型，用于存储整数值。</li>
+<li><strong><code>uint</code></strong>：无符号整数类型，只能存储非负整数。</li>
+<li><strong><code>int64</code> / <code>uint64</code></strong>：64
+位的有符号和无符号整数，适合存储较大的整数值。</li>
+</ul>
+<p><strong>数值类型</strong></p>
+<ul>
+<li><strong><code>float</code></strong>：浮点数类型，用于存储小数。</li>
+<li><strong><code>float32</code> / <code>float64</code></strong>：32
+位和 64 位浮点数类型，分别提供不同的精度。</li>
+</ul>
+<p><strong>数组和列表类型</strong></p>
+<ul>
+<li><strong><code>[]&lt;type&gt;</code></strong>：泛型数组类型，用于存储指定类型的多个值。例如，<code>[]string</code>
+表示字符串数组，<code>[]uint64</code> 表示无符号整数数组。</li>
+</ul>
+<p><strong>特殊类型</strong></p>
+<ul>
+<li><strong><code>sdk.Coin</code></strong>：用于表示 Cosmos SDK
+中的代币（coin）类型。代币包含数量和单位（例如
+<code>100atom</code>），用于表示特定数量的原生代币。</li>
+<li><strong><code>sdk.Coins</code></strong>：表示多个代币，用于处理不同类型的资产组合。</li>
+</ul>
+<p><strong>自定义类型</strong></p>
+<ul>
+<li><strong>枚举类型（enums）</strong>：通过定义特定的字符串或整数值集合，用于表示具有有限可能值的数据。</li>
+<li><strong>时间类型（<code>time.Time</code>）</strong>：用于存储日期和时间，通常在
+Cosmos SDK 项目中用于处理区块时间戳或事件时间。</li>
+</ul>
+<p><strong>复杂结构类型</strong></p>
+<ul>
+<li><strong>结构体（structs）</strong>：可以定义复杂的数据结构，包含多个字段，适用于具有多个属性的数据类型。</li>
+</ul>
+<p>这些数据类型提供了灵活的数据建模能力，支持开发者根据需要定义区块链的存储和处理需求。Ignite
+CLI 会根据指定的数据类型自动生成相关的代码、查询和接口。</p>
+</blockquote>
+<h2 id="codec.binarycodeccdc">4.2 codec.BinaryCodec（cdc）</h2>
+<p><code>codec.BinaryCodec</code> 是 Cosmos SDK
+中用于数据编码和解码的接口。该接口包含一系列常用的函数，用于序列化（编码）和反序列化（解码）数据结构，以便进行存储、传输或模块间的数据交换。以下是
+<code>BinaryCodec</code> 接口中常用的函数及其作用：</p>
+<ol type="1">
+<li><p><strong>MarshalBinaryBare</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MarshalBinaryBare(o <span class="keyword">interface</span>{}) ([]<span class="type">byte</span>, <span class="type">error</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将数据结构 <code>o</code>
+编码为二进制格式。</li>
+<li><strong>使用场景</strong>：当需要将结构化数据（如消息、状态）存储到数据库或进行网络传输时，可以调用该函数进行序列化。</li>
+<li><strong>注意</strong>：<code>MarshalBinaryBare</code>
+通常用于内部存储，因为它不包含附加元数据（例如字段的类型信息），编码效率较高。</li>
+</ul></li>
+<li><p><strong>UnmarshalBinaryBare</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">UnmarshalBinaryBare(bz []<span class="type">byte</span>, ptr <span class="keyword">interface</span>{}) <span class="type">error</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将二进制数据 <code>bz</code>
+解码为结构化数据，并将结果存储在指针 <code>ptr</code>
+指向的变量中。</li>
+<li><strong>使用场景</strong>：当从数据库或网络中获取到二进制数据并需要还原为原始结构时使用该函数。</li>
+<li><strong>注意</strong>：该函数必须知道数据的具体类型，通常在解码前已经知道数据结构的类型。</li>
+</ul></li>
+<li><p><strong>MarshalBinaryLengthPrefixed</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MarshalBinaryLengthPrefixed(o <span class="keyword">interface</span>{}) ([]<span class="type">byte</span>, <span class="type">error</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将数据结构 <code>o</code>
+编码为带有长度前缀的二进制格式。</li>
+<li><strong>使用场景</strong>：带长度前缀的二进制格式在传输时可以明确表示数据的边界，常用于网络通信和日志记录。</li>
+<li><strong>优势</strong>：长度前缀提供了更好的数据包分割管理，可用于防止数据被截断或破坏。</li>
+</ul></li>
+<li><p><strong>UnmarshalBinaryLengthPrefixed</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">UnmarshalBinaryLengthPrefixed(bz []<span class="type">byte</span>, ptr <span class="keyword">interface</span>{}) <span class="type">error</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将带有长度前缀的二进制数据 <code>bz</code>
+解码为结构化数据，并将结果存储在指针 <code>ptr</code>
+指向的变量中。</li>
+<li><strong>使用场景</strong>：从网络流或文件中读取带有长度前缀的二进制数据，并还原为结构化数据时使用。</li>
+</ul></li>
+<li><p><strong>MarshalJSON</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MarshalJSON(o <span class="keyword">interface</span>{}) ([]<span class="type">byte</span>, <span class="type">error</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将数据结构 <code>o</code> 编码为 JSON
+格式的字节切片。</li>
+<li><strong>使用场景</strong>：当需要将数据以 JSON
+格式与外部系统或前端交互时使用，便于人类阅读和调试。</li>
+<li><strong>优势</strong>：JSON
+是一种通用格式，易于调试，适用于对外提供的 API 接口。</li>
+</ul></li>
+<li><p><strong>UnmarshalJSON</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">UnmarshalJSON(bz []<span class="type">byte</span>, ptr <span class="keyword">interface</span>{}) <span class="type">error</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将 JSON 格式的字节切片 <code>bz</code>
+解码为结构化数据，并将结果存储在指针 <code>ptr</code>
+指向的变量中。</li>
+<li><strong>使用场景</strong>：从外部系统或用户接口接收到 JSON
+数据并需要解析为结构化数据时使用。</li>
+</ul></li>
+<li><p><strong>MustMarshalBinaryBare</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MustMarshalBinaryBare(o <span class="keyword">interface</span>{}) []<span class="type">byte</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将数据结构 <code>o</code>
+编码为二进制格式，与 <code>MarshalBinaryBare</code>
+类似，但若编码出错则直接触发 <code>panic</code>。</li>
+<li><strong>使用场景</strong>：在对编码错误容忍度较低的场景中使用，如编码错误几乎不可能发生时使用，简化代码结构。</li>
+</ul></li>
+<li><p><strong>MustUnmarshalBinaryBare</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MustUnmarshalBinaryBare(bz []<span class="type">byte</span>, ptr <span class="keyword">interface</span>{})</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将二进制数据 <code>bz</code>
+解码为结构化数据，与 <code>UnmarshalBinaryBare</code>
+类似，但若解码出错则直接触发 <code>panic</code>。</li>
+<li><strong>使用场景</strong>：在确定数据不会出错的情况下简化代码，减少错误处理代码的写法。</li>
+</ul></li>
+<li><p><strong>MustMarshalJSON</strong></p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MustMarshalJSON(o <span class="keyword">interface</span>{}) []<span class="type">byte</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>作用</strong>：将数据结构 <code>o</code> 编码为 JSON
+格式，若编码出错则直接触发 <code>panic</code>。</li>
+<li><strong>使用场景</strong>：在高置信度场景中快速编码 JSON
+数据，而无需处理编码错误。</li>
+</ul></li>
+<li><p><strong>MustUnmarshalJSON</strong></p></li>
+</ol>
+<p><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">MustUnmarshalJSON(bz []<span class="type">byte</span>, ptr <span class="keyword">interface</span>{})</span><br></pre></td></tr></table></figure> - <strong>作用</strong>：将 JSON 字节切片
+<code>bz</code> 解码为结构化数据，若解码出错则直接触发
+<code>panic</code>。 - <strong>使用场景</strong>：在确定 JSON
+数据格式正确的场景下，减少错误处理逻辑。</p>
+<p><code>codec.BinaryCodec</code>
+提供了一套完整的数据序列化和反序列化方法，适用于二进制、JSON
+等不同编码格式。常用的函数包括带有或不带长度前缀的二进制编码和解码、JSON
+编码和解码，以及支持 <code>panic</code>
+的编码/解码版本。选择具体函数时，可以根据数据格式要求、错误处理需求和应用场景来使用这些编码和解码函数。</p>
+<p>直接使用 <code>MustMarshal</code> (不加后缀指定类型)
+会根据具体实现自动选择二进制编码或 JSON 编码，开发者无需显式指定。</p>
+<h1 id="附录">附录</h1>
+<h2 id="proto-简要教程">proto 简要教程</h2>
+<p>一个 <code>.proto</code> 文件用于定义协议缓冲区（Protocol
+Buffers）的消息和服务结构，主要包含以下几部分：</p>
+<h3 id="语法声明syntax-declaration">1. <strong>语法声明（Syntax
+Declaration）</strong></h3>
+<p><figure class="highlight proto"><table><tr><td class="code"><pre><span class="line">syntax = <span class="string">"proto3"</span>;</span><br></pre></td></tr></table></figure> - 这行代码指定使用 <code>proto3</code>
+语法版本。<code>proto3</code> 是 Protocol Buffers 的最新版本，相比
+<code>proto2</code>，简化了一些规则和功能（例如，移除了可选字段默认值等）。</p>
+<h3 id="包声明package-declaration">2. <strong>包声明（Package
+Declaration）</strong></h3>
+<p><figure class="highlight proto"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> example;</span><br></pre></td></tr></table></figure> - 声明了 <code>.proto</code>
+文件所属的包。包名用于组织代码结构，避免命名冲突。在生成代码时，这个包名会映射到目标语言中的命名空间，例如在
+Go 中会生成相应的 <code>package</code>。</p>
+<h3 id="导入imports">3. <strong>导入（Imports）</strong></h3>
+<p><figure class="highlight proto"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"google/protobuf/timestamp.proto"</span>;</span><br></pre></td></tr></table></figure> - 用于引入其他 <code>.proto</code>
+文件，重用其中定义的消息或服务。比如
+<code>google/protobuf/timestamp.proto</code> 提供了
+<code>Timestamp</code>
+类型，用于表示时间戳。导入的文件可以是标准库文件或用户自定义文件。</p>
+<h3 id="消息定义message-definition">4. <strong>消息定义（Message
+Definition）</strong></h3>
+<p><figure class="highlight proto"><table><tr><td class="code"><pre><span class="line"><span class="keyword">message </span><span class="title class_">ExampleMessage</span> {</span><br><span class="line">    <span class="type">int32</span> id = <span class="number">1</span>;</span><br><span class="line">    <span class="type">string</span> name = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">repeated</span> <span class="type">string</span> tags = <span class="number">3</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure> - <code>message</code> 定义了数据结构，每个
+<code>message</code>
+相当于一个对象或结构体。消息中包含字段，每个字段都有类型、名称和唯一的标签编号。
+- 字段的标签编号（如
+<code>id = 1</code>）用于在序列化数据时标识字段，确保消息的兼容性。不同类型字段的作用：
+- <code>int32</code>、<code>string</code> 等基本类型。 -
+<code>repeated</code> 表示数组或列表，可以包含多个相同类型的元素。</p>
+<h3 id="服务定义service-definition">5. <strong>服务定义（Service
+Definition）</strong></h3>
+<p><figure class="highlight proto"><table><tr><td class="code"><pre><span class="line"><span class="keyword">service </span><span class="title class_">ExampleService</span> {</span><br><span class="line">    <span class="function"><span class="keyword">rpc</span> GetExample (ExampleRequest) <span class="keyword">returns</span> (ExampleResponse)</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure> - 定义服务接口，类似于定义 API
+的端点。<code>service</code> 内部包含一组 RPC
+方法，用于客户端和服务器之间的远程过程调用。 - 每个 RPC
+方法指定请求和响应的消息类型（如 <code>ExampleRequest</code> 和
+<code>ExampleResponse</code>），定义了客户端调用该方法时需要的输入和返回的输出。</p>
+<h3 id="枚举类型enum-definition">6. <strong>枚举类型（Enum
+Definition）</strong></h3>
+<p><figure class="highlight proto"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum </span><span class="title class_">Status</span> {</span><br><span class="line">    UNKNOWN = <span class="number">0</span>;</span><br><span class="line">    ACTIVE = <span class="number">1</span>;</span><br><span class="line">    INACTIVE = <span class="number">2</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure> -
+定义枚举类型，提供一组命名常量。每个枚举值都有一个编号，通常从
+<code>0</code>
+开始。这些常量可以在消息中用作字段的值，用于表示一组有限的选项或状态。</p>
+<h3 id="示例-.proto-文件结构">示例 <code>.proto</code> 文件结构</h3>
+<figure class="highlight proto"><table><tr><td class="code"><pre><span class="line">syntax = <span class="string">"proto3"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"google/protobuf/timestamp.proto"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">ExampleRequest</span> {</span><br><span class="line">    <span class="type">int32</span> id = <span class="number">1</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">ExampleResponse</span> {</span><br><span class="line">    <span class="type">string</span> message = <span class="number">1</span>;</span><br><span class="line">    google.protobuf.Timestamp timestamp = <span class="number">2</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">enum </span><span class="title class_">Status</span> {</span><br><span class="line">    UNKNOWN = <span class="number">0</span>;</span><br><span class="line">    ACTIVE = <span class="number">1</span>;</span><br><span class="line">    INACTIVE = <span class="number">2</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">service </span><span class="title class_">ExampleService</span> {</span><br><span class="line">    <span class="function"><span class="keyword">rpc</span> GetExample (ExampleRequest) <span class="keyword">returns</span> (ExampleResponse)</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="总结">总结</h3>
+<p><strong>Protocol Buffers（.proto 文件）</strong>
+是一种与语言无关、平台无关的序列化数据结构定义方式，主要用于定义复杂的数据实体以及服务接口。虽然它在
+Go 中非常常用，但它并不局限于 Go，其他语言（如
+Python、Java、C++）也可以通过 <code>.proto</code>
+文件生成相应的数据结构和代码。</p>
+<p>在 Go 中，<code>.proto</code> 文件通常用来定义以下内容：</p>
+<ol type="1">
+<li><strong>数据结构</strong>：定义复杂的数据实体（<code>message</code>），包含字段类型和序号，用于跨网络传输和存储。</li>
+<li><strong>服务接口</strong>：定义 gRPC
+服务（<code>service</code>），包含可调用的 RPC
+方法，规定了请求和响应类型，使不同服务之间能够进行 RPC 通信。</li>
+</ol>
+<p>因此，<code>.proto</code>
+文件的作用不仅仅是定义数据结构，还可以定义服务接口，使得不同服务之间能够高效通信。</p>
+<h2 id="keeper-1">Keeper</h2>
+<p>在 Cosmos SDK 的项目结构中，<code>keeper</code>
+文件夹主要负责模块内部的核心业务逻辑和状态管理。<code>keeper</code>
+是每个 Cosmos SDK
+模块的重要组件，它封装了模块的数据访问和操作逻辑，确保数据的读取和写入是安全且一致的。以下是
+<code>keeper</code> 文件夹的主要内容：</p>
+<h3 id="keeper-结构体">1. <strong>Keeper 结构体</strong></h3>
+<ul>
+<li><code>keeper</code> 文件夹通常包含一个 <code>Keeper</code>
+结构体，该结构体负责管理模块的状态、配置和依赖。它通常包含一些存储的引用、其他模块的接口以及上下文，方便模块与
+Cosmos SDK 的其他部分进行交互。</li>
+<li>典型的 <code>Keeper</code>
+结构体定义会包含模块的存储器（store）、上下文（context）、其他模块的引用等，确保模块之间的数据可以安全地访问和修改。</li>
+</ul>
+<p><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> Keeper <span class="keyword">struct</span> {</span><br><span class="line">    storeKey   sdk.StoreKey</span><br><span class="line">    cdc        codec.BinaryCodec</span><br><span class="line">    bankKeeper types.BankKeeper</span><br><span class="line">    <span class="comment">// 其他依赖</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="构造函数">2. <strong>构造函数</strong></h3>
+<ul>
+<li><code>keeper</code> 文件夹中通常会定义一个构造函数，用于初始化
+<code>Keeper</code>
+结构体。构造函数会接受必要的依赖（如存储键、编码器和其他模块的
+keeper），并将其赋值给 <code>Keeper</code> 结构体。</li>
+<li>通过构造函数，模块可以确保在创建时正确配置并提供所有依赖关系。</li>
+</ul>
+<p><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewKeeper</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    cdc codec.BinaryCodec,</span></span></span><br><span class="line"><span class="params"><span class="function">    key sdk.StoreKey,</span></span></span><br><span class="line"><span class="params"><span class="function">    bankKeeper types.BankKeeper,</span></span></span><br><span class="line"><span class="params"><span class="function">    // 其他依赖</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> Keeper {</span><br><span class="line">    <span class="keyword">return</span> Keeper{</span><br><span class="line">        storeKey: key,</span><br><span class="line">        cdc:      cdc,</span><br><span class="line">        bankKeeper: bankKeeper,</span><br><span class="line">        <span class="comment">// 其他赋值</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="查询逻辑">3. <strong>查询逻辑</strong></h3>
+<ul>
+<li><code>keeper</code>
+文件夹包含查询函数，用于处理模块的自定义查询请求。这些函数通过
+<code>gRPC</code> 和 <code>CLI</code>
+接口向外部提供模块数据的查询。</li>
+<li>查询函数会接受上下文和请求参数，访问状态存储，并返回响应。这些函数一般位于
+<code>query_xxx.go</code> 文件中，例如
+<code>query_say_hello.go</code>。</li>
+</ul>
+<p><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(k Keeper)</span></span> SayHello(ctx context.Context, req *types.QuerySayHelloRequest) (*types.QuerySayHelloResponse, <span class="type">error</span>) {</span><br><span class="line">    <span class="comment">// 实现查询逻辑</span></span><br><span class="line">    <span class="keyword">return</span> &amp;types.QuerySayHelloResponse{Name: <span class="string">"Hello Cosmos"</span>}, <span class="literal">nil</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="消息处理逻辑">4. <strong>消息处理逻辑</strong></h3>
+<ul>
+<li><code>keeper</code>
+文件夹中还包含模块的消息处理逻辑。消息是模块对区块链状态进行操作的主要手段。每个消息处理函数都会在
+<code>keeper</code> 中实现，并且通常会在 <code>msg_xxx.go</code>
+文件中定义。</li>
+<li>消息处理函数通过接收请求参数和上下文执行特定的状态更改，如更新账户余额、修改参数等。</li>
+</ul>
+<p><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(k Keeper)</span></span> HandleMsgSend(ctx sdk.Context, msg *types.MsgSend) (*types.MsgSendResponse, <span class="type">error</span>) {</span><br><span class="line">    <span class="comment">// 实现消息处理逻辑</span></span><br><span class="line">    <span class="keyword">return</span> &amp;types.MsgSendResponse{}, <span class="literal">nil</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="状态管理">5. <strong>状态管理</strong></h3>
+<ul>
+<li><code>keeper</code>
+文件夹还包含状态管理相关的逻辑，用于直接与区块链的存储层交互。<code>Keeper</code>
+结构体会使用存储器访问模块的状态数据，并提供创建、读取、更新和删除（CRUD）操作。</li>
+<li>这些状态管理函数确保数据的持久性和一致性。例如，可以有
+<code>SetData</code> 和 <code>GetData</code>
+函数，用于写入和读取模块数据。</li>
+</ul>
+<p><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(k Keeper)</span></span> SetData(ctx sdk.Context, key <span class="type">string</span>, value <span class="type">string</span>) {</span><br><span class="line">    store := ctx.KVStore(k.storeKey)</span><br><span class="line">    store.Set([]<span class="type">byte</span>(key), []<span class="type">byte</span>(value))</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(k Keeper)</span></span> GetData(ctx sdk.Context, key <span class="type">string</span>) (<span class="type">string</span>, <span class="type">error</span>) {</span><br><span class="line">    store := ctx.KVStore(k.storeKey)</span><br><span class="line">    bz := store.Get([]<span class="type">byte</span>(key))</span><br><span class="line">    <span class="keyword">if</span> bz == <span class="literal">nil</span> {</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, errors.New(<span class="string">"not found"</span>)</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> <span class="type">string</span>(bz), <span class="literal">nil</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="事件记录">6. <strong>事件记录</strong></h3>
+<ul>
+<li>在某些业务逻辑中，<code>Keeper</code>
+还会使用事件记录来追踪操作。这些事件可以用于链上和链下分析，如记录交易或数据更新。</li>
+<li>事件记录通常通过 <code>ctx.EventManager()</code>
+生成，并随模块的操作一起写入区块链日志。</li>
+</ul>
+<h3 id="总结-1">总结</h3>
+<p><code>keeper</code> 文件夹在 Cosmos SDK
+模块中扮演了核心角色，负责管理模块的业务逻辑、查询和状态存储。它为模块提供了统一的接口与其他模块和存储进行交互，确保数据操作的安全性和一致性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/Cosmos/" rel="tag"><i class="fa fa-tag"></i> Cosmos</a>
+              <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/CS2030/Mock/" rel="prev" title="新加坡国立 CS2030 期中模拟考讲解">
+                  <i class="fa fa-angle-left"></i> 新加坡国立 CS2030 期中模拟考讲解
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/CS2030/2024-11-02-%E6%96%B0%E5%8A%A0%E5%9D%A1%E5%9B%BD%E7%AB%8B-CS2030-%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/" rel="next" title="新加坡国立 CS2030 知识点整理">
+                  新加坡国立 CS2030 知识点整理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

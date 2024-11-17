@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="本文写作时 Juno 版本：v25.0.0-2-gd47e0713 还有官方 GPTs：Juno Simpler，数据库大概是 v12 左右的，但是还不错基本问题都能解决。 Juno 是在 wasmd 的基础上开发的，我误打误撞从 Juno 开始学习了。 本文的内容几乎可以直接迁移到 wasmd 使用和学习中，部分区别我在章节末作出了补充。 （只要全文替换 juno 为 wasm ，修改仓库和do">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践">
+<meta property="og:url" content="http://cishoon.top/graduation-project/10/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="本文写作时 Juno 版本：v25.0.0-2-gd47e0713 还有官方 GPTs：Juno Simpler，数据库大概是 v12 左右的，但是还不错基本问题都能解决。 Juno 是在 wasmd 的基础上开发的，我误打误撞从 Juno 开始学习了。 本文的内容几乎可以直接迁移到 wasmd 使用和学习中，部分区别我在章节末作出了补充。 （只要全文替换 juno 为 wasm ，修改仓库和do">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-17T13:47:51.718Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="Cosmos">
+<meta property="article:tag" content="Juno">
+<meta property="article:tag" content="CosmWasm">
+<meta property="article:tag" content="wasmd">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/10/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/10/","path":"graduation-project/10/","title":"毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">26</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">34</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C-juno-%E6%9C%AC%E5%9C%B0%E8%8A%82%E7%82%B9"><span class="nav-text">1 运行 Juno 本地节点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker"><span class="nav-text">1.1 Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-text">补充</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E8%84%9A%E6%9C%AC%E8%BF%90%E8%A1%8C"><span class="nav-text">1.2 本地脚本运行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E5%85%85-1"><span class="nav-text">补充</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E8%BE%93%E5%87%BA%E4%BF%A1%E6%81%AF"><span class="nav-text">1.3 分析输出信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E4%BF%A1%E6%81%AF%E8%A7%A3%E6%9E%90"><span class="nav-text">1.3.1 关键信息解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">1.3.2 总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%B5%8B%E8%AF%95"><span class="nav-text">2 简单测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E9%92%B1%E5%8C%85%E5%B9%B6%E8%BD%AC%E8%B4%A6"><span class="nav-text">2.1 创建本地钱包，并转账</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E9%92%B1%E5%8C%85"><span class="nav-text">1 创建本地钱包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#validator-%E8%BD%AC%E8%B4%A6"><span class="nav-text">2 validator 转账</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E5%92%8C%E8%B0%83%E7%94%A8%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-text">2.2 部署和调用智能合约</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E6%AD%A5%E9%AA%A4"><span class="nav-text">0 前置步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%90%88%E7%BA%A6%E9%A1%B9%E7%9B%AE"><span class="nav-text">1 创建合约项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-text">2 编译智能合约</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%9C%AA%E4%BC%98%E5%8C%96"><span class="nav-text">编译（未优化）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%B9%B6%E4%BC%98%E5%8C%96"><span class="nav-text">编译并优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-text">3 部署智能合约</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E5%90%88%E7%BA%A6"><span class="nav-text">3.1 上传合约：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%90%88%E7%BA%A6"><span class="nav-text">3.2 实例化合约</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E5%90%88%E7%BA%A6%E6%96%B9%E6%B3%95"><span class="nav-text">3.3 调用合约方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E6%96%B0%E8%8A%82%E7%82%B9"><span class="nav-text">2.3 增加新节点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%96%B0%E8%8A%82%E7%82%B9"><span class="nav-text">1 初始化新节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E5%88%9B%E4%B8%96%E5%8C%BA%E5%9D%97"><span class="nav-text">2 复制创世区块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%A7%8D%E5%AD%90%E8%8A%82%E7%82%B9"><span class="nav-text">3 设置种子节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%96%B0%E8%8A%82%E7%82%B9"><span class="nav-text">4 启动新节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E6%96%B0%E8%8A%82%E7%82%B9"><span class="nav-text">5 验证新节点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMTAubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-11-15 00:00:00" itemprop="dateCreated datePublished" datetime="2024-11-15T00:00:00+08:00">2024-11-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本文写作时 Juno 版本：v25.0.0-2-gd47e0713</p>
+<p>还有官方 GPTs：Juno Simpler，数据库大概是 v12
+左右的，但是还不错基本问题都能解决。</p>
+<p>Juno 是在 wasmd 的基础上开发的，我误打误撞从 Juno 开始学习了。
+本文的内容几乎可以直接迁移到 wasmd
+使用和学习中，部分区别我在章节末作出了补充。 <del>（只要全文替换 juno 为
+wasm ，修改仓库和docker地址，就是 wasmd 的初见教程了）</del></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Nvc21vc0NvbnRyYWN0cy9KdW5v">Juno 仓库<i class="fa fa-external-link-alt"></i></span> <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Nvc21XYXNtL3dhc21kL3RyZWUvbWFpbg==">wasmd仓库<i class="fa fa-external-link-alt"></i></span></p>
+<span id="more"></span>
+<h1 id="运行-juno-本地节点">1 运行 Juno 本地节点</h1>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/CosmosContracts/juno.git</span><br><span class="line"><span class="built_in">cd</span> juno</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h2 id="docker">1.1 Docker</h2>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> -p 26657:26657 -p 26656:26656 -p 1317:1317 -p 9090:9090 \</span><br><span class="line">  ghcr.io/cosmoscontracts/juno:latest ./setup_and_run.sh</span><br></pre></td></tr></table></figure>
+<p>当 Docker 容器启动后，你可以通过以下命令确认节点是否运行正常：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl http://localhost:26657/status</span><br></pre></td></tr></table></figure>
+<p>如果节点运行正常，会收到 JSON 格式的状态信息。</p>
+<p>但是发现这个 latest 版本才到 v12。手动换到最新的 v25。</p>
+<blockquote>
+<p>查看版本：https://github.com/CosmosContracts/juno/pkgs/container/juno/versions?filters%5Bversion_type%5D=tagged</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker pull ghcr.io/cosmoscontracts/juno:25 </span><br></pre></td></tr></table></figure>
+<p>该版本docker镜像仍存在问题，<code>/opt/run_junod.sh</code> 中设置
+<code>--minimum-gas-prices 0.0001ujunox</code> 代币类型是
+<code>ujunox</code> ，而 <code>setup_junod.sh</code> 中设置的代币类型是
+<code>ustake</code> 。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vi /opt/run_junod.sh</span><br></pre></td></tr></table></figure>
+<p>修改代币类型为 <code>ustake</code>
+后，退出容器，将其保存为新的镜像：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(in docker) # exit</span><br><span class="line">docker commit &lt;my_container_name&gt; &lt;new_image_name&gt;</span><br></pre></td></tr></table></figure>
+<p>然后启动新的镜像：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 26657:26657 --name my-juno-local &lt;new_image_name&gt; ./setup_and_run.sh</span><br><span class="line">docker run --rm -it -p 26657:26657 --name my-juno-local my_juno25 ./setup_and_run.sh</span><br></pre></td></tr></table></figure>
+<h3 id="补充">补充</h3>
+<p>wasmd 的 docker 为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cosmwasm/wasmd:latest</span><br></pre></td></tr></table></figure>
+<p>直接使用 wasmd 的镜像不需要以上复杂的修改。</p>
+<h2 id="本地脚本运行">1.2 本地脚本运行</h2>
+<p><code>./setup_junod.sh [其他账户]</code></p>
+<p>可以直接创建其他账户，但是必须提前使用
+<code>junod keys add &lt;账户名称&gt; $KEYRING</code> 创建好。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment">#set -o errexit -o nounset -o pipefail</span></span><br><span class="line"></span><br><span class="line">PASSWORD=<span class="variable">${PASSWORD:-1234567890}</span></span><br><span class="line">STAKE=<span class="variable">${STAKE_TOKEN:-ustake}</span></span><br><span class="line">FEE=<span class="variable">${FEE_TOKEN:-ucosm}</span></span><br><span class="line">CHAIN_ID=<span class="variable">${CHAIN_ID:-testing}</span></span><br><span class="line">MONIKER=<span class="variable">${MONIKER:-node001}</span></span><br><span class="line">KEYRING=<span class="string">"--keyring-backend test"</span></span><br><span class="line">TIMEOUT_COMMIT=<span class="variable">${TIMEOUT_COMMIT:-5s}</span></span><br><span class="line">BLOCK_GAS_LIMIT=<span class="variable">${GAS_LIMIT:-10000000}</span> <span class="comment"># should mirror mainnet</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Configured Block Gas Limit: <span class="variable">$BLOCK_GAS_LIMIT</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># check the genesis file</span></span><br><span class="line">GENESIS_FILE=<span class="string">"<span class="variable">$HOME</span>"</span>/.juno/config/genesis.json</span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">"<span class="variable">$GENESIS_FILE</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"<span class="variable">$GENESIS_FILE</span> exists..."</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"<span class="variable">$GENESIS_FILE</span> does not exist. Generating..."</span></span><br><span class="line"></span><br><span class="line">  junod init --chain-id <span class="string">"<span class="variable">$CHAIN_ID</span>"</span> <span class="string">"<span class="variable">$MONIKER</span>"</span></span><br><span class="line">  junod add-ica-config</span><br><span class="line">  <span class="comment"># staking/governance token is hardcoded in config, change this</span></span><br><span class="line">  sed -i <span class="string">"s/\"stake\"/\"<span class="variable">$STAKE</span>\"/"</span> <span class="string">"<span class="variable">$GENESIS_FILE</span>"</span></span><br><span class="line">  <span class="comment"># this is essential for sub-1s block times (or header times go crazy)</span></span><br><span class="line">  sed -i <span class="string">'s/"time_iota_ms": "1000"/"time_iota_ms": "10"/'</span> <span class="string">"<span class="variable">$GENESIS_FILE</span>"</span></span><br><span class="line">  <span class="comment"># change gas limit to mainnet value</span></span><br><span class="line">  sed -i <span class="string">'s/"max_gas": "-1"/"max_gas": "'</span><span class="string">"<span class="variable">$BLOCK_GAS_LIMIT</span>"</span><span class="string">'"/'</span> <span class="string">"<span class="variable">$GENESIS_FILE</span>"</span></span><br><span class="line">  <span class="comment"># change default keyring-backend to test</span></span><br><span class="line">  sed -i <span class="string">'s/keyring-backend = "os"/keyring-backend = "test"/'</span> <span class="string">"<span class="variable">$HOME</span>"</span>/.juno/config/client.toml</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">APP_TOML_CONFIG=<span class="string">"<span class="variable">$HOME</span>"</span>/.juno/config/app.toml</span><br><span class="line">APP_TOML_CONFIG_NEW=<span class="string">"<span class="variable">$HOME</span>"</span>/.juno/config/app_new.toml</span><br><span class="line">CONFIG_TOML_CONFIG=<span class="string">"<span class="variable">$HOME</span>"</span>/.juno/config/config.toml</span><br><span class="line"><span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$UNSAFE_CORS</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"Unsafe CORS set... updating app.toml and config.toml"</span></span><br><span class="line">  <span class="comment"># sorry about this bit, but toml is rubbish for structural editing</span></span><br><span class="line">  sed -n <span class="string">'1h;1!H;${g;s/# Enable defines if the API server should be enabled.\nenable = false/enable = true/;p;}'</span> <span class="string">"<span class="variable">$APP_TOML_CONFIG</span>"</span> &gt; <span class="string">"<span class="variable">$APP_TOML_CONFIG_NEW</span>"</span></span><br><span class="line">  <span class="built_in">mv</span> <span class="string">"<span class="variable">$APP_TOML_CONFIG_NEW</span>"</span> <span class="string">"<span class="variable">$APP_TOML_CONFIG</span>"</span></span><br><span class="line">  <span class="comment"># ...and breathe</span></span><br><span class="line">  sed -i <span class="string">"s/enabled-unsafe-cors = false/enabled-unsafe-cors = true/"</span> <span class="string">"<span class="variable">$APP_TOML_CONFIG</span>"</span></span><br><span class="line">  sed -i <span class="string">"s/cors_allowed_origins = \[\]/cors_allowed_origins = \[\"\*\"\]/"</span> <span class="string">"<span class="variable">$CONFIG_TOML_CONFIG</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># speed up block times for testing environments</span></span><br><span class="line">sed -i <span class="string">"s/timeout_commit = \"5s\"/timeout_commit = \"<span class="variable">$TIMEOUT_COMMIT</span>\"/"</span> <span class="string">"<span class="variable">$CONFIG_TOML_CONFIG</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># are we running for the first time?</span></span><br><span class="line"><span class="keyword">if</span> ! junod keys show validator <span class="variable">$KEYRING</span>; <span class="keyword">then</span></span><br><span class="line">  (<span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>; <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>) | junod keys add validator <span class="variable">$KEYRING</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># hardcode the validator account for this instance</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span> | junod genesis add-genesis-account validator <span class="string">"1000000000<span class="variable">$STAKE</span>,1000000000<span class="variable">$FEE</span>"</span> <span class="variable">$KEYRING</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># (optionally) add a few more genesis accounts</span></span><br><span class="line">  <span class="keyword">for</span> addr <span class="keyword">in</span> <span class="string">"<span class="variable">$@</span>"</span>; <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$addr</span></span><br><span class="line">    junod genesis add-genesis-account <span class="string">"<span class="variable">$addr</span>"</span> <span class="string">"1000000000<span class="variable">$STAKE</span>,1000000000<span class="variable">$FEE</span>,5000000000uusd"</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># submit a genesis validator tx</span></span><br><span class="line">  <span class="comment">## Workraround for https://github.com/cosmos/cosmos-sdk/issues/8251</span></span><br><span class="line">  (<span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>; <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>; <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>) | junod genesis gentx validator <span class="string">"250000000<span class="variable">$STAKE</span>"</span> --chain-id=<span class="string">"<span class="variable">$CHAIN_ID</span>"</span> --amount=<span class="string">"250000000<span class="variable">$STAKE</span>"</span> <span class="variable">$KEYRING</span></span><br><span class="line">  <span class="comment">## should be:</span></span><br><span class="line">  <span class="comment"># (echo "$PASSWORD"; echo "$PASSWORD"; echo "$PASSWORD") | junod genesis gentx validator "250000000$STAKE" --chain-id="$CHAIN_ID"</span></span><br><span class="line">  junod genesis collect-gentxs</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p><code>run_junod.sh</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -n <span class="string">"<span class="variable">$1</span>"</span>; <span class="keyword">then</span></span><br><span class="line">    <span class="comment"># need -R not -r to copy hidden files</span></span><br><span class="line">    <span class="built_in">cp</span> -R <span class="string">"<span class="variable">$1</span>/.juno"</span> /root</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">mkdir</span> -p /root/log</span><br><span class="line">junod start --rpc.laddr tcp://0.0.0.0:26657 --minimum-gas-prices 0.0001ustake --trace</span><br></pre></td></tr></table></figure>
+<p><code>setup_and_run.sh</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line">./setup_junod.sh <span class="string">"<span class="variable">$@</span>"</span></span><br><span class="line">./run_junod.sh</span><br></pre></td></tr></table></figure>
+<h3 id="补充-1">补充</h3>
+<p>Juno 脚本在 wasmd 上进行了一些参数调整，wasmd
+的更简洁，适合学习：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment">#set -o errexit -o nounset -o pipefail</span></span><br><span class="line"></span><br><span class="line">PASSWORD=<span class="variable">${PASSWORD:-1234567890}</span></span><br><span class="line">STAKE=<span class="variable">${STAKE_TOKEN:-ustake}</span></span><br><span class="line">FEE=<span class="variable">${FEE_TOKEN:-ucosm}</span></span><br><span class="line">CHAIN_ID=<span class="variable">${CHAIN_ID:-testing}</span></span><br><span class="line">MONIKER=<span class="variable">${MONIKER:-node001}</span></span><br><span class="line"></span><br><span class="line">wasmd init --chain-id <span class="string">"<span class="variable">$CHAIN_ID</span>"</span> <span class="string">"<span class="variable">$MONIKER</span>"</span></span><br><span class="line"><span class="comment"># staking/governance token is hardcoded in config, change this</span></span><br><span class="line">sed -i <span class="string">"s/\"stake\"/\"<span class="variable">$STAKE</span>\"/"</span> <span class="string">"<span class="variable">$HOME</span>"</span>/.wasmd/config/genesis.json</span><br><span class="line"><span class="comment"># this is essential for sub-1s block times (or header times go crazy)</span></span><br><span class="line">sed -i <span class="string">'s/"time_iota_ms": "1000"/"time_iota_ms": "10"/'</span> <span class="string">"<span class="variable">$HOME</span>"</span>/.wasmd/config/genesis.json</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ! wasmd keys show validator; <span class="keyword">then</span></span><br><span class="line">  (<span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>; <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>) | wasmd keys add validator</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="comment"># hardcode the validator account for this instance</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span> | wasmd genesis add-genesis-account validator <span class="string">"1000000000<span class="variable">$STAKE</span>,1000000000<span class="variable">$FEE</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># (optionally) add a few more genesis accounts</span></span><br><span class="line"><span class="keyword">for</span> addr <span class="keyword">in</span> <span class="string">"<span class="variable">$@</span>"</span>; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$addr</span></span><br><span class="line">  wasmd genesis add-genesis-account <span class="string">"<span class="variable">$addr</span>"</span> <span class="string">"1000000000<span class="variable">$STAKE</span>,1000000000<span class="variable">$FEE</span>"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># submit a genesis validator tx</span></span><br><span class="line"><span class="comment">## Workraround for https://github.com/cosmos/cosmos-sdk/issues/8251</span></span><br><span class="line">(<span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>; <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>; <span class="built_in">echo</span> <span class="string">"<span class="variable">$PASSWORD</span>"</span>) | wasmd genesis gentx validator <span class="string">"250000000<span class="variable">$STAKE</span>"</span> --chain-id=<span class="string">"<span class="variable">$CHAIN_ID</span>"</span> --amount=<span class="string">"250000000<span class="variable">$STAKE</span>"</span></span><br><span class="line"><span class="comment">## should be:</span></span><br><span class="line"><span class="comment"># (echo "$PASSWORD"; echo "$PASSWORD"; echo "$PASSWORD") | wasmd gentx validator "250000000$STAKE" --chain-id="$CHAIN_ID"</span></span><br><span class="line">wasmd genesis collect-gentxs</span><br></pre></td></tr></table></figure>
+<h2 id="分析输出信息">1.3 分析输出信息</h2>
+<p>从你提供的节点输出日志来看，运行的节点正在正常参与区块链网络的共识和状态更新流程。以下是日志中各部分的解析：</p>
+<h3 id="关键信息解析">1.3.1 关键信息解析</h3>
+<ol type="1">
+<li><p><strong>区块执行和状态提交</strong></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF executed block height=171 module=state num_invalid_txs=0 num_valid_txs=0</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：第 171
+个区块已经被成功执行。没有无效交易（<code>num_invalid_txs=0</code>），也没有有效交易（<code>num_valid_txs=0</code>）。</li>
+<li><strong>模块</strong>：<code>state</code>
+模块负责应用区块内容并更新状态。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF committed state app_hash=30D13E32FA9357F0C27B6A5DC48E65E99EA2C302B3CEEED4F44A673BA1D85AEC height=171 module=state num_txs=0</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：第 171
+个区块的状态变更已被提交，<code>app_hash</code>
+是状态哈希，用于验证状态一致性。</li>
+<li><strong>模块</strong>：<code>state</code> 模块。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF indexed block events height=171 module=txindex</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：与第 171
+个区块相关的事件（如交易）已被索引，便于后续查询。</li>
+<li><strong>模块</strong>：<code>txindex</code> 模块（交易索引）。</li>
+</ul></li>
+<li><p><strong>新高度的启动</strong></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF Timed out dur=1994.796713 height=172 module=consensus round=0 step=RoundStepNewHeight</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：网络进入了新的区块高度（172）的第 0
+轮共识阶段。这表明之前的区块已完成处理，节点正在准备生成新的区块。</li>
+</ul></li>
+<li><p><strong>提案接收与共识</strong></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF received proposal module=consensus proposal="Proposal{172/0 (...)}"</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：节点收到了高度为 172
+的区块提案（<code>proposal</code>），提议者是
+<code>3DAD15B485682FBD43119CDDE685C5142B9B0915</code>。</li>
+<li><strong>模块</strong>：<code>consensus</code> 模块。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF received complete proposal block hash=01B19714D56F0DB95008F250E626B8E3531AE5A74AA3FBB22768991CD3450D4B height=172 module=consensus</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：节点接收到了完整的提案，包含区块的哈希（<code>block hash</code>）。</li>
+<li><strong>模块</strong>：<code>consensus</code> 模块。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF finalizing commit of block hash=01B19714D56F0DB95008F250E626B8E3531AE5A74AA3FBB22768991CD3450D4B height=172 module=consensus num_txs=0</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：节点达成共识并提交高度为 172
+的区块，区块内没有交易。</li>
+</ul></li>
+<li><p><strong>铸造代币</strong></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF minted coins from module account amount=63ustake from=mint module=x/bank</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：区块链网络铸造了 63 个单位的
+<code>ustake</code> 代币（可能是通胀奖励或区块奖励）。</li>
+</ul></li>
+<li><p><strong>确保网络连接</strong></p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF Ensure peers module=pex numDialing=0 numInPeers=0 numOutPeers=0 numToDial=10</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：节点当前没有入站或出站的网络连接，但它尝试拨号以连接到其他节点（最大
+10 个节点）。</li>
+<li><strong>模块</strong>：<code>pex</code>
+模块（负责点对点连接管理）。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">INF No addresses to dial. Falling back to seeds module=pex</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>含义</strong>：没有可用的节点地址用于连接，节点将回退到预设的种子节点。</li>
+</ul></li>
+</ol>
+<h3 id="总结">1.3.2 总结</h3>
+<ul>
+<li>节点正在正常运行，且成功参与了网络共识流程。</li>
+<li>当前的区块中没有有效交易（所有
+<code>num_valid_txs=0</code>），可能是因为没有用户向链发送交易。</li>
+<li>状态哈希（<code>app_hash</code>）验证了区块链状态的一致性。</li>
+<li>节点正在尝试建立与其他节点的连接，但暂时没有连接上，可能需要检查网络配置或种子节点的可用性。</li>
+</ul>
+<h1 id="简单测试">2 简单测试</h1>
+<p>为了模拟远程网络环境（即本地通过 rpc/http 请求访问区块链），按照 1.1
+节的方式，使用修改后的docker镜像启动节点：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it -p 26657:26657 --name my-juno-local my_juno25 ./setup_and_run.sh</span><br></pre></td></tr></table></figure>
+<p>为了方便关机后恢复区块链的状态，不添加 <code>--rm</code> 选项。通过
+log 实时获取区块链的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker log -f my-juno-local</span><br></pre></td></tr></table></figure>
+<p>以下提到的 <strong>本地</strong> 即宿主机，模拟普通用户通过 junod
+来访问区块链。</p>
+<p><code>~/.juno/config/client.toml</code> 中设置了 <code>junod</code>
+作为客户端的配置，将其修改为：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">chain-id</span> = <span class="string">"testing"</span></span><br><span class="line"><span class="attr">keyring-backend</span> = <span class="string">"test"</span></span><br><span class="line"><span class="attr">output</span> = <span class="string">"text"</span></span><br><span class="line"><span class="attr">node</span> = <span class="string">"tcp://localhost:26657"</span></span><br><span class="line"><span class="attr">broadcast-mode</span> = <span class="string">"sync"</span></span><br></pre></td></tr></table></figure>
+<p>并且记住，stake 和 交易货币的名字：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">STAKE=ustake</span><br><span class="line">FEE=ucosm</span><br></pre></td></tr></table></figure>
+<h2 id="创建本地钱包并转账">2.1 创建本地钱包，并转账</h2>
+<h3 id="创建本地钱包">1 创建本地钱包</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod keys add mywallet</span><br></pre></td></tr></table></figure>
+<p>这一步并不需要和区块链交互，只是在本地的
+<code>~/.juno/keyring-test</code> 中生成了 <code>mywallet.info</code>
+。</p>
+<p>检查是否已创建钱包：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod keys show mywallet </span><br></pre></td></tr></table></figure>
+<p>只获取钱包的地址（-a, address）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod keys show mywallet -a</span><br></pre></td></tr></table></figure>
+<p>钱包地址例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">juno1ddtgryk2xgt3qlsrx8z2kat9gpluw8886wpwhu</span><br></pre></td></tr></table></figure>
+<p>此时在本地创建了一个名叫 <code>mywallet</code>
+的钱包，里面什么资产都没有。</p>
+<p>查询钱包余额：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod query bank balances &lt;address&gt;</span><br></pre></td></tr></table></figure>
+<p>或合并成一行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod query bank balances $(junod keys show mywallet -a)</span><br></pre></td></tr></table></figure>
+<h3 id="validator-转账">2 validator 转账</h3>
+<p>如果你是按照第一步运行区块链的，那么区块链在创建之初，就已经分配了一个名外
+<code>validator</code> 的账户，有很多初始资产
+<code>1000000000ustake,1000000000ujuno</code> 。</p>
+<p>现在让 validator 给 mywallet 进行转账。</p>
+<p>（这一步不能在本地执行，因为 validator 的账户信息存放在 docker
+容器里，没有账户的私钥是无法让它转账的）</p>
+<p>进入 docker ，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod tx bank send validator &lt;recipient_address&gt; \</span><br><span class="line">	100000ucosm --fees 200ustake --chain-id testing --keyring-backend <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>将 <code>&lt;recipient_address&gt;</code> 替换为你的钱包地址。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod tx bank send validator juno1ddtgryk2xgt3qlsrx8z2kat9gpluw8886wpwhu 100000ucosm --fees 200ustake --chain-id testing --keyring-backend <span class="built_in">test</span></span><br><span class="line"></span><br><span class="line">junod tx bank send validator juno1ddtgryk2xgt3qlsrx8z2kat9gpluw8886wpwhu 100000ustake --fees 200ustake --chain-id testing --keyring-backend <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>如果执行成功，可以在本地查询到你的资产：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod query bank balances $(junod keys show mywallet -a)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">balances:</span><br><span class="line">- amount: <span class="string">"100000"</span></span><br><span class="line">  denom: ucosm</span><br><span class="line">- amount: <span class="string">"100000"</span></span><br><span class="line">  denom: ustake</span><br><span class="line">pagination:</span><br><span class="line">  next_key: null</span><br><span class="line">  total: <span class="string">"0"</span></span><br></pre></td></tr></table></figure>
+<h2 id="部署和调用智能合约">2.2 部署和调用智能合约</h2>
+<h3 id="前置步骤">0 前置步骤</h3>
+<p>安装 rust 环境</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt upgrade -y</span><br><span class="line">sudo apt install curl build-essential -y</span><br><span class="line">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</span><br><span class="line">source ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p>检查是否安装成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rustc --version</span><br><span class="line">cargo --version</span><br></pre></td></tr></table></figure>
+<p>安装 <code>cargo</code> 和 <code>wasm</code> 编译工具链，用于编译
+Rust 智能合约：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rustup default stable</span><br><span class="line">rustup target add wasm32-unknown-unknown</span><br></pre></td></tr></table></figure>
+<p>确保你有一个账户（例如
+<code>mywallet</code>）并且有足够的资产来支付部署和调用费用。</p>
+<h3 id="创建合约项目">1 创建合约项目</h3>
+<p>如果未安装 <code>cargo-generate</code>，请运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cargo install cargo-generate --locked</span><br></pre></td></tr></table></figure>
+<p>使用模板创建项目：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cargo generate --git https://github.com/CosmWasm/cw-template.git --name simple_counter</span><br><span class="line">cd simple_counter</span><br></pre></td></tr></table></figure>
+<p>这将获取一个<strong>简单计数器</strong>智能合约。</p>
+<h3 id="编译智能合约">2 编译智能合约</h3>
+<h4 id="编译未优化">编译（未优化）</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cargo wasm</span><br></pre></td></tr></table></figure>
+<p>得到编译好的wasm文件
+<code>./target/wasm32-unknown-unknown/release/simple_counter.wasm</code></p>
+<h4 id="编译并优化">编译并优化</h4>
+<p>只要不超过大小限制， Juno 支持上传未优化的
+wasm。但是为了减少合约的大小，以节省区块链上的存储成本和提高加载效率，通常需要对
+wasm 文件进行<strong>优化</strong>。</p>
+<p>cosmwasm
+提供了一个优化器，封装了<strong>编译和优化</strong>的全过程。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker pull cosmwasm/optimizer:0.16.0</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 确保位于智能合约项目的根目录</span></span><br><span class="line">docker run --<span class="built_in">rm</span> -v <span class="string">"<span class="subst">$(pwd)</span>"</span>:/code cosmwasm/optimizer:0.16.0</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-v "$(pwd)":/code</code> 将当前目录挂载到容器中的 /code
+目录。</li>
+<li>镜像会自动构建和优化你的智能合约，并输出优化后的 .wasm 文件到项目的
+artifacts 目录中。</li>
+</ul>
+<p>但是有两个问题：</p>
+<ol type="1">
+<li>下载速度很慢，甚至有 crate
+下载失败，可能docker镜像不能走我宿主机的代理？</li>
+<li>每次启动都得下载，效率太低。</li>
+</ol>
+<p>为了解决这些问题：</p>
+<ol type="1">
+<li><p>使用共享 Cargo 缓存</p>
+<p>将宿主机的 Cargo
+缓存目录挂载到容器中，这样即使重新运行也能复用已下载的依赖：</p>
+<p><code>-v "$HOME/.cargo/registry":/usr/local/cargo/registry</code>
+：挂载依赖缓存。</p>
+<p><code>-v "$HOME/.cargo/git":/usr/local/cargo/git</code>：挂载 Git
+缓存。</p></li>
+<li><p>运行 docker run 时传递代理环境变量：</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-e HTTP_PROXY=http://your-proxy:port</span><br><span class="line">-e HTTPS_PROXY=http://your-proxy:port </span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<p>完整的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --<span class="built_in">rm</span> -v <span class="string">"<span class="subst">$(pwd)</span>"</span>:/code \</span><br><span class="line">    -v <span class="string">"<span class="variable">$HOME</span>/.cargo/registry"</span>:/usr/local/cargo/registry \</span><br><span class="line">    -v <span class="string">"<span class="variable">$HOME</span>/.cargo/git"</span>:/usr/local/cargo/git \</span><br><span class="line">    -e HTTP_PROXY=http://192.168.3.56:21882 \</span><br><span class="line">    -e HTTPS_PROXY=http://192.168.3.56:21882 \</span><br><span class="line">    cosmwasm/optimizer:0.16.0</span><br></pre></td></tr></table></figure>
+<p>此时在 <code>./artifacts</code> 中得到了优化后的 wasm
+文件，文件缩小了约 25%：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">240K    simple_counter.wasm(优化前)</span><br><span class="line">184K    simple_counter.wasm(优化后)</span><br></pre></td></tr></table></figure>
+<h3 id="部署智能合约">3 部署智能合约</h3>
+<h4 id="上传合约">3.1 <strong>上传合约</strong>：</h4>
+<p>（注意需要 mywallet 钱包里有足够的钱）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod tx wasm store simple_counter.wasm --from mywallet --gas 2000000 --fees 50000ustake</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>gas</code> 表示交易执行所允许的最大 Gas 单位数量。</li>
+<li><code>fees</code> 是为交易支付的手续费。</li>
+</ul>
+<p>最后会返回 <code>txhash</code> ，根据 <code>txhash</code>
+查询结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod query tx &lt;txhash&gt; --output json | jq '.raw_log | fromjson'</span><br></pre></td></tr></table></figure>
+<p>记录其中的 <code>code_id</code> 。</p>
+<h4 id="实例化合约">3.2 <strong>实例化合约</strong></h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod tx wasm instantiate &lt;code_id&gt; <span class="string">'{"count":0}'</span> --from mywallet --label <span class="string">"Simple Counter"</span> --gas 200000 --fees 5000ustake --admin $(junod keys show mywallet -a)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod tx wasm instantiate 1 <span class="string">'{"count":0}'</span> --from mywallet --label <span class="string">"Simple Counter"</span> --gas 200000 --fees 5000ustake --admin $(junod keys show mywallet -a)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--admin</code> 指定一个管理员账户</li>
+<li>或者设置 <code>--no-admin</code>
+表示合约不可更改，一旦部署，任何人都不能升级或迁移该合约。</li>
+</ul>
+<p>根据 <code>txhash</code> 查询结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod query tx &lt;txhash&gt; --output json | jq '.raw_log | fromjson'</span><br></pre></td></tr></table></figure>
+<p>记录其中的 <code>_contract_address</code> ，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">juno14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9skjuwg8</span><br></pre></td></tr></table></figure>
+<h4 id="调用合约方法">3.3 <strong>调用合约方法</strong></h4>
+<ul>
+<li><p><strong>增加计数器的值</strong>：</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod tx wasm execute &lt;contract_address&gt; <span class="string">'{"increment":{}}'</span> --from mywallet --gas 200000 --fees 5000ustake</span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod tx wasm execute juno14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9skjuwg8 <span class="string">'{"increment":{}}'</span> --from mywallet --gas 200000 --fees 5000ustake</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>查询计数器的值</strong>：</p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod query wasm contract-state smart &lt;contract_address&gt; <span class="string">'{"get_count":{}}'</span></span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">junod query wasm contract-state smart juno14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9skjuwg8 <span class="string">'{"get_count":{}}'</span></span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<p>尝试多次增加计数器的值，查看返回结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">data:</span><br><span class="line">  count: 2</span><br></pre></td></tr></table></figure>
+<table>
+<colgroup>
+<col style="width: 19%">
+<col style="width: 18%">
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr>
+<th><strong>操作类型</strong></th>
+<th><strong>是否消耗 Gas</strong></th>
+<th><strong>是否支付手续费</strong></th>
+<th><strong>是否改变链上状态</strong></th>
+<th><strong>是否需要签名</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>查询（<code>query</code>）</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+<tr>
+<td>执行（<code>execute</code>）</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+</tbody>
+</table>
+<h2 id="增加新节点">2.3 增加新节点</h2>
+<p>新增一个节点，加入这个区块链。使用本地的多个 docker
+容器模拟多个独立的节点。</p>
+<h3 id="初始化新节点">1 初始化新节点</h3>
+<p>用之前配置好的镜像 my_juno25 启动一个新的 docker
+容器。（记得换一个端口映射）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -it -p 26658:26657 --name my-juno-local-2 my_juno25 /bin/sh</span><br></pre></td></tr></table></figure>
+<p>初始化新节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod init &lt;new_node_name&gt; --chain-id &lt;existing_chain_id&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod init node002 --chain-id testing</span><br></pre></td></tr></table></figure>
+<h3 id="复制创世区块">2 复制创世区块</h3>
+<p>从主节点（现有节点）获取 <code>genesis.json</code>
+文件，并复制到新节点的配置目录。在宿主机中使用
+<code>docker cp</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir -p ~/tmp/</span><br><span class="line">docker cp my-juno-local:/root/.juno/config/genesis.json /root/tmp/</span><br><span class="line">docker cp /root/tmp/genesis.json my-juno-local-2:/root/.juno/config/</span><br></pre></td></tr></table></figure>
+<h3 id="设置种子节点">3 设置种子节点</h3>
+<p>种子节点是区块链网络中特定设置的几个稳定的节点，能保持在线状态并提供稳定的连接。新节点通过和种子节点建立P2P连接，来加入区块链网络。</p>
+<p>在我们这个例子里，种子节点就是第一个创建的主节点。</p>
+<p>修改 <code>~/.juno/config/config.toml</code> 中的：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vi ~/.juno/config/config.toml </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">seeds = "&lt;node_id&gt;@&lt;ip_address&gt;:26656"</span><br></pre></td></tr></table></figure>
+<p>其中 <code>node_id</code> 是种子节点的 id，在 my-juno-local
+镜像中执行如下命令获取节点 id：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod tendermint show-node-id</span><br></pre></td></tr></table></figure>
+<p>ip地址，使用 docker 的默认虚拟网络，在主节点中执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ip addr</span><br></pre></td></tr></table></figure>
+<p>如果主节点是第一个 docker 容器，应该是 <code>172.17.0.2</code>
+。（也可以自定义新的docker network，不在此赘述）</p>
+<p>最终修改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">seeds = "4a47e5f773f7012fd82ea195be94ace24bca13ca@172.17.0.2:26656"</span><br></pre></td></tr></table></figure>
+<p>或者使用一行指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sed -i 's/^seeds = ""/seeds = "&lt;node_id&gt;@&lt;ip_address&gt;:26656"/' ~/.juno/config/config.toml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sed -i 's/^seeds = ""/seeds = "4a47e5f773f7012fd82ea195be94ace24bca13ca@172.17.0.2:26656"/' ~/.juno/config/config.toml</span><br></pre></td></tr></table></figure>
+<h3 id="启动新节点">4 启动新节点</h3>
+<p>使用 <code>run_junod.sh</code> 脚本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /opt</span><br><span class="line">./run_junod.sh</span><br></pre></td></tr></table></figure>
+<p>会开始同步区块链数据，直到同步到最近的节点。</p>
+<h3 id="验证新节点">5 验证新节点</h3>
+<p>在宿主机中：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl http://localhost:26658/status</span><br></pre></td></tr></table></figure>
+<p>向新的节点发起查询请求：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">junod query wasm contract-state smart &lt;contract_address&gt; '{"get_count":{}}' \</span><br><span class="line">	--node "tcp://localhost:26658"</span><br></pre></td></tr></table></figure>
+<h1 id="总结-1">总结</h1>
+<p>至此，终于运行了一个 cosmos 区块链，并且在上面部署运行了 Wasm
+智能合约。</p>
+<p>最后，我发现 Juno 是在 wasmd 的基础上开发的，我误打误撞从 Juno
+开始学习了。本文的内容几乎可以直接迁移到 wasmd 使用和学习中。</p>
+<p>之后的任务是：</p>
+<ol type="1">
+<li>如何把 Wasm 模块单独拿出来，例如把 CosmWasm
+的虚拟机放到另一个服务器上，让节点通过远程调用的方式执行智能合约。</li>
+<li>把 CosmWasm 虚拟机移植到 TEE 中。</li>
+</ol>
+<p>明天先继续写专利。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/Cosmos/" rel="tag"><i class="fa fa-tag"></i> Cosmos</a>
+              <a href="/tags/Juno/" rel="tag"><i class="fa fa-tag"></i> Juno</a>
+              <a href="/tags/CosmWasm/" rel="tag"><i class="fa fa-tag"></i> CosmWasm</a>
+              <a href="/tags/wasmd/" rel="tag"><i class="fa fa-tag"></i> wasmd</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/python-torch-cuda/" rel="prev" title="python torch cuda">
+                  <i class="fa fa-angle-left"></i> python torch cuda
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/graduation-project/09/" rel="next" title="毕设09 - 毕业实训 & 专利撰写">
+                  毕设09 - 毕业实训 & 专利撰写 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>
