@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="我已经完全了解比特币了！接下来看以太坊。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="区块链技术与应用02 - 以太坊">
+<meta property="og:url" content="http://cishoon.top/blockchain/tutorial/tutorial-02/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="我已经完全了解比特币了！接下来看以太坊。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122155243308.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122160533926.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122161645346.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122162349393.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250125135006451.png">
+<meta property="article:published_time" content="2024-01-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-03T07:49:08.563Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="毕设">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122155243308.png">
+
+
+<link rel="canonical" href="http://cishoon.top/blockchain/tutorial/tutorial-02/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/blockchain/tutorial/tutorial-02/","path":"blockchain/tutorial/tutorial-02/","title":"区块链技术与应用02 - 以太坊"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>区块链技术与应用02 - 以太坊 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">41</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%A6%82%E8%BF%B0"><span class="nav-text">1 以太坊概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7"><span class="nav-text">2 账户</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E7%B1%BB%E5%9E%8B"><span class="nav-text">2.1 账户类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E8%B4%A6%E6%88%B7"><span class="nav-text">外部账户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E8%B4%A6%E6%88%B7"><span class="nav-text">合约账户</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%A0%91"><span class="nav-text">3 状态树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#trie%E5%AD%97%E5%85%B8%E6%A0%91-%E4%B8%8E-pt"><span class="nav-text">3.0 trie（字典树） 与 PT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mptmerkle-patricia-tree"><span class="nav-text">3.1 MPT（Merkle Patricia Tree）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%9D%97%E6%9E%84%E6%88%90"><span class="nav-text">3.2 区块构成</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%A4%E6%98%93%E6%A0%91%E5%92%8C%E6%94%B6%E6%8D%AE%E6%A0%91"><span class="nav-text">4 交易树和收据树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#bloom-filter"><span class="nav-text">4.1 bloom filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%9C%89%E6%94%B6%E6%8D%AE%E6%A0%91"><span class="nav-text">4.2 为什么以太坊有收据树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B1%E8%AF%86%E6%9C%BA%E5%88%B6-ghost"><span class="nav-text">5 共识机制-GHOST</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ghost-%E6%9C%80%E5%88%9D%E7%89%88%E6%9C%AC"><span class="nav-text">5.1 GHOST 最初版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B%E7%89%88%E6%9C%AC"><span class="nav-text">5.2 改进版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%94%B9%E8%BF%9B"><span class="nav-text">5.3 进一步改进</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%96%E7%9F%BF%E7%AE%97%E6%B3%95"><span class="nav-text">6 挖矿算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ethash-%E4%BC%AA%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">6.1 ethash 伪代码实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%96%E7%9F%BF%E9%9A%BE%E5%BA%A6"><span class="nav-text">7 挖矿难度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9D%83%E7%9B%8A%E8%AF%81%E6%98%8E-pos"><span class="nav-text">8 权益证明 PoS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-text">9 智能合约</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#the-dao"><span class="nav-text">10 The DAO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E6%80%9D"><span class="nav-text">11 反思</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/blockchain/tutorial/tutorial-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="区块链技术与应用02 - 以太坊 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          区块链技术与应用02 - 以太坊<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ibG9ja2NoYWluL3R1dG9yaWFsL3R1dG9yaWFsLTAyLm1k" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-21T00:00:00+08:00">2024-01-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><del>我已经完全了解比特币了！</del>接下来看以太坊。</p>
+<span id="more"></span>
+<h1 id="以太坊概述">1 以太坊概述</h1>
+<ul>
+<li>吞吐率提高：出块时间大幅降低</li>
+<li>挖矿基址修改：对内存要求很高，用于resistance</li>
+<li>（在后来）工作量证明PoW → 权益证明PoS</li>
+<li>智能合约支持</li>
+</ul>
+<h1 id="账户">2 账户</h1>
+<p>优点：</p>
+<ul>
+<li>基于账户而不是基于账本，更自然</li>
+<li>天然能够防御双花攻击</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>重放攻击，解决方案是在交易里加一个
+nonce，记录一下一共发布过多少个交易</li>
+</ul>
+<blockquote>
+<p>双花攻击和重放攻击是<strong>对称的</strong></p>
+<p>双花是花钱的人不诚实</p>
+<p>重放是收钱的人不诚实</p>
+</blockquote>
+<h2 id="账户类型">2.1 账户类型</h2>
+<h3 id="外部账户">外部账户</h3>
+<p>正常的公私钥对创建的账户。</p>
+<ul>
+<li>账户余额 balance</li>
+<li>交易次数 nonce（和比特币的 nonce 不一样）</li>
+</ul>
+<h3 id="合约账户">合约账户</h3>
+<ul>
+<li>账户余额 balance</li>
+<li>交易次数 nonce</li>
+<li>代码 code</li>
+<li>存储 storage</li>
+</ul>
+<h1 id="状态树">3 状态树</h1>
+<p>为什么不能直接做一个地址到状态的哈希表映射？哈希表有什么问题？</p>
+<p>要保证账户的内容没有被篡改，要把所有账号构成默克尔树，保证全节点之间状态的一致性，也可以作为Merkle
+Proof。</p>
+<p>如果用哈希表，每次要把哈希表的所有key
+value构成一个默克尔树，这个过程开销太大。</p>
+<p>如果使用默克尔树，每次查询账户的效率太低。</p>
+<p>如果使用排序默克尔树，每次新增账户的时候，又要重新构成一个默克尔树。</p>
+<p>所以，要有一个数据结构，满足以下要求：</p>
+<ul>
+<li>可以轻易证明所有内部元素没有被篡改</li>
+<li>可以快速查询、修改每个元素</li>
+<li>可以快速新增元素</li>
+</ul>
+<h2 id="trie字典树-与-pt">3.0 trie（字典树） 与 PT</h2>
+<p>字典树的结构略。</p>
+<p>Patricia trie，压缩前缀树：</p>
+<p><img src="/blockchain/tutorial/tutorial-02/image-20250122155243308.png" alt="image-20250122155243308" style="zoom:50%;"></p>
+<p>节省空间，提高搜索效率。在单词稀疏的情况下效果拔群。</p>
+<p>而以太坊的地址，显然是非常稀疏的。（因为地址空间是 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="3.719ex" height="1.887ex" role="img" focusable="false" viewbox="0 -833.9 1643.7 833.9"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mn"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"/></g><g data-mml-node="TeXAtom" transform="translate(533,363) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/><path data-c="36" d="M42 313Q42 476 123 571T303 666Q372 666 402 630T432 550Q432 525 418 510T379 495Q356 495 341 509T326 548Q326 592 373 601Q351 623 311 626Q240 626 194 566Q147 500 147 364L148 360Q153 366 156 373Q197 433 263 433H267Q313 433 348 414Q372 400 396 374T435 317Q456 268 456 210V192Q456 169 451 149Q440 90 387 34T253 -22Q225 -22 199 -14T143 16T92 75T56 172T42 313ZM257 397Q227 397 205 380T171 335T154 278T148 216Q148 133 160 97T198 39Q222 21 251 21Q302 21 329 59Q342 77 347 104T352 209Q352 289 347 316T329 361Q302 397 257 397Z" transform="translate(500,0)"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(1000,0)"/></g></g></g></g></g></svg></mjx-container></span>
+，目前产生的地址数量远远达不到这个）</p>
+<h2 id="mptmerkle-patricia-tree">3.1 MPT（Merkle Patricia Tree）</h2>
+<p>把PT的普通指针换成哈希指针，就得到了一个根哈希值。</p>
+<p>并且查询效率很高，最多访问40次内存。修改也只用修改这一条路径上的哈希值，最多不超过40次。</p>
+<p>以太坊用到的事 Modified MPT，还做了一些修改。</p>
+<figure>
+<img src="/blockchain/tutorial/tutorial-02/image-20250122160533926.png" alt="image-20250122160533926">
+<figcaption aria-hidden="true">image-20250122160533926</figcaption>
+</figure>
+<p>合约账户里的存储 Storage
+也是MPT。更新哪里，就把这一条路径的默克尔树分支修改，其他直接指向之前的</p>
+<figure>
+<img src="/blockchain/tutorial/tutorial-02/image-20250122161645346.png" alt="image-20250122161645346">
+<figcaption aria-hidden="true">image-20250122161645346</figcaption>
+</figure>
+<h2 id="区块构成">3.2 区块构成</h2>
+<figure>
+<img src="/blockchain/tutorial/tutorial-02/image-20250122162349393.png" alt="image-20250122162349393">
+<figcaption aria-hidden="true">image-20250122162349393</figcaption>
+</figure>
+<h1 id="交易树和收据树">4 交易树和收据树</h1>
+<p>数据结构都是 MPT 。块头里存了每个树的树根，并且有一个 Bloom
+，是交易树和收据树的 bloom filter 的并。</p>
+<ul>
+<li>交易树中存的是区块中所有的交易数据</li>
+<li>收据树中存的是所有交易的执行结果</li>
+</ul>
+<h2 id="bloom-filter">4.1 bloom filter</h2>
+<p>高效的查找某一个元素是不是在一个大集合里。</p>
+<p>保存一个大集合的摘要（例如一个128位的数）。</p>
+<p>集和中的元素哈希后得到 0~127 的数字，将对应的位数变为 1
+。（初始均为0）</p>
+<p>下面要查找一个元素在不在集合中，先计算他的哈希值，如果对应位置为 0
+，则说明该元素一定不在集合中；如果对应位置为
+1，由于可能存在哈希碰撞，并不能确定该元素存在集合中。</p>
+<p>举一个实际的应用例子：要找到最近100个区块内哪个区块里有执行某个智能合约的交易，先在块头的
+Bloom
+里查看对应的位置是否为1，就可以排除一部分绝对不存在该智能合约的区块，以此提高搜索效率。即<strong>快速过滤无关区块</strong>。</p>
+<h2 id="为什么以太坊有收据树">4.2 为什么以太坊有收据树</h2>
+<p>比特币的主要目标是作为一个去中心化的数字货币系统，因此交易是其核心功能。因此比特币只需要交易树（Merkle
+Tree）来记录区块中的所有交易。</p>
+<p>比特币的交易模型是简单的
+UTXO（未花费交易输出）模型，所有状态变化（账户余额的变化）都可以直接通过交易记录推导出来，不需要额外的数据结构来保存中间结果。</p>
+<p>以太坊中有收据树，因为以太坊需要支持复杂的智能合约和状态变化，收据树用于记录交易执行结果（状态、gas、日志等），提高了验证效率，支持了更丰富的功能。</p>
+<h1 id="共识机制-ghost">5 共识机制-GHOST</h1>
+<h2 id="ghost-最初版本">5.1 GHOST 最初版本</h2>
+<p>因为出块时间大大缩短，产生分叉的概率很大。</p>
+<p>为了避免大量矿工做无用功（挖出来的区块不能成为最长合法链），以太坊也要给这些区块一些奖励。</p>
+<p>这些区块（orphan block）在以太坊里成为了叔叔区块（uncle
+block，和现区块的parent block是兄弟），uncle block 可以得到 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.816ex;" xmlns="http://www.w3.org/2000/svg" width="1.795ex" height="2.789ex" role="img" focusable="false" viewbox="0 -872 793.6 1232.6"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mfrac"><g data-mml-node="mn" transform="translate(220,394) scale(0.707)"><path data-c="37" d="M55 458Q56 460 72 567L88 674Q88 676 108 676H128V672Q128 662 143 655T195 646T364 644H485V605L417 512Q408 500 387 472T360 435T339 403T319 367T305 330T292 284T284 230T278 162T275 80Q275 66 275 52T274 28V19Q270 2 255 -10T221 -22Q210 -22 200 -19T179 0T168 40Q168 198 265 368Q285 400 349 489L395 552H302Q128 552 119 546Q113 543 108 522T98 479L95 458V455H55V458Z"/></g><g data-mml-node="mn" transform="translate(220,-345) scale(0.707)"><path data-c="38" d="M70 417T70 494T124 618T248 666Q319 666 374 624T429 515Q429 485 418 459T392 417T361 389T335 371T324 363L338 354Q352 344 366 334T382 323Q457 264 457 174Q457 95 399 37T249 -22Q159 -22 101 29T43 155Q43 263 172 335L154 348Q133 361 127 368Q70 417 70 494ZM286 386L292 390Q298 394 301 396T311 403T323 413T334 425T345 438T355 454T364 471T369 491T371 513Q371 556 342 586T275 624Q268 625 242 625Q201 625 165 599T128 534Q128 511 141 492T167 463T217 431Q224 426 228 424L286 386ZM250 21Q308 21 350 55T392 137Q392 154 387 169T375 194T353 216T330 234T301 253T274 270Q260 279 244 289T218 306L210 311Q204 311 181 294T133 239T107 157Q107 98 150 60T250 21Z"/></g><rect width="553.6" height="60" x="120" y="220"/></g></g></g></svg></mjx-container></span> 倍的出块奖励。</p>
+<p>当前区块如果包含一个叔叔区块，可以得到 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.816ex;" xmlns="http://www.w3.org/2000/svg" width="2.595ex" height="2.773ex" role="img" focusable="false" viewbox="0 -864.9 1147.1 1225.5"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mfrac"><g data-mml-node="mn" transform="translate(396.8,394) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="mn" transform="translate(220,-345) scale(0.707)"><path data-c="33" d="M127 463Q100 463 85 480T69 524Q69 579 117 622T233 665Q268 665 277 664Q351 652 390 611T430 522Q430 470 396 421T302 350L299 348Q299 347 308 345T337 336T375 315Q457 262 457 175Q457 96 395 37T238 -22Q158 -22 100 21T42 130Q42 158 60 175T105 193Q133 193 151 175T169 130Q169 119 166 110T159 94T148 82T136 74T126 70T118 67L114 66Q165 21 238 21Q293 21 321 74Q338 107 338 175V195Q338 290 274 322Q259 328 213 329L171 330L168 332Q166 335 166 348Q166 366 174 366Q202 366 232 371Q266 376 294 413T322 525V533Q322 590 287 612Q265 626 240 626Q208 626 181 615T143 592T132 580H135Q138 579 143 578T153 573T165 566T175 555T183 540T186 520Q186 498 172 481T127 463Z"/><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z" transform="translate(500,0)"/></g><rect width="907.1" height="60" x="120" y="220"/></g></g></g></svg></mjx-container></span>
+倍额外的出块奖励。一个区块最多可以包含两个叔叔区块。</p>
+<p>这鼓励区块快速合并。（如果想要拿到作为叔叔区块的出块奖励，就沿着最长合法链继续挖就行了，不用因为担心自己的区块白白浪费而坚持自己的链）</p>
+<p>如果有3个叔叔区块呢？</p>
+<p>如果已经开始挖下一个区块，才知道叔叔区块的存在？</p>
+<p>如果矿池之间存在竞争关系，故意不把别的矿池的区块包含进叔叔区块？</p>
+<h2 id="改进版本">5.2 改进版本</h2>
+<p>叔叔区块并不一定是“上一辈”，爷爷辈、曾祖父辈，也是叔叔区块。</p>
+<p>考虑之前的三个问题：</p>
+<ul>
+<li>有2个以上的叔叔区块：后面的孙子、曾孙子区块会再慢慢把这些区块包含进去，迟早会得到奖励。</li>
+<li>第二个问题同上，留给孙子和后代们。</li>
+<li>矿池竞争中，如果自己不包含，总会有别人包含，不损人只不利己。</li>
+</ul>
+<p>每个区块还是只能包含两个叔叔区块，如果叔叔区块很多（曾祖父，曾曾曾曾祖父）选哪一个包含？</p>
+<p>叔叔区块的产生时间怎么限制？我能不能现在挖1000个区块以前的叔叔区块，因为那时候挖矿难度低、出块奖励高，然后等着被后代包含？</p>
+<h2 id="进一步改进">5.3 进一步改进</h2>
+<figure>
+<img src="/blockchain/tutorial/tutorial-02/image-20250125135006451.png" alt="image-20250125135006451">
+<figcaption aria-hidden="true">image-20250125135006451</figcaption>
+</figure>
+<p>7代以内，才算叔叔区块，并且出块奖励递减。</p>
+<p>以此鼓励挖最新的区块。也节省了维护的状态数量。以此也鼓励尽早合并。</p>
+<p>当前区块如果包含一个叔叔区块，可以得到 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.816ex;" xmlns="http://www.w3.org/2000/svg" width="2.595ex" height="2.773ex" role="img" focusable="false" viewbox="0 -864.9 1147.1 1225.5"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mfrac"><g data-mml-node="mn" transform="translate(396.8,394) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="mn" transform="translate(220,-345) scale(0.707)"><path data-c="33" d="M127 463Q100 463 85 480T69 524Q69 579 117 622T233 665Q268 665 277 664Q351 652 390 611T430 522Q430 470 396 421T302 350L299 348Q299 347 308 345T337 336T375 315Q457 262 457 175Q457 96 395 37T238 -22Q158 -22 100 21T42 130Q42 158 60 175T105 193Q133 193 151 175T169 130Q169 119 166 110T159 94T148 82T136 74T126 70T118 67L114 66Q165 21 238 21Q293 21 321 74Q338 107 338 175V195Q338 290 274 322Q259 328 213 329L171 330L168 332Q166 335 166 348Q166 366 174 366Q202 366 232 371Q266 376 294 413T322 525V533Q322 590 287 612Q265 626 240 626Q208 626 181 615T143 592T132 580H135Q138 579 143 578T153 573T165 566T175 555T183 540T186 520Q186 498 172 481T127 463Z"/><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z" transform="translate(500,0)"/></g><rect width="907.1" height="60" x="120" y="220"/></g></g></g></svg></mjx-container></span>
+倍额外的出块奖励。（这个没有变）</p>
+<p>如果叔叔区块后面还有区块怎么办？给钱吗？不能给钱。</p>
+<p>如果叔叔区块后面的区块也给钱，那分叉攻击就太便宜了，分叉攻击失败了还有奖励。</p>
+<h1 id="挖矿算法">6 挖矿算法</h1>
+<p>ASIC Resistance</p>
+<p>以太坊的方法是，增加芯片对内存访问的需求。因为 ASIC
+芯片的主要优势是计算，而访存性能并没有优势。</p>
+<h2 id="ethash-伪代码实现">6.1 ethash 伪代码实现</h2>
+<ul>
+<li><p>16M 的 cache，是根据一个种子算出来的哈希列表</p>
+<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mkcache</span>(<span class="params">cache_size, seed</span>):</span><br><span class="line">    o = [<span class="built_in">hash</span>(seed)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, cache_size):</span><br><span class="line">        o.append(<span class="built_in">hash</span>(o[-<span class="number">1</span>]))</span><br><span class="line">    <span class="keyword">return</span> o</span><br></pre></td></tr></table></figure></p>
+<p>细节：每隔30000个块重新生成一个seed更新cache，并增大cache_size
+128K。（增大 cache_size
+的目的是随着硬件访存效率的提升稳定挖矿难度）</p></li>
+<li><p>1G 的 dataset，叫做 DAG，是通过 cache 来生成的一个数据集。</p>
+<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">calc_dataset_item</span>(<span class="params">cache, i</span>):</span><br><span class="line">	cache_size = cache.size</span><br><span class="line">    mix = <span class="built_in">hash</span>(cache[i % cache_size] ^ i)</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">256</span>):</span><br><span class="line">        cache_index = get_int_from_item(mix)</span><br><span class="line">        mix = make_item(mix, cache[cache_index % cache_size])</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cal_dataset</span>(<span class="params">full_size, cache</span>):</span><br><span class="line">    <span class="keyword">return</span> [calc_dataset_item(cache, i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(full_size)]</span><br></pre></td></tr></table></figure></p>
+<p>上面的函数用来计算第 i 个 dataset 中的元素。每一个元素的计算需要重复
+256 次hash和访问cache内存。</p></li>
+<li><p>下面就是全节点和轻节点挖矿的 ethash ：</p>
+<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">hashimoto_full</span>(<span class="params">header, nonce, full_size, dataset</span>):</span><br><span class="line">    mix = <span class="built_in">hash</span>(header, nonce)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">        dataset_index = get_int_from_item(mix) % full_size <span class="comment"># 获取一个dataset中的下标</span></span><br><span class="line">        mix = make_item(mix, dataset[dataset_index])</span><br><span class="line">        mix = make_item(mix, dataset[dataset_index + <span class="number">1</span>]) <span class="comment"># 每次取出两个元素，接到mix后面</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hashimoto_light</span>(<span class="params">header, nonce, full_size, cache</span>): <span class="comment"># 轻节点不用1G的dataset，只用16M的cache</span></span><br><span class="line">    mix = <span class="built_in">hash</span>(header, nonce)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">        dataset_index = get_int_from_item(mix) % full_size</span><br><span class="line">        mix = make_item(mix, calc_dataset_item(cache, dataset_index))</span><br><span class="line">        mix = make_item(mix, calc_dataset_item(cache, dataset_index + <span class="number">1</span>)) <span class="comment"># 每次重新计算两个元素</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)    </span><br></pre></td></tr></table></figure></p>
+<p>矿工需要保存1G的数据库，频繁访问来计算hash，判断区块是否符合难度要求。为了计算方便，把dataset的值缓存下来最快。而频繁的访存又让访存成为了性能瓶颈。</p>
+<p>轻节点为了节省空间，并且也不需要频繁计算hash，所以只有用到的时候再重新计算一次即可。</p></li>
+<li><p>挖矿函数：</p>
+<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mine</span>(<span class="params">full_size, dataset, header, target</span>):</span><br><span class="line">    nonce = random.randint(<span class="number">0</span>, <span class="number">2</span>**<span class="number">64</span>)</span><br><span class="line">    <span class="keyword">while</span> hashimoto_full(header, nonce, full_size, dataset) &gt; target:</span><br><span class="line">        nonce = (nonce + <span class="number">1</span>) % <span class="number">2</span>**<span class="number">64</span></span><br><span class="line">    <span class="keyword">return</span> nonce</span><br></pre></td></tr></table></figure></p></li>
+</ul>
+<h1 id="挖矿难度">7 挖矿难度</h1>
+<blockquote>
+<p>该部分可能已经过时了，毕竟目前以太坊已经全面转为 PoS 了。</p>
+<p>就不细看实现了</p>
+</blockquote>
+<h1 id="权益证明-pos">8 权益证明 PoS</h1>
+<p>Proof of Stake。</p>
+<p>PoW需要人们大量购买矿机进行挖矿，最终变成比拼算力、进一步变成比拼财力的游戏。</p>
+<p>PoS的基本思想就是，既然是比拼财力，不如直接把钱给以太坊用于支持以太坊的开发。</p>
+<p>这课讲的有点简略了……</p>
+<h1 id="智能合约">9 智能合约</h1>
+<blockquote>
+<p>略过了这一节，可能会落一些不知道细节，大体上对智能合约的了解还是比较足够了</p>
+</blockquote>
+<h1 id="the-dao">10 The DAO</h1>
+<p>DAO：去中心化的自治组织。</p>
+<p>The DAO：是一个具体的运行在以太坊上的智能合约。</p>
+<p>这部分在 ethernaut 里也了解过了。</p>
+<p>精彩的故事，但是不太有知识点。</p>
+<p>后续有一节美链，也是在 ethernaut 里了解过了。</p>
+<h1 id="反思">11 反思</h1>
+<p>智能合约不智能。</p>
+<p>不可篡改性是一个双刃剑。</p>
+<p>没有什么是不可篡改的。</p>
+<p>Solidity是好的编程语言吗？</p>
+<p>智能合约开源真的更安全吗？（TEE，加密智能合约）</p>
+<p>去中心化意味着什么？</p>
+<p>去中心化并不是全自动化；去中心化并不是不能修改规则，而是应该用去中心化的方法修改规则。</p>
+<p>去中心化不等于分布式。去中心化系统必然是分布式的，分布式系统不一定是去中心化的。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/graduation-project/17/" rel="prev" title="毕设17 - DID数字身份 Rust 实现">
+                  <i class="fa fa-angle-left"></i> 毕设17 - DID数字身份 Rust 实现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/tutorial/tutorial-01/" rel="next" title="区块链技术与应用01 - 比特币">
+                  区块链技术与应用01 - 比特币 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

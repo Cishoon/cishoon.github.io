@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="复工复工。这一个月补了区块链的底层原理，过了个年，做了点AI项目。 总之，少不了在 Cosmos 里实现数字身份的内容，先把这个做了。 这一步还是得用上 Wasm ……吗？用吧，不用没有能扯的创新点了…… 为什么不直接把数字身份的内容作为 Cosmos 的模块呢？…… 作为模块，代码直接运行在REE中了，必须要让这部分代码跑在TEE里。那能不能核心生成VC，VP的代码跑在TEE里，其他跑在REE里">
+<meta property="og:type" content="article">
+<meta property="og:title" content="毕设17 - DID数字身份 Rust 实现">
+<meta property="og:url" content="http://cishoon.top/graduation-project/17/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="复工复工。这一个月补了区块链的底层原理，过了个年，做了点AI项目。 总之，少不了在 Cosmos 里实现数字身份的内容，先把这个做了。 这一步还是得用上 Wasm ……吗？用吧，不用没有能扯的创新点了…… 为什么不直接把数字身份的内容作为 Cosmos 的模块呢？…… 作为模块，代码直接运行在REE中了，必须要让这部分代码跑在TEE里。那能不能核心生成VC，VP的代码跑在TEE里，其他跑在REE里">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-02-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-28T15:08:31.228Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="毕设">
+<meta property="article:tag" content="数字身份">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/graduation-project/17/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/graduation-project/17/","path":"graduation-project/17/","title":"毕设17 - DID数字身份 Rust 实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>毕设17 - DID数字身份 Rust 实现 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">41</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-text">0 分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#wamr-rust"><span class="nav-text">1 WAMR &amp; Rust</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#wasm%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E8%AE%BF%E9%97%AE%E9%93%BE%E4%B8%8A%E6%95%B0%E6%8D%AE"><span class="nav-text">2 Wasm智能合约访问链上数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#cgo-%E5%9B%9E%E8%B0%83-go"><span class="nav-text">2.1 cgo 回调 go</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ta%E4%B8%BB%E5%8A%A8%E8%A7%A6%E5%8F%91ca%E8%A1%8C%E4%B8%BA"><span class="nav-text">2.2 TA主动触发CA行为</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1ca-ta%E4%BA%A4%E4%BA%92%E6%8E%A5%E5%8F%A3"><span class="nav-text">2.3 设计CA TA交互接口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-text">3 优化智能合约</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#rust-wasm%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-text">3.1 Rust-wasm的内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%8C%87%E4%BB%A4%E8%AE%BE%E7%BD%AE"><span class="nav-text">3.1.1 编译指令设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%8A%A0%E6%B3%95"><span class="nav-text">3.1.2 简单加法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%94%E5%9B%9E%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">3.1.3 返回字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%86%85%E5%AD%98%E6%8F%90%E6%A1%88"><span class="nav-text">3.1.4 多内存提案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%A8%A1%E5%BC%8F-vs-%E5%A4%9A%E5%86%85%E5%AD%98%E6%A8%A1%E5%BC%8F"><span class="nav-text">传统模式 vs 多内存模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD"><span class="nav-text">为什么需要这个功能？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-text">实际代码示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81"><span class="nav-text">当前状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D-wamr"><span class="nav-text">3.2 移植 wamr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E6%96%87%E6%A1%A3%E9%87%8D%E5%86%99%E4%BB%A3%E7%A0%81"><span class="nav-text">3.2.1 阅读文档重写代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E6%B5%8B%E8%AF%95"><span class="nav-text">3.2.2 简单的测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="nav-text">其他碎碎念</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/graduation-project/17/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="毕设17 - DID数字身份 Rust 实现 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          毕设17 - DID数字身份 Rust 实现<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ncmFkdWF0aW9uLXByb2plY3QvMTcubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-02-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-02-06T00:00:00+08:00">2024-02-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>12k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>复工复工。这一个月补了区块链的底层原理，过了个年，做了点AI项目。</p>
+<p>总之，少不了在 Cosmos 里实现数字身份的内容，先把这个做了。</p>
+<p>这一步还是得用上 Wasm ……吗？用吧，不用没有能扯的创新点了……</p>
+<p>为什么不直接把数字身份的内容作为 Cosmos 的模块呢？……</p>
+<p>作为模块，代码直接运行在REE中了，必须要让这部分代码跑在TEE里。那能不能核心生成VC，VP的代码跑在TEE里，其他跑在REE里呢？差不多，这就约等于全跑在TEE里了。那既然跑在TEE里了，就写的通用一点，做成智能合约的结构。</p>
+<span id="more"></span>
+<h1 id="分析">0 分析</h1>
+<p>大体上还是之前的结构，有几个地方要大改动：</p>
+<ul>
+<li>不需要冗余的proxy，直接cosmos和host连通。</li>
+<li>信息传输方式格式
+<ul>
+<li>json格式效率低、不安全</li>
+<li>初步打算改用
+MessagePack，天然更小的体积，更快的速度，二进制格式天然对抗注入攻击，支持动态schema</li>
+</ul></li>
+<li>链上状态和智能合约（aot）全部加密，秘钥留在TEE里，有验证和解密程序。</li>
+<li>wasm代码要能够让cosmos提供新的数据。</li>
+<li>重写 TA 和 wasm，全部改用 Rust。</li>
+</ul>
+<p>重点在于：</p>
+<ol type="1">
+<li>rust 编译成 wamr 可以运行的 wasm</li>
+<li>wasm智能合约内部调用获取私钥，解密、加密数据</li>
+<li>wasm智能合约和cosmos进行通信</li>
+</ol>
+<h1 id="wamr-rust">1 WAMR &amp; Rust</h1>
+<blockquote>
+<p>参考资料：https://anoopelias.github.io/posts/wasm-micro-runtime-with-rust/</p>
+</blockquote>
+<p>根据参考资料，按如下步骤准备：</p>
+<p>源代码：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> core::panic::PanicInfo;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">panic</span>(_info: &amp;PanicInfo) <span class="punctuation">-&gt;</span> ! {</span><br><span class="line">    <span class="keyword">loop</span> {}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> {</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">puts</span>(s: *<span class="keyword">const</span> <span class="type">i8</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() {</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">hello</span> = <span class="string">"Hello Rust World!"</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">hello_ptr</span>: *<span class="keyword">const</span> <span class="type">u8</span> = hello.<span class="title function_ invoke__">as_ptr</span>() <span class="keyword">as</span> *<span class="keyword">const</span> <span class="type">u8</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unsafe</span> {</span><br><span class="line">        <span class="title function_ invoke__">puts</span>(hello_ptr);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>编译指令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rustc -C link-self-contained=no \</span><br><span class="line">    -C link-args=--no-entry \</span><br><span class="line">    -C link-args=-zstack-size=32768 \</span><br><span class="line">    --target wasm32-wasip1 main.rs</span><br></pre></td></tr></table></figure>
+<p>AoT：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wamrc --target=aarch64 --disable-simd -o main.aot main.wasm</span><br></pre></td></tr></table></figure>
+<p>然后进入 optee 中，用 optee_wamr 运行这个 aot 文件，但是报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">failed to call unlinked import function (env, puts)</span><br></pre></td></tr></table></figure>
+<p>是因为之前我实现的 optee_wamr 不支持导入外部函数。</p>
+<p>更新了 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vT1BURUUtV0FNUi90cmVlL21haW4=">OPTEE-WAMR<i class="fa fa-external-link-alt"></i></span>
+增加了导入外部函数的功能，现在运行会在安全世界里输出：Hello Rust
+World!</p>
+<h1 id="wasm智能合约访问链上数据">2 Wasm智能合约访问链上数据</h1>
+<h2 id="cgo-回调-go">2.1 cgo 回调 go</h2>
+<p>需要实现将 go 函数传递给 c 调用。</p>
+<p>一个例子：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">// 定义C函数指针类型</span></span><br><span class="line"><span class="comment">typedef void (*Callback)(const char*);</span></span><br><span class="line"><span class="comment">extern void goCallbackProxy(char* msg);</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">// C端触发回调的函数</span></span><br><span class="line"><span class="comment">static void triggerCallback(Callback cb) {</span></span><br><span class="line"><span class="comment">    cb("Hello from C!");</span></span><br><span class="line"><span class="comment">}</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"C"</span></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">//export goCallbackProxy</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">goCallbackProxy</span><span class="params">(msg *C.char)</span></span> {</span><br><span class="line">	fmt.Println(<span class="string">"Go received:"</span>, C.GoString(msg))</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> {</span><br><span class="line">	<span class="comment">// 将Go回调函数转换为C函数指针</span></span><br><span class="line">	cb := C.Callback(C.goCallbackProxy)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 调用C函数触发回调</span></span><br><span class="line">	C.triggerCallback(cb)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 防止cb被提前回收</span></span><br><span class="line">	runtime.KeepAlive(cb)</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h2 id="ta主动触发ca行为">2.2 TA主动触发CA行为</h2>
+<p>思路为使用共享内存空间作为TA和CA沟通的桥梁。具体实现如下：</p>
+<p>分配一块共享内存空间：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">shared_mem</span></span></span><br><span class="line"><span class="class">{</span></span><br><span class="line">	<span class="type">char</span> data[<span class="number">256</span>];		<span class="comment">// 数据区域</span></span><br><span class="line">	<span class="type">int</span> ready; <span class="comment">// 准备标志</span></span><br><span class="line">};</span><br></pre></td></tr></table></figure>
+<p>将 CA 分为两个线程：</p>
+<ol type="1">
+<li>负责调用TA</li>
+<li>负责轮询监听共享内存空间</li>
+</ol>
+<p>TA 需要传递数据给 CA 时：</p>
+<ol type="1">
+<li>将数据写入 data</li>
+<li>修改 ready</li>
+</ol>
+<p>进一步考虑可能存在的问题，进行防御性变成：</p>
+<ol type="1">
+<li>防止编译器优化掉 <code>ready</code> 的读写或重排顺序</li>
+<li>确保编译器生成的代码顺序与源码一致</li>
+</ol>
+<p>最终伪代码为：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 共享内存定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> {</span></span><br><span class="line">    <span class="type">uint8_t</span> data[DATA_SIZE];</span><br><span class="line">    <span class="keyword">volatile</span> <span class="type">int</span> ready;</span><br><span class="line">} SharedMem;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TA侧写入</span></span><br><span class="line"><span class="keyword">while</span> (shared_mem.ready != <span class="number">0</span>);</span><br><span class="line"><span class="built_in">memcpy</span>(shared_mem.data, data, size);</span><br><span class="line">__asm__ __volatile__(<span class="string">""</span> ::: <span class="string">"memory"</span>); <span class="comment">// 编译器屏障，防止编译器提前修改ready</span></span><br><span class="line">shared_mem.ready = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// CA侧读取</span></span><br><span class="line"><span class="keyword">while</span> (shared_mem.ready != <span class="number">1</span>);</span><br><span class="line">process_data(shared_mem.data);</span><br><span class="line">__asm__ __volatile__(<span class="string">""</span> ::: <span class="string">"memory"</span>); <span class="comment">// 编译器屏障</span></span><br><span class="line">shared_mem.ready = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="设计ca-ta交互接口">2.3 设计CA TA交互接口</h2>
+<p>通过共享内存交换数据发送请求，需要设计请求的接口。</p>
+<p>TA 向 CA 发送请求：</p>
+<ol type="1">
+<li><p>set 状态</p>
+<p><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">{</span></span><br><span class="line">  <span class="attr">"type"</span><span class="punctuation">:</span> <span class="string">"set"</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">"key"</span><span class="punctuation">:</span> <span class="string">"key"</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">"value"</span><span class="punctuation">:</span> <span class="string">"value"</span></span><br><span class="line"><span class="punctuation">}</span></span><br></pre></td></tr></table></figure></p></li>
+<li><p>get 状态</p>
+<p><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">{</span></span><br><span class="line">  <span class="attr">"type"</span><span class="punctuation">:</span> <span class="string">"get"</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">"key"</span><span class="punctuation">:</span> <span class="string">"key"</span></span><br><span class="line"><span class="punctuation">}</span></span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<p>CA 向 TA 返回数据：</p>
+<ol type="1">
+<li><p>set 返回成功与否</p>
+<p><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">{</span></span><br><span class="line">  <span class="attr">"status"</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">}</span></span><br></pre></td></tr></table></figure></p></li>
+<li><p>get 返回对应的值</p>
+<p><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">{</span></span><br><span class="line">  <span class="attr">"status"</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span>  <span class="comment">// 表示整体操作成功</span></span><br><span class="line">  <span class="attr">"value"</span><span class="punctuation">:</span> <span class="string">"value"</span></span><br><span class="line"><span class="punctuation">}</span></span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<p>原来想采用 MessagePack 序列化数据，但是库里依赖网络接口
+<code>#include &lt;arpa/inet.h&gt;</code> ，过于复杂且 TEE</p>
+<p>环境不支持。另外，我这里序列化的需求很简单，不如自己实现序列化。代码很简单，这里不记录了。</p>
+<h1 id="优化智能合约">3 优化智能合约</h1>
+<h2 id="rust-wasm的内存分配">3.1 Rust-wasm的内存分配</h2>
+<p>遇到第一个问题，纯C中要分配内存直接调用 <code>malloc</code>
+即可，编译出的wasm文件可以直接wamrc预编译。</p>
+<p>但是Rust的内存管理方式不同，需要自定义内存分配器。但是，如果自定义了内存分配器就无法wamrc预编译。</p>
+<p>下面进行一系列测试：</p>
+<h3 id="编译指令设置">3.1.1 编译指令设置</h3>
+<p><code>build-c.sh</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/opt/wasi-sdk/bin/clang --target=wasm32-wasi -O3 -nostdlib \</span><br><span class="line">    -Wl,--no-entry -Wl,--export=test -o test-c.wasm test-c.c</span><br><span class="line"></span><br><span class="line">./wamrc --target=aarch64 --disable-simd -o test-c.aot test-c.wasm</span><br><span class="line"></span><br><span class="line">wasm2wat test-c.wasm &gt; test-c.wat</span><br></pre></td></tr></table></figure>
+<p><code>build-rs.sh</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rustc -C link-self-contained=no \</span><br><span class="line">    -C link-args=-zstack-size=32768 \</span><br><span class="line">    -C link-args=-O3 \</span><br><span class="line">    -C link-args=--no-entry \</span><br><span class="line">    --target wasm32-wasip1 test-rs.rs</span><br><span class="line"></span><br><span class="line">./wamrc --target=aarch64 --disable-simd -o test-rs.aot test-rs.wasm</span><br><span class="line"></span><br><span class="line">wasm2wat test-rs.wasm &gt; test-rs.wat</span><br></pre></td></tr></table></figure>
+<h3 id="简单加法">3.1.2 简单加法</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">test</span><span class="params">()</span></span><br><span class="line">{</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> + <span class="number">2</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">panic</span>(_: &amp;core::panic::PanicInfo) <span class="punctuation">-&gt;</span> ! {</span><br><span class="line">    <span class="keyword">loop</span> {}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">test</span>() <span class="punctuation">-&gt;</span> <span class="type">i32</span> {</span><br><span class="line">    <span class="number">1</span> + <span class="number">2</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>编译结果非常类似：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(module $test-c.wasm</span><br><span class="line">  (type (;0;) (func (result i32)))</span><br><span class="line">  (func $test (type 0) (result i32)</span><br><span class="line">    i32.const 3)</span><br><span class="line">  (memory (;0;) 2)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 66560))</span><br><span class="line">  (export "memory" (memory 0))</span><br><span class="line">  (export "test" (func $test)))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(module $test-rs.wasm</span><br><span class="line">  (type (;0;) (func (param i32)))</span><br><span class="line">  (type (;1;) (func (result i32)))</span><br><span class="line">  (type (;2;) (func (param i32 i32)))</span><br><span class="line">  (func $rust_begin_unwind (type 0) (param i32)</span><br><span class="line">    loop  ;; label = @1</span><br><span class="line">      br 0 (;@1;)</span><br><span class="line">    end)</span><br><span class="line">  (func $test (type 1) (result i32)</span><br><span class="line">    (local i32 i32 i32 i32 i32)</span><br><span class="line">    ......//省略</span><br><span class="line">    call $_ZN4core9panicking11panic_const24panic_const_add_overflow17h183f3e35055c840eE</span><br><span class="line">    unreachable)</span><br><span class="line">  (func $_ZN4core9panicking9panic_fmt17hd65c069160825202E (type 2) (param i32 i32)</span><br><span class="line">    ......//省略</span><br><span class="line">    call $rust_begin_unwind</span><br><span class="line">    unreachable)</span><br><span class="line">  (func $_ZN4core9panicking11panic_const24panic_const_add_overflow17h183f3e35055c840eE (type 0) (param i32)</span><br><span class="line">    ......//省略</span><br><span class="line">    call $_ZN4core9panicking9panic_fmt17hd65c069160825202E</span><br><span class="line">    unreachable)</span><br><span class="line">  (table (;0;) 1 1 funcref)</span><br><span class="line">  (memory (;0;) 1)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 32768))</span><br><span class="line">  (export "memory" (memory 0))</span><br><span class="line">  (export "test" (func $test))</span><br><span class="line">  (data $.rodata (i32.const 32768) "test-rs.rs\00\00\00\80\00\00\0a\00\00\00\0b\00\00\00\05\00\00\00attempt to add with overflow\1c\80\00\00\1c\00\00\00"))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>可以看到 Rust 的编译结果复杂很多，包含了大量的溢出检查（overflow
+checking）相关代码。</p>
+<p>如果想让 Rust 编译结果和 C 类似，可以如下修改：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">test</span>() <span class="punctuation">-&gt;</span> <span class="type">i32</span> {</span><br><span class="line">    <span class="number">1_i32</span>.<span class="title function_ invoke__">wrapping_add</span>(<span class="number">2</span>)</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(module $test-rs.wasm</span><br><span class="line">  (type (;0;) (func (result i32)))</span><br><span class="line">  (func $test (type 0) (result i32)</span><br><span class="line">    (local i32)</span><br><span class="line">    i32.const 3</span><br><span class="line">    local.set 0</span><br><span class="line">    local.get 0</span><br><span class="line">    return)</span><br><span class="line">  (memory (;0;) 1)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 32768))</span><br><span class="line">  (export "memory" (memory 0))</span><br><span class="line">  (export "test" (func $test)))</span><br></pre></td></tr></table></figure>
+<p>纯C默认不做运行时检查，假设程序员知道自己在做什么；Rust默认的简单运算也会有很多安全保证。</p>
+<h3 id="返回字符串">3.1.3 返回字符串</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">char</span> *<span class="title function_">test</span><span class="params">()</span></span><br><span class="line">{</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Hello, World!"</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">panic</span>(_: &amp;core::panic::PanicInfo) <span class="punctuation">-&gt;</span> ! {</span><br><span class="line">    <span class="keyword">loop</span> {}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">test</span>() <span class="punctuation">-&gt;</span> *<span class="keyword">const</span> <span class="type">u8</span> {</span><br><span class="line">    <span class="string">"Hello, World!"</span>.<span class="title function_ invoke__">as_ptr</span>()</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(module $test-c.wasm</span><br><span class="line">  (type (;0;) (func (result i32)))</span><br><span class="line">  (func $test (type 0) (result i32)</span><br><span class="line">    i32.const 1024)</span><br><span class="line">  (memory (;0;) 2)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 66576))</span><br><span class="line">  (export "memory" (memory 0))</span><br><span class="line">  (export "test" (func $test))</span><br><span class="line">  (data $.rodata (i32.const 1024) "Hello, World!\00"))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(module $test-rs.wasm</span><br><span class="line">  (type (;0;) (func (result i32)))</span><br><span class="line">  (func $test (type 0) (result i32)</span><br><span class="line">    (local i32)</span><br><span class="line">    i32.const 32768</span><br><span class="line">    local.set 0</span><br><span class="line">    local.get 0</span><br><span class="line">    return)</span><br><span class="line">  (memory (;0;) 1)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 32768))</span><br><span class="line">  (export "memory" (memory 0))</span><br><span class="line">  (export "test" (func $test))</span><br><span class="line">  (data $.rodata (i32.const 32768) "Hello, World!"))</span><br></pre></td></tr></table></figure>
+<p>有个有意思的地方，Rust的字符串不会带尾零。侧面说明了 Rust
+的一个习惯：传指针之后要传数组长度。纯C经常直接传指针，靠尾零区分的。</p>
+<p>这里的 "Hello World!" 作为一个字符串常量，存储在栈空间中。</p>
+<p>直接运行 wasm ，结果为：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ./iwasm -f test test-c.wasm</span></span><br><span class="line">0x400:i32</span><br><span class="line"><span class="comment"># ./iwasm -f test test-rs.wasm</span></span><br><span class="line">0x8000:i32</span><br></pre></td></tr></table></figure>
+<p>返回的是一个指针地址。wasm 中的
+<code>(export "memory" (memory 0))</code>
+暴露了内存空间，可以在这个内存空间的对应位置访问到字符串的值。</p>
+<p>wamr中，export 的 memory 会映射在外部的内存空间中，通过
+<code>wasm_runtime_addr_app_to_native</code> 函数将 wasm
+内部的地址转换为外部的地址。</p>
+<h3 id="多内存提案">3.1.4 多内存提案</h3>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#![no_std]</span></span><br><span class="line"><span class="meta">#![no_main]</span></span><br><span class="line"><span class="meta">#![allow(static_mut_refs)]</span></span><br><span class="line"><span class="keyword">use</span> core::alloc::{GlobalAlloc, Layout};</span><br><span class="line"><span class="keyword">use</span> core::sync::atomic::{AtomicUsize, Ordering};</span><br><span class="line"></span><br><span class="line"><span class="meta">#[panic_handler]</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">panic</span>(_: &amp;core::panic::PanicInfo) <span class="punctuation">-&gt;</span> ! {</span><br><span class="line">    <span class="keyword">loop</span> {}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> HEAP_SIZE: <span class="type">usize</span> = <span class="number">65536</span>;</span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">mut</span> HEAP: [<span class="type">u8</span>; HEAP_SIZE] = [<span class="number">0</span>; HEAP_SIZE];</span><br><span class="line"><span class="keyword">static</span> HEAP_PTR: AtomicUsize = AtomicUsize::<span class="title function_ invoke__">new</span>(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">SimpleAllocator</span>;</span><br><span class="line"><span class="keyword">unsafe</span> <span class="keyword">impl</span> <span class="title class_">GlobalAlloc</span> <span class="keyword">for</span> <span class="title class_">SimpleAllocator</span> {</span><br><span class="line">    <span class="keyword">unsafe</span> <span class="keyword">fn</span> <span class="title function_">alloc</span>(&amp;<span class="keyword">self</span>, layout: Layout) <span class="punctuation">-&gt;</span> *<span class="keyword">mut</span> <span class="type">u8</span> {</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">offset</span> = HEAP_PTR.<span class="title function_ invoke__">fetch_add</span>(layout.<span class="title function_ invoke__">size</span>(), Ordering::SeqCst);</span><br><span class="line">        <span class="keyword">if</span> offset + layout.<span class="title function_ invoke__">size</span>() &gt; HEAP_SIZE {</span><br><span class="line">            <span class="keyword">return</span> core::ptr::<span class="title function_ invoke__">null_mut</span>();</span><br><span class="line">        }</span><br><span class="line">        HEAP.<span class="title function_ invoke__">as_mut_ptr</span>().<span class="title function_ invoke__">add</span>(offset)</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unsafe</span> <span class="keyword">fn</span> <span class="title function_">dealloc</span>(&amp;<span class="keyword">self</span>, _ptr: *<span class="keyword">mut</span> <span class="type">u8</span>, _layout: Layout) {</span><br><span class="line">        <span class="comment">// 这个简单实现不支持内存释放</span></span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="meta">#[global_allocator]</span></span><br><span class="line"><span class="keyword">static</span> ALLOCATOR: SimpleAllocator = SimpleAllocator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> alloc;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> alloc::string::<span class="type">String</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">test</span>() <span class="punctuation">-&gt;</span> *<span class="keyword">const</span> <span class="type">u8</span> {</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">buf</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    buf.<span class="title function_ invoke__">push_str</span>(<span class="string">"Hello, World!"</span>);</span><br><span class="line">    buf.<span class="title function_ invoke__">as_ptr</span>()</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>实验发现，使用 <code>alloc</code> 里的其他库貌似没有问题，唯独会用
+<code>String::new()</code> 会让 wamrc 编译不通过。</p>
+<p>直接运行 wasm ，报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[04:30:07:055 - 75C5E7216040]: warning: failed to link import function (env, memset)</span><br><span class="line">[04:30:07:055 - 75C5E7216040]: warning: failed to link import function (env, memcpy)</span><br><span class="line">[04:30:07:055 - 75C5E7216040]: warning: failed to link import function (env, memmove)</span><br><span class="line">Error: ExecutionError(ExecError { message: "Exception: failed to call unlinked import function (env, memcpy)", exit_code: 0 })</span><br></pre></td></tr></table></figure>
+<p>实现了外部接口后，报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Error: ExecutionError(ExecError { message: "Exception: wasm operand stack overflow", exit_code: 0 })</span><br></pre></td></tr></table></figure>
+<p>直接用 iwasm 或 wamrc 报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">WASM module load failed: zero byte expected</span><br></pre></td></tr></table></figure>
+<p>检查 iwasm 源码，发现是因为编译时未启用
+<code>WASM_ENABLE_MULTI_MEMORY</code> 选项（多内存提案）</p>
+<blockquote>
+<p>多内存提案（Multi-Memory Proposal）是 WebAssembly
+的一个扩展特性，简单说就是<strong>让一个WASM模块能同时拥有多个独立的内存块</strong>。这就像给你的程序开了多个独立仓库，每个仓库可以存不同类型的东西，互不干扰。</p>
+<hr>
+<h3 id="传统模式-vs-多内存模式">传统模式 vs 多内存模式</h3>
+<table>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 53%">
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>传统单内存</th>
+<th>多内存模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>内存数量</strong></td>
+<td>只能有1块内存（memory 0）</td>
+<td>可声明多个内存（memory 0,1,2...）</td>
+</tr>
+<tr>
+<td><strong>内存操作</strong></td>
+<td>所有指令默认操作memory 0</td>
+<td>指令需指定操作哪个内存（如 memory.load 1）</td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>简单场景</td>
+<td>复杂模块化/沙盒/多线程场景</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="为什么需要这个功能">为什么需要这个功能？</h3>
+<ol type="1">
+<li><p><strong>模块化开发</strong><br>
+不同库可以使用独立内存，避免内存污染（比如一个加密库和一个图形库各自用独立内存）</p></li>
+<li><p><strong>安全隔离</strong><br>
+高风险操作（如解析不可信数据）可放在独立内存，崩溃时不影响主内存</p></li>
+<li><p><strong>并行优化</strong><br>
+多线程中不同线程可绑定不同内存（需配合线程提案使用）</p></li>
+<li><p><strong>内存复用</strong><br>
+可创建专用内存（比如单独给GC分配一块内存）</p></li>
+</ol>
+<hr>
+<h3 id="实际代码示例">实际代码示例</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">;; 声明两个内存</span><br><span class="line">(module</span><br><span class="line">  (memory $mem1 1)  ;; 第一个内存初始1页（64KB）</span><br><span class="line">  (memory $mem2 2)  ;; 第二个内存初始2页</span><br><span class="line"></span><br><span class="line">  ;; 在第二个内存写入数据</span><br><span class="line">  (data (memory $mem2) (i32.const 0) "hello")</span><br><span class="line"></span><br><span class="line">  ;; 从第二个内存加载数据</span><br><span class="line">  (func $get_hello</span><br><span class="line">    (i32.load $mem2 (i32.const 0)) </span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="当前状态">当前状态</h3>
+<ul>
+<li>2023年已成为<strong>官方标准</strong>（Phase 4）</li>
+<li>需要运行时环境支持（如Wasmtime需开启<code>--enable-multi-memory</code>）</li>
+<li>主流浏览器逐步支持中（Chrome 119+已实现）</li>
+</ul>
+</blockquote>
+<p>所以解决方案有两个：</p>
+<ul>
+<li>重新编译 iwasm 和 wamrc，使其支持 multi-memory</li>
+<li>禁用 Rust 编译的时候启用多内存提案</li>
+</ul>
+<p>还是重新编译 iwasm 和 wamrc 。</p>
+<p>在
+<code>wasm-micro-runtime/product-mini/platforms/linux/CMakeLists.txt</code>
+的最后添加：</p>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 为所有目标添加预处理器宏</span></span><br><span class="line"><span class="keyword">add_definitions</span>(-DWASM_ENABLE_MULTI_MEMORY)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者为特定目标添加预处理器宏</span></span><br><span class="line"><span class="keyword">target_compile_definitions</span>(iwasm PRIVATE WASM_ENABLE_MULTI_MEMORY)</span><br></pre></td></tr></table></figure>
+<p>重新编译得到的 iwasm 不会报错 zero byte expected，但是和直接用
+wasm-sdk 运行一样报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wasm operand stack overflow</span><br></pre></td></tr></table></figure>
+<p>有可能是因为自定义实现的内存分配器有问题。改成使用
+<code>wee_alloc</code> ，可以了。</p>
+<h2 id="移植-wamr">3.2 移植 wamr</h2>
+<h3 id="阅读文档重写代码">3.2.1 阅读文档重写代码</h3>
+<p>https://wamr.gitbook.io/document/wamr-in-practice/advance-tutorial/port_wamr</p>
+<p>这部分略，修改后的代码之后开源。</p>
+<p>主要思路就是实现新增的接口，根据报错信息（<code>undefined reference to XXXX</code>）实现新的接口。</p>
+<h3 id="简单的测试">3.2.2 简单的测试</h3>
+<p>最简单的wasm没有问题，不会报错。</p>
+<p>但是当运行复杂一点程序时，TA 中报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">D/TA:  os_mmap:111 os_mmap(addr=0x40049000, size=144412, aligned size=147456, prot=0x7) memory allocated.</span><br><span class="line">D/TA:  os_mprotect:171 os_mprotect(addr=0x40049000, size=147456, prot=7) OK.</span><br><span class="line">D/TA:  os_mmap:123 os_mmap(addr=0x40049000, size=144412, aligned size=147456, prot=0x7) protection set.</span><br><span class="line">D/TA:  os_mmap:111 os_mmap(addr=0x4006d000, size=8192, aligned size=8192, prot=0x3) memory allocated.</span><br><span class="line">D/TA:  os_mprotect:171 os_mprotect(addr=0x4006d000, size=8192, prot=3) OK.</span><br><span class="line">D/TA:  os_mmap:123 os_mmap(addr=0x4006d000, size=8192, aligned size=8192, prot=0x3) protection set.</span><br><span class="line">D/TC:? 0 tee_ta_invoke_command:798 Error: ffff000c of 4</span><br><span class="line">E/TA:  tee_map_zi:56 Invoke PTA_SYSTEM_MAP_ZI: res=0xffff000c</span><br><span class="line">I/TA: os_mmap(size=155648, aligned size=155648, prot=0x3) failed.</span><br></pre></td></tr></table></figure>
+<p><code>0xffff000c</code> 是 <code>TEE_ERROR_OUT_OF_MEMORY</code>
+内存不足。</p>
+<p>估计是最多只能分配256KB。</p>
+<p>先重新试试之前的 wamr 看看内存分配多少。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">D/TA:  os_mmap:103 os_mmap(addr=0x40049000, size=141040, aligned size=143360, prot=0x7) memory allocated.</span><br><span class="line">D/TA:  os_mprotect:156 os_mprotect(addr=0x40049000, size=143360, prot=7) OK.</span><br><span class="line">D/TA:  os_mmap:114 os_mmap(addr=0x40049000, size=141040, aligned size=143360, prot=0x7) protection set.</span><br><span class="line">D/TA:  os_mmap:103 os_mmap(addr=0x4006c000, size=2306, aligned size=4096, prot=0x3) memory allocated.</span><br><span class="line">D/TA:  os_mprotect:156 os_mprotect(addr=0x4006c000, size=4096, prot=3) OK.</span><br><span class="line">D/TA:  os_mmap:114 os_mmap(addr=0x4006c000, size=2306, aligned size=4096, prot=0x3) protection set.</span><br><span class="line">D/TA:  os_mprotect:156 os_mprotect(addr=0x40049000, size=141040, prot=5) OK.</span><br><span class="line">D/TA:  os_mprotect:156 os_mprotect(addr=0x4006c000, size=2306, prot=1) OK.</span><br><span class="line">E/TA:  aot_instantiate:982 check heap size is OK.</span><br><span class="line">E/TA:  aot_instantiate:1000 calculate size of table data is OK.</span><br><span class="line">E/TA:  aot_instantiate:1007 Allocate module instance, global data, table data and heap data is OK.</span><br><span class="line">E/TA:  aot_instantiate:1019 Initialize global info is OK.</span><br><span class="line">E/TA:  aot_instantiate:1030 Initialize table info is OK.</span><br><span class="line">E/TA:  memories_instantiate:647 info: runtime_malloc is OK</span><br><span class="line">E/TA:  memories_instantiate:651 debug: 0</span><br><span class="line">E/TA:  memory_instantiate:361 info: memory_instantiate</span><br><span class="line">E/TA:  memory_instantiate:473 info: 1</span><br><span class="line">E/TA:  memory_instantiate:480 num_bytes_per_page=65536, init_page_count=3, max_page_count=16385, heap_offset=131072, heap_size=64512</span><br><span class="line">E/TA:  memory_instantiate:485 total_size=196608</span><br></pre></td></tr></table></figure>
+<p>总共分配的内存不到 200 KB。</p>
+<p>发现是 TA 的 <code>TA_InitializeWamrRuntime</code> 里写死了
+<code>stack_size = 256 * 1024</code> 。。。</p>
+<p>归根结底是不了解 WAMR 的内存模型。</p>
+<p>分P吧。</p>
+<h1 id="其他碎碎念">其他碎碎念</h1>
+<p>cosmos首次启动，调用TA生成RSA密钥对，私钥直接加密存储在TEE里，公钥返回在链上保存。</p>
+<p>其他节点加入区块链，与种子节点建立TLS连接，将私钥加密传输。</p>
+<p>自始至终，外界无法得知私钥。</p>
+<p>如果外界写一个新的TA用户获取加密存储的数据，那只用知道私钥存放的id，不就可以获取私钥了吗？并不会，因为OPTEE的Secure
+Storage
+API是按照TA的UUID进行隔离存储的，别的恶意TA无法访问秘钥生成TA的安全空间。</p>
+<p>所以应该只有一个TA，包含了生成私钥、执行智能合约等全部功能。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E6%AF%95%E8%AE%BE/" rel="tag"><i class="fa fa-tag"></i> 毕设</a>
+              <a href="/tags/%E6%95%B0%E5%AD%97%E8%BA%AB%E4%BB%BD/" rel="tag"><i class="fa fa-tag"></i> 数字身份</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/graduation-project/18/" rel="prev" title="毕设18 - WAMR 内存模型">
+                  <i class="fa fa-angle-left"></i> 毕设18 - WAMR 内存模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/tutorial/tutorial-02/" rel="next" title="区块链技术与应用02 - 以太坊">
+                  区块链技术与应用02 - 以太坊 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://cishoon.top/graduation-project/12/image-20241209191604765.png">
 <meta property="og:image" content="http://cishoon.top/graduation-project/12/image-20241209193130675.png">
 <meta property="article:published_time" content="2024-11-30T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-12-17T08:59:06.521Z">
+<meta property="article:modified_time" content="2025-03-08T08:32:37.441Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="Rust">
 <meta property="article:tag" content="毕设">
@@ -63,6 +63,7 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
+<link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
 <style>mjx-container[jax="SVG"] {
   direction: ltr;
 }
@@ -175,8 +176,7 @@ mjx-container[display="true"] {
 mjx-container[display="true"] + br {
   display: none;
 }
-</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
-</head>
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -211,7 +211,7 @@ mjx-container[display="true"] + br {
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">38</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">41</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -350,14 +350,14 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.8k</span>
+      <span>4.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -411,8 +411,10 @@ no_std。</p>
 <p>进入虚拟机：</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /mnt/host</span><br><span class="line">mount -t 9p -o trans=virtio host /mnt/host</span><br><span class="line"><span class="built_in">cd</span> /mnt/host</span><br></pre></td></tr></table></figure>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sh init.sh</span><br></pre></td></tr></table></figure>
-<p><code>init.sh</code> 包含修改配置：</p>
+<blockquote>
+<p>注意检查 <code>init.sh</code> 包含修改配置：</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sed -i <span class="string">'s|laddr = "tcp://127.0.0.1:26657"|laddr = "tcp://0.0.0.0:26657"|'</span> ~/.minid/config/config.toml</span><br></pre></td></tr></table></figure>
+</blockquote>
 <p>启动节点：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./minid start</span><br></pre></td></tr></table></figure>
 <p>在本地和区块链交互：</p>
@@ -423,7 +425,7 @@ no_std。</p>
 <p>回到虚拟机，把minid进程挂到后台</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ctrl + z</span><br><span class="line">bg %1</span><br></pre></td></tr></table></figure>
 <p>让 alice 账户给 mywallet 转账：(先记下本地mywallet的地址)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./minid tx bank send alice mini1s09httyypqw7r5r9p6htqkxu0dzsc8f620575d 9000000mini --yes</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./minid tx bank send alice mini1s09httyypqw7r5r9p6htqkxu0dzsc8f620575d 9000000mini --yes</span><br><span class="line">./minid tx bank send alice mini1s09httyypqw7r5r9p6htqkxu0dzsc8f620575d 3000000mini --yes</span><br><span class="line">./minid tx bank send alice mini16rnyvqk8cku22lc7xtphntpkk0tnpc4tvj0jhd 3000000mini --yes</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>在本地，上传智能合约：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid tx swt upload /root/contracts/swt_contracts/contract/target/simple_count.aot --gas 20000000 --from mywallet --yes</span><br></pre></td></tr></table></figure>
 <p>查看上传结果：</p>
@@ -440,6 +442,14 @@ no_std。</p>
 <p>执行事务修改智能合约状态：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid tx swt execute &lt;address&gt; &lt;func_name&gt; &lt;msg&gt; --from mywallet --gas 2000000 --yes</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid tx swt execute mini1jvkf9e7agxj8ly7mnxxmaq6cpq5e3hc266nx7p47exgd067xnadqlm3ken increase "{\"count\": 10}" --from mywallet --gas 2000000 --yes</span><br></pre></td></tr></table></figure>
+<p>2</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mini1ulr2skrhrs035mheuhjhp8cg4llqj6afes07urnkvfuwux89vmvsuj6jz7</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid query swt contract-state mini1ulr2skrhrs035mheuhjhp8cg4llqj6afes07urnkvfuwux89vmvsuj6jz7 count "{}"</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid tx swt execute mini1ulr2skrhrs035mheuhjhp8cg4llqj6afes07urnkvfuwux89vmvsuj6jz7 increase "{\"count\": 10}" --from mywallet --gas 2000000 --yes</span><br></pre></td></tr></table></figure>
+<p>3</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mini12l025hf53wavw4hl8a60ws6wzmcrsry6puclfdu0va37j7unhh8qj358n7</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid query swt contract-state mini12l025hf53wavw4hl8a60ws6wzmcrsry6puclfdu0va37j7unhh8qj358n7 count "{}"</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">minid tx swt execute mini12l025hf53wavw4hl8a60ws6wzmcrsry6puclfdu0va37j7unhh8qj358n7 increase "{\"count\": 10}" --from mywallet --gas 2000000 --yes</span><br></pre></td></tr></table></figure>
 <p>老师我现在把之前说的系统实现了，在TrustZone里跑通了，和官方的实现方式有一点小区别。上周说的论文还没看，接下来我先看论文想创新点</p>
 <p>有一个小改动：</p>
 <ul>
