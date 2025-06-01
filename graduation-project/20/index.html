@@ -29,7 +29,7 @@
 <meta property="og:description" content="最后一个问题，如何让多个区块链节点可以共享一个私钥，或是共享不同私钥的但是均可以独立解密用户提供的数据。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-03-12T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-03-16T09:01:11.660Z">
+<meta property="article:modified_time" content="2025-03-17T12:09:41.972Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="毕设">
 <meta property="article:tag" content="TrustZone">
@@ -209,7 +209,7 @@ mjx-container[display="true"] + br {
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">41</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">73</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -260,7 +260,7 @@ mjx-container[display="true"] + br {
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E7%BB%9F%E4%B8%80%E5%85%B1%E4%BA%AB%E7%A7%81%E9%92%A5%E7%BB%93%E5%90%88tee%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8"><span class="nav-text">解决方案：统一共享私钥结合TEE安全存储</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E7%82%B9%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="nav-text">关键点与优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-text">对抗性分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%85%B1%E4%BA%AB%E7%A7%81%E9%92%A5%E5%B9%B6%E6%B3%A8%E5%85%A5%E6%89%80%E6%9C%89trustzone"><span class="nav-text">生成共享私钥并注入所有TrustZone</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%85%B1%E4%BA%AB%E5%AF%86%E9%92%A5"><span class="nav-text">1. 生成共享密钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%98%E9%92%A5%E6%B3%A8%E5%85%A5trustzone"><span class="nav-text">2. 秘钥注入TrustZone</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%8C%E6%88%90"><span class="nav-text">完成！！！</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E7%BB%9F%E4%B8%80%E5%85%B1%E4%BA%AB%E7%A7%81%E9%92%A5%E7%BB%93%E5%90%88tee%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8"><span class="nav-text">解决方案：统一共享私钥结合TEE安全存储</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E7%82%B9%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="nav-text">关键点与优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-text">对抗性分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%85%B1%E4%BA%AB%E7%A7%81%E9%92%A5%E5%B9%B6%E6%B3%A8%E5%85%A5%E6%89%80%E6%9C%89trustzone"><span class="nav-text">生成共享私钥并注入所有TrustZone</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%85%B1%E4%BA%AB%E5%AF%86%E9%92%A5"><span class="nav-text">1. 生成共享密钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%98%E9%92%A5%E6%B3%A8%E5%85%A5trustzone"><span class="nav-text">2. 秘钥注入TrustZone</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%8C%E6%88%90"><span class="nav-text">完成！！！</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8D%B3%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-text">存在的问题即解决思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%981tee%E4%B8%8Eree%E9%80%9A%E4%BF%A1%E7%9A%84%E5%8F%8D%E5%90%91%E8%B0%83%E7%94%A8%E6%9C%BA%E5%88%B6"><span class="nav-text">问题1：TEE与REE通信的反向调用机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%982%E5%9F%BA%E4%BA%8Etrustzone%E7%9A%84%E9%9A%90%E7%A7%81%E4%BF%9D%E6%8A%A4%E6%95%B0%E5%AD%97%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81"><span class="nav-text">问题2：基于TrustZone的隐私保护数字身份验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%983%E6%94%AF%E6%8C%81rust%E7%BC%96%E5%86%99%E7%9A%84%E5%A4%8D%E6%9D%82wasm%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-text">问题3：支持Rust编写的复杂Wasm智能合约</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5%E5%B7%A5%E4%BD%9C%E8%AE%A1%E5%88%92%E4%B8%8E%E7%A0%94%E7%A9%B6%E5%86%85%E5%AE%B9"><span class="nav-text">下一阶段工作计划与研究内容</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -348,14 +348,14 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>3.9k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>4 分钟</span>
     </span>
 </div>
 
@@ -444,9 +444,106 @@ Sharing）</strong>和<strong>安全多方计算（MPC）</strong>的方案。</
 <p>这一步简单，只要OPTEE支持有一种方式传入私钥即可。</p>
 <h1 id="完成">完成！！！</h1>
 <p>剩余工作，整理代码存到github上。</p>
-<p>写专利。</p>
-<p>在香橙派中运行多个节点，进行性能测试。</p>
+<p>在香橙派中运行多个节点，进行多节点的功能测试和性能测试。</p>
 <p>写毕业论文，准备毕业答辩。</p>
+<h1 id="存在的问题即解决思路">存在的问题即解决思路</h1>
+<h2 id="问题1tee与ree通信的反向调用机制">问题1：TEE与REE通信的反向调用机制</h2>
+<p><strong>问题描述</strong>：
+OP-TEE架构将系统分为可信执行环境(TEE)和富执行环境(REE)，传统上只支持REE向TEE发起请求的单向通信模式。在本毕业设计中，wasm智能合约运行在TEE的安全虚拟机中，但智能合约执行过程中需要实时访问和修改区块链状态数据，这些数据位于REE中。如何实现TEE中的智能合约能够主动向REE发起请求，突破传统TEE-REE通信的单向限制？</p>
+<p><strong>解决思路</strong>： 设计了基于共享内存的双向通信机制：</p>
+<ol type="1">
+<li>在REE中申请一块共享内存区域，确保TEE和REE均有读写权限</li>
+<li>区块链节点在调用智能合约时分出两个并行线程：
+<ul>
+<li>主线程负责调用TEE中的智能合约</li>
+<li>监听线程持续轮询共享内存区域，检测来自TEE的请求</li>
+</ul></li>
+<li>实现了防止编译器优化的内存屏障机制，确保数据读写顺序正确</li>
+<li>设计了请求-响应协议，支持get/set等操作类型</li>
+<li>当智能合约需要访问链上数据时，将请求写入共享内存并设置标志位</li>
+<li>REE监听线程检测到请求后，执行相应操作并将结果写回共享内存</li>
+<li>TEE中的智能合约从共享内存获取结果继续执行</li>
+</ol>
+<p>这种机制实现了TEE到REE的反向调用，同时保持了TEE的安全隔离特性，不需要修改OP-TEE的核心架构。</p>
+<h2 id="问题2基于trustzone的隐私保护数字身份验证">问题2：基于TrustZone的隐私保护数字身份验证</h2>
+<p><strong>问题描述</strong>：
+传统的分布式数字身份(DID)系统通常依赖纯数学层面的零知识证明算法，这些算法计算复杂且难以实现。如何利用ARM
+TrustZone提供的可信执行环境，设计一种更高效、更安全的隐私保护数字身份验证机制，充分发挥硬件可信根的优势？</p>
+<p><strong>解决思路</strong>： 设计了基于TEE的隐私保护验证流程：</p>
+<ol type="1">
+<li>用户DID文档中包含一个ECDH公钥用于安全密钥交换</li>
+<li>区块链网络中的所有节点共享同一ECDH密钥对：
+<ul>
+<li>私钥安全存储在OP-TEE的隔离空间中，永不离开TEE</li>
+<li>公钥公开存储在区块链上，任何实体可获取</li>
+</ul></li>
+<li>用户通过区块链公钥与自身私钥计算共享密钥，使用该密钥对可验证凭证(VC)进行AES加密</li>
+<li>验证流程保护用户隐私：
+<ul>
+<li>验证机构无法直接解密用户VC，保护敏感信息</li>
+<li>验证请求转发至区块链节点的TEE环境</li>
+<li>TEE环境使用安全存储的私钥与用户公钥计算共享密钥</li>
+<li>在TEE内部解密VC并验证内容，仅向外部返回验证结果</li>
+</ul></li>
+<li>整个过程中敏感数据始终在TEE内处理，未加密数据不会暴露给REE</li>
+</ol>
+<p>这种方案将密码学保护与硬件隔离相结合，提供了比纯软件方案更强的安全保证，同时降低了计算复杂度。</p>
+<h2 id="问题3支持rust编写的复杂wasm智能合约">问题3：支持Rust编写的复杂Wasm智能合约</h2>
+<p><strong>问题描述</strong>： 本毕业设计参考《WaTZ: A Trusted
+WebAssembly Runtime Environment with Remote Attestation for
+TrustZone》论文，在OP-TEE中实现了 wasm
+虚拟机。然而，论文中使用的WAMR(WebAssembly Micro
+Runtime)不支持WebAssembly的"多内存提案"(Multi-Memory
+Proposal)特性，导致无法运行由Rust语言编译的复杂智能合约。Rust作为一种内存安全的系统级语言，非常适合编写智能合约，但其编译产生的Wasm模块通常依赖多内存特性和更复杂的内存管理机制。如何扩展TEE中的WebAssembly运行时，使其能够支持现代Rust编译的智能合约？</p>
+<p><strong>解决思路：</strong></p>
+<ol type="1">
+<li>首先分析了Rust编译为wasm时的内存模型与C的区别：
+<ul>
+<li>C 语言编译的wasm使用简单的内存模型，直接调用malloc分配内存</li>
+<li>Rust需要自定义内存分配器，且默认会生成更复杂的内存管理代码</li>
+<li>通过实验对比发现Rust编译的wasm会使用多内存提案特性</li>
+</ul></li>
+<li>修改WAMR运行时和OP-TEE以支持多内存提案：
+<ul>
+<li>放弃使用论文中的旧版WAMR，迁移至最新版本的WebAssembly Micro
+Runtime</li>
+<li>重新实现了WAMR与OP-TEE的全部接口层，包括内存管理、系统时钟等</li>
+<li>在OP-TEE中实现了mprotect系统调用，修改内存区域的保护属性</li>
+</ul></li>
+<li>解决内存分配问题：
+<ul>
+<li>采用Rust的no_std模式编译，并引入轻量级内存分配器wee_alloc，显著降低内存开销</li>
+<li>根据TEE环境的实际内存限制，调整WAMR的内存模型参数</li>
+</ul></li>
+</ol>
+<p>通过以上方案，成功在OP-TEE的TEE环境中运行了由Rust编写的复杂wasm智能合约，解决了多内存提案支持问题，并克服了TEE环境下的内存限制。这使得可以在保证安全隔离的同时，利用Rust语言的安全特性开发更复杂、更可靠的智能合约。</p>
+<h2 id="下一阶段工作计划与研究内容">下一阶段工作计划与研究内容</h2>
+<ol type="1">
+<li><strong>多节点分布式测试环境搭建</strong>：
+<ul>
+<li>在多台华为香橙派开发板上部署完整的区块链节点</li>
+<li>构建基于局域网的区块链测试网络</li>
+</ul></li>
+<li><strong>功能测试与验证</strong>：
+<ul>
+<li>测试智能合约在多节点环境下的一致性执行</li>
+<li>验证节点间状态同步和共识机制的正确性</li>
+<li>进行各类异常情况下的系统恢复测试</li>
+</ul></li>
+<li><strong>性能测试与优化</strong>：
+<ul>
+<li>测量交易处理吞吐量和延迟</li>
+<li>分析TEE环境下智能合约执行效率</li>
+<li>评估系统在不同负载下的资源消耗</li>
+<li>比较与传统区块链系统的性能差异</li>
+</ul></li>
+<li><strong>安全性分析与评估</strong>：
+<ul>
+<li>进行系统安全威胁建模</li>
+<li>评估潜在攻击面和防御措施</li>
+</ul></li>
+<li><strong>毕业论文撰写毕业答辩准备</strong></li>
+</ol>
 
     </div>
 
@@ -466,8 +563,8 @@ Sharing）</strong>和<strong>安全多方计算（MPC）</strong>的方案。</
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/rust/1-%E5%8F%98%E9%87%8F%E4%B8%8E%E5%8F%AF%E5%8F%98%E6%80%A7/" rel="prev" title="Rust 学习笔记 - 变量与可变性">
-                  <i class="fa fa-angle-left"></i> Rust 学习笔记 - 变量与可变性
+                <a href="/graduation-project/21/" rel="prev" title="毕设21 - 性能测试">
+                  <i class="fa fa-angle-left"></i> 毕设21 - 性能测试
                 </a>
             </div>
             <div class="post-nav-item">
