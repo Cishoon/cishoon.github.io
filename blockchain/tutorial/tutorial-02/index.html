@@ -33,8 +33,8 @@
 <meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122161645346.png">
 <meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250122162349393.png">
 <meta property="og:image" content="http://cishoon.top/blockchain/tutorial/tutorial-02/image-20250125135006451.png">
-<meta property="article:published_time" content="2024-01-20T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-03T07:49:08.563Z">
+<meta property="article:published_time" content="2025-01-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-02T06:14:49.495Z">
 <meta property="article:author" content="Cishoon">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="以太坊">
@@ -66,7 +66,6 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
-<link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
 <style>mjx-container[jax="SVG"] {
   direction: ltr;
 }
@@ -179,7 +178,8 @@ mjx-container[display="true"] {
 mjx-container[display="true"] + br {
   display: none;
 }
-</style></head>
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
@@ -335,7 +335,7 @@ mjx-container[display="true"] + br {
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-21T00:00:00+08:00">2024-01-21</time>
+      <time title="创建时间：2025-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2025-01-21T00:00:00+08:00">2025-01-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -513,20 +513,20 @@ block，和现区块的parent block是兄弟），uncle block 可以得到 <span
 <h2 id="ethash-伪代码实现">6.1 ethash 伪代码实现</h2>
 <ul>
 <li><p>16M 的 cache，是根据一个种子算出来的哈希列表</p>
-<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mkcache</span>(<span class="params">cache_size, seed</span>):</span><br><span class="line">    o = [<span class="built_in">hash</span>(seed)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, cache_size):</span><br><span class="line">        o.append(<span class="built_in">hash</span>(o[-<span class="number">1</span>]))</span><br><span class="line">    <span class="keyword">return</span> o</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mkcache</span>(<span class="params">cache_size, seed</span>):</span><br><span class="line">    o = [<span class="built_in">hash</span>(seed)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, cache_size):</span><br><span class="line">        o.append(<span class="built_in">hash</span>(o[-<span class="number">1</span>]))</span><br><span class="line">    <span class="keyword">return</span> o</span><br></pre></td></tr></table></figure>
 <p>细节：每隔30000个块重新生成一个seed更新cache，并增大cache_size
 128K。（增大 cache_size
 的目的是随着硬件访存效率的提升稳定挖矿难度）</p></li>
 <li><p>1G 的 dataset，叫做 DAG，是通过 cache 来生成的一个数据集。</p>
-<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">calc_dataset_item</span>(<span class="params">cache, i</span>):</span><br><span class="line">	cache_size = cache.size</span><br><span class="line">    mix = <span class="built_in">hash</span>(cache[i % cache_size] ^ i)</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">256</span>):</span><br><span class="line">        cache_index = get_int_from_item(mix)</span><br><span class="line">        mix = make_item(mix, cache[cache_index % cache_size])</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cal_dataset</span>(<span class="params">full_size, cache</span>):</span><br><span class="line">    <span class="keyword">return</span> [calc_dataset_item(cache, i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(full_size)]</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">calc_dataset_item</span>(<span class="params">cache, i</span>):</span><br><span class="line">	cache_size = cache.size</span><br><span class="line">    mix = <span class="built_in">hash</span>(cache[i % cache_size] ^ i)</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">256</span>):</span><br><span class="line">        cache_index = get_int_from_item(mix)</span><br><span class="line">        mix = make_item(mix, cache[cache_index % cache_size])</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cal_dataset</span>(<span class="params">full_size, cache</span>):</span><br><span class="line">    <span class="keyword">return</span> [calc_dataset_item(cache, i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(full_size)]</span><br></pre></td></tr></table></figure>
 <p>上面的函数用来计算第 i 个 dataset 中的元素。每一个元素的计算需要重复
 256 次hash和访问cache内存。</p></li>
 <li><p>下面就是全节点和轻节点挖矿的 ethash ：</p>
-<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">hashimoto_full</span>(<span class="params">header, nonce, full_size, dataset</span>):</span><br><span class="line">    mix = <span class="built_in">hash</span>(header, nonce)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">        dataset_index = get_int_from_item(mix) % full_size <span class="comment"># 获取一个dataset中的下标</span></span><br><span class="line">        mix = make_item(mix, dataset[dataset_index])</span><br><span class="line">        mix = make_item(mix, dataset[dataset_index + <span class="number">1</span>]) <span class="comment"># 每次取出两个元素，接到mix后面</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hashimoto_light</span>(<span class="params">header, nonce, full_size, cache</span>): <span class="comment"># 轻节点不用1G的dataset，只用16M的cache</span></span><br><span class="line">    mix = <span class="built_in">hash</span>(header, nonce)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">        dataset_index = get_int_from_item(mix) % full_size</span><br><span class="line">        mix = make_item(mix, calc_dataset_item(cache, dataset_index))</span><br><span class="line">        mix = make_item(mix, calc_dataset_item(cache, dataset_index + <span class="number">1</span>)) <span class="comment"># 每次重新计算两个元素</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)    </span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">hashimoto_full</span>(<span class="params">header, nonce, full_size, dataset</span>):</span><br><span class="line">    mix = <span class="built_in">hash</span>(header, nonce)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">        dataset_index = get_int_from_item(mix) % full_size <span class="comment"># 获取一个dataset中的下标</span></span><br><span class="line">        mix = make_item(mix, dataset[dataset_index])</span><br><span class="line">        mix = make_item(mix, dataset[dataset_index + <span class="number">1</span>]) <span class="comment"># 每次取出两个元素，接到mix后面</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hashimoto_light</span>(<span class="params">header, nonce, full_size, cache</span>): <span class="comment"># 轻节点不用1G的dataset，只用16M的cache</span></span><br><span class="line">    mix = <span class="built_in">hash</span>(header, nonce)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">        dataset_index = get_int_from_item(mix) % full_size</span><br><span class="line">        mix = make_item(mix, calc_dataset_item(cache, dataset_index))</span><br><span class="line">        mix = make_item(mix, calc_dataset_item(cache, dataset_index + <span class="number">1</span>)) <span class="comment"># 每次重新计算两个元素</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>(mix)  </span><br></pre></td></tr></table></figure>
 <p>矿工需要保存1G的数据库，频繁访问来计算hash，判断区块是否符合难度要求。为了计算方便，把dataset的值缓存下来最快。而频繁的访存又让访存成为了性能瓶颈。</p>
 <p>轻节点为了节省空间，并且也不需要频繁计算hash，所以只有用到的时候再重新计算一次即可。</p></li>
 <li><p>挖矿函数：</p>
-<p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mine</span>(<span class="params">full_size, dataset, header, target</span>):</span><br><span class="line">    nonce = random.randint(<span class="number">0</span>, <span class="number">2</span>**<span class="number">64</span>)</span><br><span class="line">    <span class="keyword">while</span> hashimoto_full(header, nonce, full_size, dataset) &gt; target:</span><br><span class="line">        nonce = (nonce + <span class="number">1</span>) % <span class="number">2</span>**<span class="number">64</span></span><br><span class="line">    <span class="keyword">return</span> nonce</span><br></pre></td></tr></table></figure></p></li>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mine</span>(<span class="params">full_size, dataset, header, target</span>):</span><br><span class="line">    nonce = random.randint(<span class="number">0</span>, <span class="number">2</span>**<span class="number">64</span>)</span><br><span class="line">    <span class="keyword">while</span> hashimoto_full(header, nonce, full_size, dataset) &gt; target:</span><br><span class="line">        nonce = (nonce + <span class="number">1</span>) % <span class="number">2</span>**<span class="number">64</span></span><br><span class="line">    <span class="keyword">return</span> nonce</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h1 id="挖矿难度">7 挖矿难度</h1>
 <blockquote>
@@ -575,13 +575,13 @@ block，和现区块的parent block是兄弟），uncle block 可以得到 <span
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/rust/1-%E5%8F%98%E9%87%8F%E4%B8%8E%E5%8F%AF%E5%8F%98%E6%80%A7/" rel="prev" title="Rust 学习笔记 - 变量与可变性">
-                  <i class="fa fa-angle-left"></i> Rust 学习笔记 - 变量与可变性
+                <a href="/graduation-project/17/" rel="prev" title="毕设17 - DID数字身份 Rust 实现">
+                  <i class="fa fa-angle-left"></i> 毕设17 - DID数字身份 Rust 实现
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/blockchain/tutorial/tutorial-01/" rel="next" title="区块链技术与应用01 - 比特币">
-                  区块链技术与应用01 - 比特币 <i class="fa fa-angle-right"></i>
+                <a href="/graduation-project/16/" rel="next" title="毕设16 - Decentraland">
+                  毕设16 - Decentraland <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
