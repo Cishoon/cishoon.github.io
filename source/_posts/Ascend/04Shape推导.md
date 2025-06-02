@@ -1,5 +1,5 @@
 ---
-title: Ascend 学习笔记 03 - 广播机制与Shape推导
+title: Ascend 学习笔记 04 - 广播机制与Shape推导
 categories: [笔记]
 tags: [AI, 硬件加速, Ascend]
 date: 2025-03-27
