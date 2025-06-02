@@ -2,9 +2,8 @@
 title: 区块链技术与应用02 - 以太坊
 categories: [笔记]
 tags: [毕设, 区块链, 以太坊]
-date: 2024-01-21
+date: 2025-01-21
 ---
-
 ~~我已经完全了解比特币了！~~接下来看以太坊。
 
 <!--more-->
@@ -15,8 +14,6 @@ date: 2024-01-21
 - 挖矿基址修改：对内存要求很高，用于resistance
 - （在后来）工作量证明PoW → 权益证明PoS
 - 智能合约支持
-
-
 
 # 2 账户
 
@@ -29,15 +26,11 @@ date: 2024-01-21
 
 - 重放攻击，解决方案是在交易里加一个 nonce，记录一下一共发布过多少个交易
 
-
-
 > 双花攻击和重放攻击是**对称的**
 >
 > 双花是花钱的人不诚实
 >
 > 重放是收钱的人不诚实
-
-
 
 ## 2.1 账户类型
 
@@ -55,12 +48,6 @@ date: 2024-01-21
 - 代码 code
 - 存储 storage
 
-
-
-
-
-
-
 # 3 状态树
 
 为什么不能直接做一个地址到状态的哈希表映射？哈希表有什么问题？
@@ -73,21 +60,15 @@ date: 2024-01-21
 
 如果使用排序默克尔树，每次新增账户的时候，又要重新构成一个默克尔树。
 
-
-
 所以，要有一个数据结构，满足以下要求：
 
 - 可以轻易证明所有内部元素没有被篡改
 - 可以快速查询、修改每个元素
 - 可以快速新增元素
 
-
-
 ## 3.0 trie（字典树） 与 PT
 
 字典树的结构略。
-
-
 
 Patricia trie，压缩前缀树：
 
@@ -95,9 +76,7 @@ Patricia trie，压缩前缀树：
 
 节省空间，提高搜索效率。在单词稀疏的情况下效果拔群。
 
-而以太坊的地址，显然是非常稀疏的。（因为地址空间是 $2^{160}$ ，目前产生的地址数量远远达不到这个） 
-
-
+而以太坊的地址，显然是非常稀疏的。（因为地址空间是 $2^{160}$ ，目前产生的地址数量远远达不到这个）
 
 ## 3.1 MPT（Merkle Patricia Tree）
 
@@ -117,18 +96,12 @@ Patricia trie，压缩前缀树：
 
 ![image-20250122162349393](./tutorial-02/image-20250122162349393.png)
 
-
-
-
-
 # 4 交易树和收据树
 
 数据结构都是 MPT 。块头里存了每个树的树根，并且有一个 Bloom ，是交易树和收据树的 bloom filter 的并。
 
 - 交易树中存的是区块中所有的交易数据
 - 收据树中存的是所有交易的执行结果
-
-
 
 ## 4.1 bloom filter
 
@@ -140,11 +113,7 @@ Patricia trie，压缩前缀树：
 
 下面要查找一个元素在不在集合中，先计算他的哈希值，如果对应位置为 0 ，则说明该元素一定不在集合中；如果对应位置为 1，由于可能存在哈希碰撞，并不能确定该元素存在集合中。
 
-
-
 举一个实际的应用例子：要找到最近100个区块内哪个区块里有执行某个智能合约的交易，先在块头的 Bloom 里查看对应的位置是否为1，就可以排除一部分绝对不存在该智能合约的区块，以此提高搜索效率。即**快速过滤无关区块**。
-
-
 
 ## 4.2 为什么以太坊有收据树
 
@@ -152,11 +121,7 @@ Patricia trie，压缩前缀树：
 
 比特币的交易模型是简单的 UTXO（未花费交易输出）模型，所有状态变化（账户余额的变化）都可以直接通过交易记录推导出来，不需要额外的数据结构来保存中间结果。
 
-
-
 以太坊中有收据树，因为以太坊需要支持复杂的智能合约和状态变化，收据树用于记录交易执行结果（状态、gas、日志等），提高了验证效率，支持了更丰富的功能。
-
-
 
 # 5 共识机制-GHOST
 
@@ -172,15 +137,11 @@ Patricia trie，压缩前缀树：
 
 这鼓励区块快速合并。（如果想要拿到作为叔叔区块的出块奖励，就沿着最长合法链继续挖就行了，不用因为担心自己的区块白白浪费而坚持自己的链）
 
-
-
 如果有3个叔叔区块呢？
 
 如果已经开始挖下一个区块，才知道叔叔区块的存在？
 
 如果矿池之间存在竞争关系，故意不把别的矿池的区块包含进叔叔区块？
-
-
 
 ## 5.2 改进版本
 
@@ -192,15 +153,9 @@ Patricia trie，压缩前缀树：
 - 第二个问题同上，留给孙子和后代们。
 - 矿池竞争中，如果自己不包含，总会有别人包含，不损人只不利己。
 
-
-
 每个区块还是只能包含两个叔叔区块，如果叔叔区块很多（曾祖父，曾曾曾曾祖父）选哪一个包含？
 
 叔叔区块的产生时间怎么限制？我能不能现在挖1000个区块以前的叔叔区块，因为那时候挖矿难度低、出块奖励高，然后等着被后代包含？
-
-
-
-
 
 ## 5.3 进一步改进
 
@@ -212,15 +167,9 @@ Patricia trie，压缩前缀树：
 
 当前区块如果包含一个叔叔区块，可以得到 $\frac {1} {32}$ 倍额外的出块奖励。（这个没有变）
 
-
-
 如果叔叔区块后面还有区块怎么办？给钱吗？不能给钱。
 
 如果叔叔区块后面的区块也给钱，那分叉攻击就太便宜了，分叉攻击失败了还有奖励。
-
-
-
-
 
 # 6 挖矿算法
 
@@ -228,82 +177,73 @@ ASIC Resistance
 
 以太坊的方法是，增加芯片对内存访问的需求。因为 ASIC 芯片的主要优势是计算，而访存性能并没有优势。
 
-
-
 ## 6.1 ethash 伪代码实现
 
 - 16M 的 cache，是根据一个种子算出来的哈希列表
 
-    ```python
-    def mkcache(cache_size, seed):
-        o = [hash(seed)]
-        for i in range(1, cache_size):
-            o.append(hash(o[-1]))
-        return o
-    ```
+  ```python
+  def mkcache(cache_size, seed):
+      o = [hash(seed)]
+      for i in range(1, cache_size):
+          o.append(hash(o[-1]))
+      return o
+  ```
 
-    细节：每隔30000个块重新生成一个seed更新cache，并增大cache_size 128K。（增大 cache_size 的目的是随着硬件访存效率的提升稳定挖矿难度）
-
+  细节：每隔30000个块重新生成一个seed更新cache，并增大cache_size 128K。（增大 cache_size 的目的是随着硬件访存效率的提升稳定挖矿难度）
 - 1G 的 dataset，叫做 DAG，是通过 cache 来生成的一个数据集。
 
-    ```python
-    def calc_dataset_item(cache, i):
-    	cache_size = cache.size
-        mix = hash(cache[i % cache_size] ^ i)
-        for j in range(256):
-            cache_index = get_int_from_item(mix)
-            mix = make_item(mix, cache[cache_index % cache_size])
-        return hash(mix)
-    
-    def cal_dataset(full_size, cache):
-        return [calc_dataset_item(cache, i) for i in range(full_size)]
-    ```
+  ```python
+  def calc_dataset_item(cache, i):
+  	cache_size = cache.size
+      mix = hash(cache[i % cache_size] ^ i)
+      for j in range(256):
+          cache_index = get_int_from_item(mix)
+          mix = make_item(mix, cache[cache_index % cache_size])
+      return hash(mix)
 
-    上面的函数用来计算第 i 个 dataset 中的元素。每一个元素的计算需要重复 256 次hash和访问cache内存。
+  def cal_dataset(full_size, cache):
+      return [calc_dataset_item(cache, i) for i in range(full_size)]
+  ```
 
+  上面的函数用来计算第 i 个 dataset 中的元素。每一个元素的计算需要重复 256 次hash和访问cache内存。
 - 下面就是全节点和轻节点挖矿的 ethash ：
 
-    ```python
-    def hashimoto_full(header, nonce, full_size, dataset):
-        mix = hash(header, nonce)
-        for i in range(64):
-            dataset_index = get_int_from_item(mix) % full_size # 获取一个dataset中的下标
-            mix = make_item(mix, dataset[dataset_index])
-            mix = make_item(mix, dataset[dataset_index + 1]) # 每次取出两个元素，接到mix后面
-        return hash(mix)
-    
-    def hashimoto_light(header, nonce, full_size, cache): # 轻节点不用1G的dataset，只用16M的cache
-        mix = hash(header, nonce)
-        for i in range(64):
-            dataset_index = get_int_from_item(mix) % full_size
-            mix = make_item(mix, calc_dataset_item(cache, dataset_index))
-            mix = make_item(mix, calc_dataset_item(cache, dataset_index + 1)) # 每次重新计算两个元素
-        return hash(mix)    
-    ```
+  ```python
+  def hashimoto_full(header, nonce, full_size, dataset):
+      mix = hash(header, nonce)
+      for i in range(64):
+          dataset_index = get_int_from_item(mix) % full_size # 获取一个dataset中的下标
+          mix = make_item(mix, dataset[dataset_index])
+          mix = make_item(mix, dataset[dataset_index + 1]) # 每次取出两个元素，接到mix后面
+      return hash(mix)
 
-    矿工需要保存1G的数据库，频繁访问来计算hash，判断区块是否符合难度要求。为了计算方便，把dataset的值缓存下来最快。而频繁的访存又让访存成为了性能瓶颈。
+  def hashimoto_light(header, nonce, full_size, cache): # 轻节点不用1G的dataset，只用16M的cache
+      mix = hash(header, nonce)
+      for i in range(64):
+          dataset_index = get_int_from_item(mix) % full_size
+          mix = make_item(mix, calc_dataset_item(cache, dataset_index))
+          mix = make_item(mix, calc_dataset_item(cache, dataset_index + 1)) # 每次重新计算两个元素
+      return hash(mix)  
+  ```
 
-    轻节点为了节省空间，并且也不需要频繁计算hash，所以只有用到的时候再重新计算一次即可。
+  矿工需要保存1G的数据库，频繁访问来计算hash，判断区块是否符合难度要求。为了计算方便，把dataset的值缓存下来最快。而频繁的访存又让访存成为了性能瓶颈。
 
+  轻节点为了节省空间，并且也不需要频繁计算hash，所以只有用到的时候再重新计算一次即可。
 - 挖矿函数：
 
-    ```python
-    def mine(full_size, dataset, header, target):
-        nonce = random.randint(0, 2**64)
-        while hashimoto_full(header, nonce, full_size, dataset) > target:
-            nonce = (nonce + 1) % 2**64
-        return nonce
-    ```
-
-
+  ```python
+  def mine(full_size, dataset, header, target):
+      nonce = random.randint(0, 2**64)
+      while hashimoto_full(header, nonce, full_size, dataset) > target:
+          nonce = (nonce + 1) % 2**64
+      return nonce
+  ```
 
 # 7 挖矿难度
 
 > 该部分可能已经过时了，毕竟目前以太坊已经全面转为 PoS 了。
 >
 > 就不细看实现了
-
-
 
 # 8 权益证明 PoS
 
@@ -315,13 +255,9 @@ PoS的基本思想就是，既然是比拼财力，不如直接把钱给以太�
 
 这课讲的有点简略了……
 
-
-
 # 9 智能合约
 
 > 略过了这一节，可能会落一些不知道细节，大体上对智能合约的了解还是比较足够了
-
-
 
 # 10 The DAO
 
@@ -333,13 +269,7 @@ The DAO：是一个具体的运行在以太坊上的智能合约。
 
 精彩的故事，但是不太有知识点。
 
-
-
 后续有一节美链，也是在 ethernaut 里了解过了。
-
-
-
-
 
 # 11 反思
 
@@ -358,6 +288,3 @@ Solidity是好的编程语言吗？
 去中心化并不是全自动化；去中心化并不是不能修改规则，而是应该用去中心化的方法修改规则。
 
 去中心化不等于分布式。去中心化系统必然是分布式的，分布式系统不一定是去中心化的。
-
-
-
