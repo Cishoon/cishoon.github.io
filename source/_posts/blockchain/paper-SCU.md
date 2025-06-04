@@ -1,5 +1,5 @@
 ---
-title: SCU: A Hardware Accelerator for Smart Contract Execution 论文笔记
+title: A Hardware Accelerator for Smart Contract Execution 论文笔记
 categories: [笔记]
 tags: [区块链, 以太坊, 智能合约, 论文]
 date: 2024-08-25
