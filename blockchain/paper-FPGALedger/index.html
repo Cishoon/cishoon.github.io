@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="随着区块链和去中心化账本的广泛应用，为了降低技术负担，提出了区块链即服务（Blockchain-as-a-Service，BaaS）的概念，将区块链托管在云端。类似于函数及服务等云服务。 但是这种方式带来了安全问题。本文提出了一种基于FPGA的企业应用去中心化账本，利用FPGA的安全特性来防止未经授权的数据访问。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FPGA based Decentralized Ledger for Enterprise Applications 论文笔记">
+<meta property="og:url" content="http://cishoon.top/blockchain/paper-FPGALedger/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="随着区块链和去中心化账本的广泛应用，为了降低技术负担，提出了区块链即服务（Blockchain-as-a-Service，BaaS）的概念，将区块链托管在云端。类似于函数及服务等云服务。 但是这种方式带来了安全问题。本文提出了一种基于FPGA的企业应用去中心化账本，利用FPGA的安全特性来防止未经授权的数据访问。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/blockchain/paper-FPGALedger/image-20240904122454798.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/paper-FPGALedger/image-20240904123850602.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/paper-FPGALedger/image-20240904131033260.png">
+<meta property="article:published_time" content="2024-09-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-04T07:04:39.643Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="FPGA">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="智能合约">
+<meta property="article:tag" content="论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/blockchain/paper-FPGALedger/image-20240904122454798.png">
+
+
+<link rel="canonical" href="http://cishoon.top/blockchain/paper-FPGALedger/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/blockchain/paper-FPGALedger/","path":"blockchain/paper-FPGALedger/","title":"FPGA based Decentralized Ledger for Enterprise Applications 论文笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>FPGA based Decentralized Ledger for Enterprise Applications 论文笔记 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">77</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-text">1 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="nav-text">1.1 主要贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fpga-%E7%9A%84%E5%AE%89%E5%85%A8%E7%89%B9%E6%80%A7"><span class="nav-text">1.2 FPGA 的安全特性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#fpga-ledger%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-text">2 FPGA Ledger的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E8%A7%88"><span class="nav-text">2.1 总览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%A6%E7%BB%86%E8%AE%BE%E8%AE%A1"><span class="nav-text">2.2 详细设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E8%AF%86%E8%AE%BE%E8%AE%A1"><span class="nav-text">2.3 共识设计</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-text">3 安全性分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/blockchain/paper-FPGALedger/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="FPGA based Decentralized Ledger for Enterprise Applications 论文笔记 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FPGA based Decentralized Ledger for Enterprise Applications 论文笔记<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ibG9ja2NoYWluL3BhcGVyLUZQR0FMZWRnZXIubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-09-04 00:00:00" itemprop="dateCreated datePublished" datetime="2024-09-04T00:00:00+08:00">2024-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>随着区块链和去中心化账本的广泛应用，为了降低技术负担，提出了区块链即服务（Blockchain-as-a-Service，BaaS）的概念，将区块链托管在云端。类似于函数及服务等云服务。</p>
+<p>但是这种方式带来了安全问题。本文提出了一种基于FPGA的企业应用去中心化账本，利用FPGA的安全特性来防止未经授权的数据访问。</p>
+<span id="more"></span>
+<h1 id="简介">1 简介</h1>
+<h2 id="主要贡献">1.1 主要贡献</h2>
+<p>本文提出了FPGALedger，利用现代FPGA的安全特性，如比特流加密和防篡改功能，防止攻击者（例如云服务提供商的恶意管理员）从去中心化账本应用程序中获取敏感信息和/或影响应用程序的执行过程。总之，我们的贡献有两方面：</p>
+<ul>
+<li>我们提出了<strong>FPGALedger的架构</strong>、不同参与者之间的<strong>详细协议</strong>，并分析其安全特性；</li>
+<li>我们使用现成的FPGA实现了<strong>FPGALedger的关键组件</strong>，并评估其性能以证明其实际可行性。</li>
+</ul>
+<h2 id="fpga-的安全特性">1.2 FPGA 的安全特性</h2>
+<p>FPGA 的安全特性可以整理如下：</p>
+<ol type="1">
+<li><strong>防篡改技术（Anti-Tamper, AT）</strong>：
+<ul>
+<li>防止逆向工程：通过使电路设计更加难以分析，阻止外部对FPGA的逆向工程。</li>
+<li>防止系统能力修改：确保FPGA的配置和功能不会被非法篡改或修改。</li>
+<li>阻止对策开发：通过复杂的设计和保护措施，防止开发针对FPGA安全的攻击性对策。</li>
+</ul></li>
+<li><strong>防篡改涂层技术</strong>：
+<ul>
+<li>物理防护：通过涂层技术，保护FPGA免受物理攻击，如探针攻击或微探针侵入。</li>
+</ul></li>
+<li><strong>比特流加密机制</strong>：
+<ul>
+<li><strong>保密性</strong>：使用AES加密技术对比特流进行加密，确保在FPGA上运行的程序不会被未授权方读取或篡改。</li>
+<li><strong>完整性</strong>：使用HMAC（哈希消息认证码）来验证比特流的完整性，防止未经授权的修改。</li>
+<li><strong>根信任</strong>：通过工厂预置的密钥材料，如物理不可克隆函数（PUF），与非对称加密技术协调工作，确保加密过程的安全性和可靠性。</li>
+</ul></li>
+<li><strong>物理不可克隆函数（Physically Unclonable Function,
+PUF）</strong>：
+<ul>
+<li>工厂预置的密钥材料：作为根信任的一部分，PUF利用FPGA芯片的物理特性生成独特的、不可克隆的密钥。</li>
+<li>安全密钥存储：PUF生成的密钥用于保护比特流和其他敏感数据，防止其被复制或篡改。</li>
+</ul></li>
+</ol>
+<p>这些安全特性使FPGA在云环境中进行大规模数据处理和执行敏感任务时，能够提供高水平的安全保障。</p>
+<figure>
+<img src="/blockchain/paper-FPGALedger/image-20240904122454798.png" alt="image-20240904122454798">
+<figcaption aria-hidden="true">image-20240904122454798</figcaption>
+</figure>
+<p><strong>FPGA Boot Image</strong>（FPGA启动镜像）：</p>
+<ul>
+<li><strong>HMAC Authenticated
+Image</strong>（HMAC认证的镜像）：用户准备好比特流后，通过AES（高级加密标准）进行加密，并生成相应的HMAC（哈希消息认证码）签名。HMAC用于确保比特流在传输和存储过程中未被篡改。</li>
+<li><strong>AES Encrypted
+Bitstream</strong>（AES加密的比特流）：这个比特流是经过AES加密的，确保在传输和存储时的数据保密性。</li>
+<li><strong>HMAC
+Signature</strong>（HMAC签名）：这是由HMAC生成的签名，用于验证比特流的完整性和真实性。</li>
+</ul>
+<p><strong>Hard-wired System</strong>（硬件系统）：</p>
+<ul>
+<li><strong>Secure
+Vault</strong>（安全保险库）：FPGA设备内置了一个安全保险库，用于存储公钥/私钥对或其他关键材料，如eFUSE密钥或BBRAM（电池备份RAM）密钥。这些密钥用于解密和验证比特流。</li>
+<li><strong>HMAC
+Authentication</strong>（HMAC认证）：在加载比特流之前，硬件首先通过HMAC认证，确认比特流未被篡改。如果认证成功，比特流会被传递到AES解密器。</li>
+<li><strong>AES</strong>（AES解密器）：在HMAC认证成功后，AES密钥会被传递到硬件AES解密器，用于解密比特流。解密后的比特流将被部署到FPGA的可编程逻辑中。</li>
+</ul>
+<p><strong>Interconnection Network and Programmable
+Logic</strong>（互连网络与可编程逻辑）：</p>
+<ul>
+<li>解密后的比特流通过内部互连网络加载到FPGA的可编程逻辑中，FPGA根据比特流的指令配置相应的功能。</li>
+</ul>
+<h1 id="fpga-ledger的设计">2 FPGA Ledger的设计</h1>
+<h2 id="总览">2.1 总览</h2>
+<p>有三个组成部分：</p>
+<ul>
+<li><p>云服务提供商</p>
+<p>云服务提供商提供基础设施，包含很多FPGA设备、存储系统和网络。</p></li>
+<li><p>FPGA设备</p>
+<p>FPGA设备作为分布式账本的节点，负责区块链管理和智能合约的执行。每个
+FPGA
+设备都有自己的一对公钥/私钥，并支持防篡改技术，包括比特流保护机制。</p></li>
+<li><p>用户</p>
+<p>用户是基于去中心化账本应用的一方，通常是一个组织。每个用户控制云中的一个或多个
+FPGA 设备，与其他参与者进行交互。</p></li>
+</ul>
+<figure>
+<img src="/blockchain/paper-FPGALedger/image-20240904123850602.png" alt="image-20240904123850602">
+<figcaption aria-hidden="true">image-20240904123850602</figcaption>
+</figure>
+<ol type="1">
+<li><strong>输入（Input）</strong>：
+<ul>
+<li>输入部分包含三个主要内容：
+<ul>
+<li><strong>Contract ID（合约 ID）</strong>：智能合约的唯一标识符。</li>
+<li><strong>Current
+State（当前状态）</strong>：合约当前的执行状态。</li>
+<li><strong>Smart
+Contract（智能合约）</strong>：具体的智能合约代码。</li>
+</ul></li>
+</ul></li>
+<li><strong>比特流（Bitstream）</strong>：
+<ul>
+<li><strong>DMA（直接内存访问）</strong>：用于快速传输数据，通常用于将数据从输入设备传输到处理器或者从处理器传输到输出设备。</li>
+<li><strong>Input
+Decryptor（输入解密器）</strong>：解密输入的智能合约和状态数据，以确保其在
+FPGA 内部的处理是安全的。</li>
+<li><strong>Smart Contract
+Interpreter（智能合约解释器）</strong>：负责解释和执行智能合约代码。</li>
+<li><strong>Support
+Functions（支持功能）</strong>：包括数字签名生成/验证、一致性机制、I/O
+操作等辅助功能。</li>
+<li><strong>Output
+Encryptor（输出加密器）</strong>：对输出的结果进行加密，以确保结果在传输和存储过程中保持机密性。</li>
+</ul></li>
+<li><strong>输出（Output）</strong>：
+<ul>
+<li><strong>Accept/Reject（接受/拒绝）</strong>：智能合约执行后的结果，决定是否接受或拒绝某个操作。</li>
+<li><strong>Attestation of
+Correctness（正确性证明）</strong>：提供执行过程的正确性证明。</li>
+<li><strong>State
+Delta（状态变化）</strong>：描述执行智能合约后系统状态的变化。</li>
+</ul></li>
+</ol>
+<ul>
+<li><strong>用户（User）</strong>：用户通常是企业组织，他们租用 FPGA
+设备来维护和使用去中心化账本。</li>
+<li><strong>云服务提供商（Cloud Service Provider, CSP）</strong>：CSP
+负责管理多个 FPGA 设备，为企业用户提供服务。FPGA
+设备在云环境中解释和执行智能合约，而不会泄露与合约及相关交易的信息。</li>
+</ul>
+<p>总结一下，就是所有输入内容、输出内容和比特流中的所有内容都是加密的，其他人无法看到。</p>
+<h2 id="详细设计">2.2 详细设计</h2>
+<p>主要设计内容是，用户和FPGA之间、FPGA和FPGA之间如何加密传输数据。</p>
+<p>用到了两个秘钥：</p>
+<p><strong>密钥对（公钥/私钥）</strong>：</p>
+<ul>
+<li>每个 FPGA
+设备都有一对唯一的公钥和私钥，其中私钥嵌入在比特流中并加载到设备内，公钥则以证书的形式发布。</li>
+<li>私钥用于解密智能合约提交时附带的加密信息（例如，对称密钥），确保只有指定的
+FPGA 设备可以解密并处理这些信息。</li>
+<li>通过私钥的使用，FPGA
+设备能够恢复并解密智能合约的内容，同时确保私钥不暴露给外部。</li>
+</ul>
+<p><strong>对称密钥（<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.355ex;" xmlns="http://www.w3.org/2000/svg" width="2.117ex" height="1.926ex" role="img" focusable="false" viewbox="0 -694 935.6 851.1"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D458" d="M121 647Q121 657 125 670T137 683Q138 683 209 688T282 694Q294 694 294 686Q294 679 244 477Q194 279 194 272Q213 282 223 291Q247 309 292 354T362 415Q402 442 438 442Q468 442 485 423T503 369Q503 344 496 327T477 302T456 291T438 288Q418 288 406 299T394 328Q394 353 410 369T442 390L458 393Q446 405 434 405H430Q398 402 367 380T294 316T228 255Q230 254 243 252T267 246T293 238T320 224T342 206T359 180T365 147Q365 130 360 106T354 66Q354 26 381 26Q429 26 459 145Q461 153 479 153H483Q499 153 499 144Q499 139 496 130Q455 -11 378 -11Q333 -11 305 15T277 90Q277 108 280 121T283 145Q283 167 269 183T234 206T200 217T182 220H180Q168 178 159 139T145 81T136 44T129 20T122 7T111 -2Q98 -11 83 -11Q66 -11 57 -1T48 16Q48 26 85 176T158 471L195 616Q196 629 188 632T149 637H144Q134 637 131 637T124 640T121 647Z"/></g><g data-mml-node="mi" transform="translate(554,-150) scale(0.707)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"/></g></g></g></g></svg></mjx-container></span>）</strong>：</p>
+<ul>
+<li><span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.355ex;" xmlns="http://www.w3.org/2000/svg" width="2.117ex" height="1.926ex" role="img" focusable="false" viewbox="0 -694 935.6 851.1"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D458" d="M121 647Q121 657 125 670T137 683Q138 683 209 688T282 694Q294 694 294 686Q294 679 244 477Q194 279 194 272Q213 282 223 291Q247 309 292 354T362 415Q402 442 438 442Q468 442 485 423T503 369Q503 344 496 327T477 302T456 291T438 288Q418 288 406 299T394 328Q394 353 410 369T442 390L458 393Q446 405 434 405H430Q398 402 367 380T294 316T228 255Q230 254 243 252T267 246T293 238T320 224T342 206T359 180T365 147Q365 130 360 106T354 66Q354 26 381 26Q429 26 459 145Q461 153 479 153H483Q499 153 499 144Q499 139 496 130Q455 -11 378 -11Q333 -11 305 15T277 90Q277 108 280 121T283 145Q283 167 269 183T234 206T200 217T182 220H180Q168 178 159 139T145 81T136 44T129 20T122 7T111 -2Q98 -11 83 -11Q66 -11 57 -1T48 16Q48 26 85 176T158 471L195 616Q196 629 188 632T149 637H144Q134 637 131 637T124 640T121 647Z"/></g><g data-mml-node="mi" transform="translate(554,-150) scale(0.707)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"/></g></g></g></g></svg></mjx-container></span> 是一个在所有参与 FPGALedger
+系统的 FPGA 设备之间共享的对称密钥。</li>
+<li>在智能合约被解密后，<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.355ex;" xmlns="http://www.w3.org/2000/svg" width="2.117ex" height="1.926ex" role="img" focusable="false" viewbox="0 -694 935.6 851.1"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D458" d="M121 647Q121 657 125 670T137 683Q138 683 209 688T282 694Q294 694 294 686Q294 679 244 477Q194 279 194 272Q213 282 223 291Q247 309 292 354T362 415Q402 442 438 442Q468 442 485 423T503 369Q503 344 496 327T477 302T456 291T438 288Q418 288 406 299T394 328Q394 353 410 369T442 390L458 393Q446 405 434 405H430Q398 402 367 380T294 316T228 255Q230 254 243 252T267 246T293 238T320 224T342 206T359 180T365 147Q365 130 360 106T354 66Q354 26 381 26Q429 26 459 145Q461 153 479 153H483Q499 153 499 144Q499 139 496 130Q455 -11 378 -11Q333 -11 305 15T277 90Q277 108 280 121T283 145Q283 167 269 183T234 206T200 217T182 220H180Q168 178 159 139T145 81T136 44T129 20T122 7T111 -2Q98 -11 83 -11Q66 -11 57 -1T48 16Q48 26 85 176T158 471L195 616Q196 629 188 632T149 637H144Q134 637 131 637T124 640T121 647Z"/></g><g data-mml-node="mi" transform="translate(554,-150) scale(0.707)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"/></g></g></g></g></svg></mjx-container></span>
+被用来对合约进行再次加密，以便安全地将其存储在去中心化账本中。</li>
+<li><span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.355ex;" xmlns="http://www.w3.org/2000/svg" width="2.117ex" height="1.926ex" role="img" focusable="false" viewbox="0 -694 935.6 851.1"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D458" d="M121 647Q121 657 125 670T137 683Q138 683 209 688T282 694Q294 694 294 686Q294 679 244 477Q194 279 194 272Q213 282 223 291Q247 309 292 354T362 415Q402 442 438 442Q468 442 485 423T503 369Q503 344 496 327T477 302T456 291T438 288Q418 288 406 299T394 328Q394 353 410 369T442 390L458 393Q446 405 434 405H430Q398 402 367 380T294 316T228 255Q230 254 243 252T267 246T293 238T320 224T342 206T359 180T365 147Q365 130 360 106T354 66Q354 26 381 26Q429 26 459 145Q461 153 479 153H483Q499 153 499 144Q499 139 496 130Q455 -11 378 -11Q333 -11 305 15T277 90Q277 108 280 121T283 145Q283 167 269 183T234 206T200 217T182 220H180Q168 178 159 139T145 81T136 44T129 20T122 7T111 -2Q98 -11 83 -11Q66 -11 57 -1T48 16Q48 26 85 176T158 471L195 616Q196 629 188 632T149 637H144Q134 637 131 637T124 640T121 647Z"/></g><g data-mml-node="mi" transform="translate(554,-150) scale(0.707)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"/></g></g></g></g></svg></mjx-container></span>
+还用于加密账本中的数据和智能合约执行的结果，确保在传输和存储过程中保持数据的保密性。</li>
+<li>由于 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.355ex;" xmlns="http://www.w3.org/2000/svg" width="2.117ex" height="1.926ex" role="img" focusable="false" viewbox="0 -694 935.6 851.1"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D458" d="M121 647Q121 657 125 670T137 683Q138 683 209 688T282 694Q294 694 294 686Q294 679 244 477Q194 279 194 272Q213 282 223 291Q247 309 292 354T362 415Q402 442 438 442Q468 442 485 423T503 369Q503 344 496 327T477 302T456 291T438 288Q418 288 406 299T394 328Q394 353 410 369T442 390L458 393Q446 405 434 405H430Q398 402 367 380T294 316T228 255Q230 254 243 252T267 246T293 238T320 224T342 206T359 180T365 147Q365 130 360 106T354 66Q354 26 381 26Q429 26 459 145Q461 153 479 153H483Q499 153 499 144Q499 139 496 130Q455 -11 378 -11Q333 -11 305 15T277 90Q277 108 280 121T283 145Q283 167 269 183T234 206T200 217T182 220H180Q168 178 159 139T145 81T136 44T129 20T122 7T111 -2Q98 -11 83 -11Q66 -11 57 -1T48 16Q48 26 85 176T158 471L195 616Q196 629 188 632T149 637H144Q134 637 131 637T124 640T121 647Z"/></g><g data-mml-node="mi" transform="translate(554,-150) scale(0.707)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"/></g></g></g></g></svg></mjx-container></span> 是共享的，所有 FPGA
+设备都可以解密和验证账本中的数据和智能合约的执行结果，以确保系统的完整性和一致性。</li>
+</ul>
+<p>总结：</p>
+<p>用户给FPGA发送信息时，用公钥加密数据，FPGA用私钥解密数据。</p>
+<p>FPGA给FPGA发送信息时，用对称密钥加密数据，其他FPGA可以解密数据。</p>
+<h2 id="共识设计">2.3 共识设计</h2>
+<p>FPGALedger 将共识视为一个独立的层，可以由通用处理器运行。</p>
+<p>当 FPGA
+设备生成交易或接收到交易时，它会将其决策通知指定的共识处理器，处理器再与其他节点通信以运行共识协议。</p>
+<h1 id="安全性分析">3 安全性分析</h1>
+<figure>
+<img src="/blockchain/paper-FPGALedger/image-20240904131033260.png" alt="image-20240904131033260">
+<figcaption aria-hidden="true">image-20240904131033260</figcaption>
+</figure>
+<p><strong>智能合约及相关数据的保护</strong>：</p>
+<ul>
+<li>智能合约及其相关数据首先通过共享对称密钥（Shared Symmetric
+Key）进行加密保护。这确保了数据在存储和传输过程中不会被未经授权的实体访问。</li>
+</ul>
+<p><strong>共享对称密钥的保护</strong>：</p>
+<ul>
+<li>共享对称密钥（Shared Symmetric Key）通过每个 FPGA 设备的私钥（FPGA
+Private
+Key）进行加密保护。这个私钥嵌入在比特流中，并通过比特流加密机制得到保护。</li>
+</ul>
+<p><strong>FPGA 私钥的保护</strong>：</p>
+<ul>
+<li>FPGA 设备的私钥通过比特流加密密钥（Bitstream Encryption
+Key）进行保护。这意味着只有指定的 FPGA
+设备才能解密比特流并访问私钥，从而确保整个链条的安全性。</li>
+</ul>
+<h1 id="总结">总结</h1>
+<p>区块链和分布式账本的火爆，使得将区块链作为可提供的云服务成为发展方向。</p>
+<p>区块链作为云服务，存在云服务商能够盗取私密信息的风险，所以需要有办法对数据进行加密。</p>
+<p>用户需要向区块链发送信息，这个信息需要加密，只有区块链能解密 →
+密钥对，用户使用公钥加密，区块使用私钥解密</p>
+<p>私钥如何提供给区块？将私钥嵌入在比特流里，利用比特流加密的机制，保证比特流不能被读取和篡改，且只能由特定的FPGA写入。</p>
+<p>区块需要将信息发送给其他区块，这个信息需要加密，所有其他区块都能解密
+→ 对称秘钥，所有网络中的区块都有这个对称秘钥。</p>
+<p>层层保护使得信息</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/FPGA/" rel="tag"><i class="fa fa-tag"></i> FPGA</a>
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+              <a href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/" rel="tag"><i class="fa fa-tag"></i> 智能合约</a>
+              <a href="/tags/%E8%AE%BA%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 论文</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blockchain/paper-TSC-VEE/" rel="prev" title="A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记">
+                  <i class="fa fa-angle-left"></i> A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/AXI/" rel="next" title="AXI 系统总线">
+                  AXI 系统总线 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

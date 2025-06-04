@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="这篇论文影响因子好高，文章也比较长。耐心啃啃学习一下。 讲的是一种基于TrustZone的智能合约的虚拟执行环境。 我还不知道什么是可信执行环境TrustZone，总之听起来很安全。并且本文验证了这种方法比Geth性能更好。 本文先学习TrustZone的原理，然后精读这篇论文。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记">
+<meta property="og:url" content="http://cishoon.top/blockchain/paper-TSC-VEE/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="这篇论文影响因子好高，文章也比较长。耐心啃啃学习一下。 讲的是一种基于TrustZone的智能合约的虚拟执行环境。 我还不知道什么是可信执行环境TrustZone，总之听起来很安全。并且本文验证了这种方法比Geth性能更好。 本文先学习TrustZone的原理，然后精读这篇论文。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/blockchain/paper-TSC-VEE/image-20240907130854787.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/paper-TSC-VEE/image-20240908140541329.png">
+<meta property="og:image" content="http://cishoon.top/blockchain/paper-TSC-VEE/image-20240908140653177.png">
+<meta property="article:published_time" content="2024-09-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-04T07:04:29.173Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="以太坊">
+<meta property="article:tag" content="TrustZone">
+<meta property="article:tag" content="智能合约">
+<meta property="article:tag" content="论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/blockchain/paper-TSC-VEE/image-20240907130854787.png">
+
+
+<link rel="canonical" href="http://cishoon.top/blockchain/paper-TSC-VEE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/blockchain/paper-TSC-VEE/","path":"blockchain/paper-TSC-VEE/","title":"A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">77</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#trustzone"><span class="nav-text">TrustZone</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87"><span class="nav-text">目标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%96%B9%E6%B3%95%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="nav-text">传统方法与问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#trustzone%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">TrustZone解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#trustzonetsc-vee-%E5%92%8C-op-tee"><span class="nav-text">TrustZone、TSC-VEE 和 OP-TEE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-text">1 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%91%E6%88%98"><span class="nav-text">2 挑战</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1"><span class="nav-text">3 设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A8%81%E8%83%81%E6%A8%A1%E5%9E%8Bthreat-model"><span class="nav-text">3.1 威胁模型（Threat Model）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="nav-text">3.2 架构概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%93%E7%94%A8%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="nav-text">3.3 专用指令集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-rmm"><span class="nav-text">3.4 运行时内存管理 RMM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-text">内存分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6"><span class="nav-text">内存回收</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E7%B2%92%E5%BA%A6%E5%AD%97%E8%8A%82%E7%A0%81%E5%88%86%E6%9E%90-hgba"><span class="nav-text">3.5 混合粒度字节码分析
+HGBA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E6%A0%88%E9%AB%98%E5%BA%A6%E6%A3%80%E6%B5%8B"><span class="nav-text">堆栈高度检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gas-%E6%88%90%E6%9C%AC%E6%A3%80%E6%B5%8B"><span class="nav-text">Gas 成本检测</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%A8%E9%9A%94%E7%A6%BB%E7%8E%AF%E5%A2%83%E9%A2%84%E5%8F%96-ciep"><span class="nav-text">3.6 跨隔离环境预取 CIEP</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.jpg">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/blockchain/paper-TSC-VEE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.jpg">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9ibG9ja2NoYWluL3BhcGVyLVRTQy1WRUUubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-09-05 00:00:00" itemprop="dateCreated datePublished" datetime="2024-09-05T00:00:00+08:00">2024-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>这篇论文影响因子好高，文章也比较长。耐心啃啃学习一下。</p>
+<p>讲的是一种基于TrustZone的智能合约的虚拟执行环境。</p>
+<p>我还不知道什么是可信执行环境TrustZone，总之听起来很安全。并且本文验证了这种方法比Geth性能更好。</p>
+<p>本文先学习TrustZone的原理，然后精读这篇论文。</p>
+<span id="more"></span>
+<h1 id="trustzone">TrustZone</h1>
+<p>参考资料：https://www.bilibili.com/read/cv29524904/</p>
+<h2 id="目标">目标</h2>
+<p>一句话概括：TrustZone的目的是提高嵌入式设备的安全性。</p>
+<p>那么，传统的嵌入式设备，哪里不安全？传统的方法是怎么解决安全问题的？</p>
+<h3 id="传统方法与问题">传统方法与问题</h3>
+<p>CPU
+通过内存映射手段给每个进程营造一个单独的地址空间来隔离多个进程的代码和数据，通过内核空间和用户空间不同的特权级来隔离操作系统和用户进程的代码和数据。但由于内存中的代码和数据都是明文，容易被同处于内存中的其它应用偷窥
+。</p>
+<p>为了解决这个问题，传统的方案有：</p>
+<ul>
+<li><p><strong>外部挂接硬件安全模块</strong>：使用外置的SIM卡、U盘等外部硬件加解密模块</p>
+<p>问题：</p>
+<ol type="1">
+<li>外部模块与主芯片之间会通信，这个通信线路暴露在外部，可以被破解监听；</li>
+<li>通信速率低</li>
+</ol></li>
+<li><p><strong>内部集成硬件安全模块</strong>：集成到芯片内部，一个芯片两个核：普通核与安全核</p>
+<p>问题：</p>
+<ol type="1">
+<li>核之间通信速率仍然很低</li>
+<li>性能有限、成本较高、占用SoC（System on Chip）面积</li>
+</ol></li>
+</ul>
+<h2 id="trustzone解决方案">TrustZone解决方案</h2>
+<p>并不是使用独立的安全模块，而是将每个核<strong>虚拟为两个核</strong>，好比在一个CPU里集成两个操作系统：</p>
+<ul>
+<li>一个非安全核（Non-secure Core, NS
+Core），运行非安全世界的代码；</li>
+<li>另一个安全核（Secure Core），运行安全世界的代码。</li>
+</ul>
+<p><strong>安全世界</strong>（Secure
+World）和<strong>非安全世界</strong>（Non-secure
+World）是TrustZone抽象出的概念</p>
+<ul>
+<li>需要保密的操作在安全世界中执行，普通操作在非安全世界中执行；</li>
+<li>安全世界可以访问非安全世界的资源，非安全世界不能访问安全世界的资源。</li>
+<li>这两个世界通过<strong>时间片轮转</strong>的方式交替占用物理核，通过
+<strong>Monitor Mode</strong> 进行转换。</li>
+</ul>
+<p>原先我想先学习仔细学习TrustZone和他的实现方案的，但是内容过多，并且论文中也会部分讲解部分内容，不在此单独学习TrustZone了，有需要以后会单独开一篇文章。</p>
+<h2 id="trustzonetsc-vee-和-op-tee">TrustZone、TSC-VEE 和 OP-TEE</h2>
+<p>TrustZone、TSC-VEE 和 OP-TEE 之间的关系如下：</p>
+<ol type="1">
+<li><strong>TrustZone</strong>：TrustZone 是 ARM
+处理器中的一种安全架构，它提供了两个隔离的执行环境：安全世界（Secure
+World）和普通世界（Normal World）。TrustZone
+通过硬件强制隔离机制，确保普通世界无法访问安全世界的资源。TrustZone
+是整个系统的底层基础，负责提供硬件级别的安全和隔离环境。</li>
+<li><strong>OP-TEE</strong>：OP-TEE 是一个在 TrustZone
+上运行的开源安全操作系统，专门为 ARM
+处理器设计。它提供了运行在安全世界中的操作系统功能，并支持开发和运行可信应用程序（Trusted
+Applications, TAs）。OP-TEE 通过提供 API，使得普通世界（例如运行
+Linux）中的应用程序可以安全地与安全世界中的应用程序进行通信。</li>
+<li><strong>TSC-VEE</strong>：TSC-VEE 是一个专门为 TrustZone
+设计的虚拟执行环境，它运行在 OP-TEE 上，旨在支持 Solidity 智能合约在
+TrustZone 上的执行。TSC-VEE 利用了 OP-TEE 提供的安全功能和 TrustZone
+的硬件隔离机制，为智能合约提供了一个安全高效的执行环境。TSC-VEE
+通过动态内存管理和优化指令集等机制，克服了在 TrustZone
+上运行智能合约时的内存和性能限制。</li>
+</ol>
+<h1 id="简介">1 简介</h1>
+<p>本文的主要动机在于解决将主流智能合约迁移到ARM
+TrustZone上执行的困难。现有智能合约通常使用Solidity编写，而TrustZone的执行环境主要支持C语言，缺乏支持智能合约所需的虚拟执行环境。这导致了现有智能合约无法直接迁移到TrustZone上执行，从而限制了在嵌入式设备和云服务器上利用TrustZone保护智能合约的潜力。</p>
+<p>为应对这一挑战，本文提出并设计了一个名为TSC-VEE的新虚拟执行环境，旨在支持在TrustZone上执行用Solidity编写的智能合约。具体的贡献包括：</p>
+<ol type="1">
+<li><strong>指令集设计</strong>：设计了特定的指令集，支持在TrustZone上执行Solidity智能合约。</li>
+<li><strong>运行时内存管理机制</strong>：提出了一种新的运行时内存管理机制，显著减少了内存占用，同时保持低延迟。</li>
+<li><strong>混合粒度字节码分析</strong>：通过预执行字节码来减少运行时检测次数，从而降低了执行延迟。</li>
+<li><strong>跨隔离环境预取方法</strong>：设计了一种方法，提前加载并存储区块链数据，减少了智能合约执行时的延迟。</li>
+<li><strong>性能验证</strong>：在Raspberry Pi
+3B+上实现并验证了TSC-VEE，展示了其在执行性能上的显著提升。</li>
+</ol>
+<h1 id="挑战">2 挑战</h1>
+<p>https://chatgpt.com/c/bd659cf1-4e63-41d2-a6b0-6d8a48bcb185</p>
+<p><strong>指令集与执行机制的匹配</strong>：现有的 Solidity
+指令集和解释器无法直接适应 TrustZone
+的执行机制，特别是跨世界的数据访问会导致显著的延迟。</p>
+<p><strong>内存资源限制</strong>：TrustZone
+上可用的安全内存资源有限，而智能合约执行过程中内存需求不断增加，可能导致内存不足，进而导致合约执行失败。</p>
+<p><strong>频繁的资源检测</strong>：在智能合约执行过程中，频繁的资源检测会增加执行延迟，并在异常（如堆栈溢出或
+gas 耗尽）发生时使执行无效。</p>
+<h1 id="设计">3 设计</h1>
+<h2 id="威胁模型threat-model">3.1 威胁模型（Threat Model）</h2>
+<p>假设：</p>
+<ul>
+<li>所有TrustZone的软件组件都是可信的</li>
+<li>普通世界中的操作系统和用户空间是不可信的</li>
+<li>数据的传输是可信的</li>
+</ul>
+<p>因此，TSC-VEE
+可以在<strong>从输入数据到输出结果</strong>的整个智能合约执行过程中提供安全保护。</p>
+<p>针对 TrustZone 本身的攻击，和以太坊上的回滚攻击，不在TSC-VEE</p>
+<h2 id="架构概述">3.2 架构概述</h2>
+<p><strong>数据区</strong>：包括堆栈和工作内存。堆栈是一个操作数堆栈，负责存储执行过程中需要的操作数，字长为
+256
+位。工作内存负责存储各种类型的数据和运行时的返回值。在作为操作数使用之前，工作内存中的运行时数据和区块链存储中的状态数据将首先被加载到堆栈中。</p>
+<p><strong>指令集</strong>：包含 TSC-VEE 支持的所有指令。TSC-VEE
+提供一个跳转表，记录从操作码到操作或从操作到指令函数的对应关系。</p>
+<p><strong>指令解释器</strong>：是 TSC-VEE
+的核心，负责智能合约的字节码解释和执行。解释器由四个主要执行阶段组成：</p>
+<ol type="1">
+<li><strong>取指阶段</strong>：程序计数器从存储在 TEE
+侧的输入字节码中提取操作码，操作码是一个两位的十六进制数。</li>
+<li><strong>解码阶段</strong>：根据指令集的跳转表，解释器将操作码转换为操作。</li>
+<li><strong>分析阶段</strong>：解释器通过字节码预执行来分析指令的堆栈需求和静态
+gas
+成本。分析结果被缓存到共享内存中，以供解释器访问，并避免增加安全内存占用。在分析阶段，每条指令的相应函数、某些特殊类型指令的参数以及字节码块的跳转目标将被记录，并用作下一执行阶段的输入数据。这三个阶段将重复进行，直到所有字节码加载完成。</li>
+<li><strong>执行阶段</strong>：解释器根据记录顺序执行指令，动态修正 gas
+成本，然后返回执行结果。</li>
+</ol>
+<figure>
+<img src="/blockchain/paper-TSC-VEE/image-20240907130854787.png" alt="image-20240907130854787">
+<figcaption aria-hidden="true">image-20240907130854787</figcaption>
+</figure>
+<h2 id="专用指令集">3.3 专用指令集</h2>
+<blockquote>
+<p>挑战：</p>
+<p><strong>指令集与执行机制的匹配</strong>：现有的 Solidity
+指令集和解释器无法直接适应 TrustZone
+的执行机制，特别是跨世界的数据访问会导致显著的延迟。</p>
+</blockquote>
+<p>这些指令基于 Solidity 的原生指令集，但其底层解释已被重构，以适应
+TrustZone 和 OP-TEE 机制，从而支持主流智能合约。</p>
+<ol type="1">
+<li><strong>算术指令</strong>：包括四种算术运算、模运算和用于 256
+位操作数的指数运算。这些指令从堆栈顶部弹出两个或三个操作数，进行计算，然后将结果压入堆栈。</li>
+<li><strong>比较指令</strong>：包括数据大小比较和布尔运算，用于操作数比较和跳转目标判断等。</li>
+<li><strong>加密指令</strong>：SHA3 负责区块链的哈希计算。</li>
+<li><strong>Clusterstate
+指令</strong>：主要负责获取附加数据，包括交易发起时的发送者、输入数据和其他参数。</li>
+<li><strong>存储指令</strong>：包括从堆栈顶部弹出操作数，以及在堆栈和
+TSC-VEE 工作内存之间或堆栈和 TSC-VEE 存储之间的数据移动。</li>
+<li><strong>执行指令</strong>：主要包括跳转指令，以及获取当前程序计数器、内存大小和剩余
+gas 的指令。跳转指令负责处理执行流程的跳转和验证。</li>
+<li><strong>堆栈指令</strong>：包括三种类型。PUSHx 指令将 X 字节（1-32
+字节）的数据推送到堆栈顶部。DUPx 指令复制堆栈的第 X 个（第 1 到第 16
+个）数据，并将其推送到堆栈顶部。SWAPx 指令将堆栈顶部元素与第 X 个（第 1
+到第 16 个）元素交换。</li>
+<li><strong>日志指令</strong>：用于将不同长度的日志存储在区块链 StateDB
+中。</li>
+<li><strong>Cluster
+指令</strong>：包括不同的合约调用模式指令和返回指令。</li>
+<li><strong>RMM
+指令</strong>：包括一对指令，用于创建内存指针和释放内存，以完成 RMM
+机制。</li>
+</ol>
+<h2 id="运行时内存管理-rmm">3.4 运行时内存管理 RMM</h2>
+<blockquote>
+<p>挑战：</p>
+<p><strong>内存资源限制</strong>：TrustZone
+上可用的安全内存资源有限，而智能合约执行过程中内存需求不断增加，可能导致内存不足，进而导致合约执行失败。</p>
+</blockquote>
+<p>Solidity 提供了两个关键词，<code>storage</code> 和
+<code>memory</code>，用于指定变量类型。<code>storage</code>
+类型的变量将持久存储在区块链的 stateDB 中，而 <code>memory</code>
+类型的变量将暂时存储在工作内存中，并且在执行结束前不会释放。为了避免持久存储带来的高
+gas 消耗，合约中的大部分数据都被定义为 <code>memory</code>
+类型。然而，这些数据会随着合约的执行，使工作内存（即 TrustZone
+上的安全内存）的占用持续增长。这使得在 TrustZone 上执行 Solidity
+智能合约变得具有挑战性，因为内存资源有限。</p>
+<p>再次强调一遍，TrustZone是一个硬件架构，分为安全世界和非安全世界。OP-TEE
+OS是一个可信执行环境的操作系统，这个操作系统运行在TrustZone的安全世界中。</p>
+<p>本文实现的TSC-VEE是一个可信智能合约的虚拟执行环境，本质上是一个TA（可信应用程序），运行在OP-TEE
+OS上。</p>
+<p>智能合约的运算过程中会有大量的内存资源使用，而TrustZone中的内存空间有限，所以必须有一种方式合理的管理内存空间。</p>
+<figure>
+<img src="/blockchain/paper-TSC-VEE/image-20240908140541329.png" alt="image-20240908140541329">
+<figcaption aria-hidden="true">image-20240908140541329</figcaption>
+</figure>
+<h3 id="内存分配">内存分配</h3>
+<ol type="1">
+<li>当 <code>VM_RAM</code> 的剩余内存充足时，按需扩展工作内存区域。</li>
+<li>当剩余内存无法满足要求时，合并内存池中的连续区域，然后找到合适大小的区域。</li>
+<li>如果内存池中也没有可用区域，则将 <code>VM_RAM</code>
+起始地址的一定大小的数据移动到共享内存，然后释放该区域。</li>
+<li>重复步骤 1-3，直到满足需求为止。</li>
+</ol>
+<p>和操作系统的运行内存分配方法一样，如果内存真的不够，还会移动一部分到外存。</p>
+<h3 id="内存回收">内存回收</h3>
+<p>在编译阶段，对将来要回收的变量打上标记（MARK），在后续不再使用该变量的时候释放空间（FREE）。</p>
+<figure>
+<img src="/blockchain/paper-TSC-VEE/image-20240908140653177.png" alt="image-20240908140653177">
+<figcaption aria-hidden="true">image-20240908140653177</figcaption>
+</figure>
+<p>原来的方法从来不主动释放空间，有任何变量都不断往栈里面加，直到合约执行完毕。现在的方法是当变量不再被使用后就释放他的空间，因此显著减少了内存空间的占用</p>
+<h2 id="混合粒度字节码分析-hgba">3.5 <strong>混合粒度字节码分析</strong>
+HGBA</h2>
+<blockquote>
+<p>目的：减少运行时对堆栈高度和 gas
+成本的检测次数，从而降低了执行延迟。</p>
+</blockquote>
+<p>在合约执行过程中，会进行堆栈高度和 gas
+成本的检测，以确保执行的正确性。传统上，这种检测是在每条指令执行之前进行的。如此频繁的检测会带来较高的延迟。</p>
+<blockquote>
+<p>什么是粒度？</p>
+<p>“粒度”是指处理或分析某个事物的细化程度、最小单位。</p>
+</blockquote>
+<p>传统上，每条指令执行之前都会进行堆栈高度和 gas
+成本的检测，这个就是<em>指令粒度</em>。</p>
+<p>本文提出的方法是，在<em>合约粒度</em>上分析堆栈高度，在<em>基本块粒度</em>上分析
+gas 成本。在两个不同的粒度上进行分析，因此叫做“混合粒度”。</p>
+<h3 id="堆栈高度检测">堆栈高度检测</h3>
+<p>合约粒度，每个合约执行之前只检测一次。</p>
+<p>因为每个指令会造成的堆栈高度变化是一定的。比如 <code>ADD</code>
+就是先减少2个高度，再增加1个高度。</p>
+<p>提前过一遍所有指令，就能得到堆栈高度的最大值，检查是否超过上限即可。</p>
+<h3 id="gas-成本检测">Gas 成本检测</h3>
+<p>基本块粒度。基本块就是编译原理中的基本块，是指一系列不包含跳转的指令序列。</p>
+<p>Gas 成本会随着运行复杂度而增加。例如一个代码的循环次数非常多，Gas
+成本就会很高。</p>
+<p>每条指令的Gas
+成本是一定的，每个基本块的执行顺序也是一定的，因此可以先计算出每个基本块的总Gas成本，之后执行到这个基本块后，只用检测加入这个基本块之后Gas
+成本是否超限。</p>
+<p>从一个指令一次缩减到一个基本块一次。</p>
+<h2 id="跨隔离环境预取-ciep">3.6 跨隔离环境预取 CIEP</h2>
+<p>CIEP（Cross-Isolation-Environment Prefetching）</p>
+<p>智能合约执行过程中需要获取多种类型的数据，包括输入参数、合约字节码和区块链状态。这些数据都可以从普通世界（REE）侧的交易参数或区块链
+StateDB 中获取。</p>
+<p>跨世界数据加载的过程是一个缓慢的过程：</p>
+<p>没有 CIEP
+时，此操作首先从安全世界切换到普通世界，通过主机应用程序获取数据并将其复制到共享内存，然后再切换回安全世界，从共享内存加载数据，并继续执行，如图中所示的步骤
+1© 2© 3© 4©。跨世界数据存储的过程类似，但顺序相反。一旦解释器遇到 SSTORE
+和 SLOAD 指令，这些耗时操作将在运行时重复执行。</p>
+<p>在 CIEP
+机制下，持久化存储数据可以与其他参数一起在执行前预取，而不是在运行时进行。CIEP
+的过程如下：</p>
+<ol type="1">
+<li>普通世界中的包装器会在执行前从合约调用交易和包含区块链 StateDB
+中持久化存储数据的账户存储树中获取参数。</li>
+<li>所有数据将通过 TSC-VEE 主机应用程序复制到 REE 和 TEE
+之间的共享内存中。</li>
+<li>通过世界切换调用 TSC-VEE TA。</li>
+<li>使用这些数据，TSC-VEE
+解释器可以在不同的执行阶段根据需要从共享内存中获取参数、操作码和存储数据。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+              <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+              <a href="/tags/TrustZone/" rel="tag"><i class="fa fa-tag"></i> TrustZone</a>
+              <a href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/" rel="tag"><i class="fa fa-tag"></i> 智能合约</a>
+              <a href="/tags/%E8%AE%BA%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 论文</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/fabric/fabric%E6%BA%90%E7%A0%81%E7%B2%BE%E8%AF%BB%20(1)/" rel="prev" title="Hyperledger Fabric 源码精读（1）">
+                  <i class="fa fa-angle-left"></i> Hyperledger Fabric 源码精读（1）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/paper-FPGALedger/" rel="next" title="FPGA based Decentralized Ledger for Enterprise Applications 论文笔记">
+                  FPGA based Decentralized Ledger for Enterprise Applications 论文笔记 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>
