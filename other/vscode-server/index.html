@@ -21,28 +21,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
 
-    <meta name="description" content="https:&#x2F;&#x2F;download.pytorch.org&#x2F;whl&#x2F;cu124&#x2F;torch&#x2F; https:&#x2F;&#x2F;download.pytorch.org&#x2F;whl&#x2F;cu124&#x2F;torchvision&#x2F; https:&#x2F;&#x2F;mirror.sjtu.edu.cn&#x2F;pytorch-wheels&#x2F;cu124&#x2F;?mirror_intel_list">
+    <meta name="description" content="vscode-server下载特别慢，每次连接服务器都要等很久，配置了 ~&#x2F;.bashrc 全局代理也没用。 原因： VSCode Remote SSH 使用的是 login shell，所以只会加载 ~&#x2F;.bash_profile，不会自动加载 ~&#x2F;.bashrc。 如果你只写在 ~&#x2F;.bashrc，VSCode 就看不到设置的代理变量了。 解决方案： 需要在 ~&#x2F;.bash_profile 中">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python torch cuda">
-<meta property="og:url" content="http://cishoon.top/python-torch-cuda/index.html">
+<meta property="og:title" content="vscode-server下载慢">
+<meta property="og:url" content="http://cishoon.top/other/vscode-server/index.html">
 <meta property="og:site_name" content="Cishoon&#39;s Blog">
-<meta property="og:description" content="https:&#x2F;&#x2F;download.pytorch.org&#x2F;whl&#x2F;cu124&#x2F;torch&#x2F; https:&#x2F;&#x2F;download.pytorch.org&#x2F;whl&#x2F;cu124&#x2F;torchvision&#x2F; https:&#x2F;&#x2F;mirror.sjtu.edu.cn&#x2F;pytorch-wheels&#x2F;cu124&#x2F;?mirror_intel_list">
+<meta property="og:description" content="vscode-server下载特别慢，每次连接服务器都要等很久，配置了 ~&#x2F;.bashrc 全局代理也没用。 原因： VSCode Remote SSH 使用的是 login shell，所以只会加载 ~&#x2F;.bash_profile，不会自动加载 ~&#x2F;.bashrc。 如果你只写在 ~&#x2F;.bashrc，VSCode 就看不到设置的代理变量了。 解决方案： 需要在 ~&#x2F;.bash_profile 中">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-11-17T05:56:10.344Z">
+<meta property="article:published_time" content="2025-06-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-03T12:40:33.521Z">
 <meta property="article:author" content="Cishoon">
-<meta property="article:tag" content="python">
+<meta property="article:tag" content="vscode">
+<meta property="article:tag" content="cursor">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://cishoon.top/python-torch-cuda/">
+<link rel="canonical" href="http://cishoon.top/other/vscode-server/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/python-torch-cuda/","path":"python-torch-cuda/","title":"python torch cuda"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/other/vscode-server/","path":"other/vscode-server/","title":"vscode-server下载慢"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>python torch cuda | Cishoon's Blog</title>
+<title>vscode-server下载慢 | Cishoon's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -206,7 +207,7 @@ mjx-container[display="true"] + br {
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">69</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">47</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">72</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -297,7 +298,7 @@ mjx-container[display="true"] + br {
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cishoon.top/python-torch-cuda/">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/other/vscode-server/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/cishoon.jpg">
@@ -310,12 +311,12 @@ mjx-container[display="true"] + br {
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="python torch cuda | Cishoon's Blog">
+      <meta itemprop="name" content="vscode-server下载慢 | Cishoon's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          python torch cuda<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9weXRob24tdG9yY2gtY3VkYS5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+          vscode-server下载慢<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9vdGhlci92c2NvZGUtc2VydmVyLm1k" title="编辑"><i class="fa fa-pen-nib"></i></span>
         </h1>
 
         <div class="post-meta-container">
@@ -326,7 +327,7 @@ mjx-container[display="true"] + br {
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-11-17 00:00:00" itemprop="dateCreated datePublished" datetime="2024-11-17T00:00:00+08:00">2024-11-17</time>
+      <time title="创建时间：2025-06-03 00:00:00" itemprop="dateCreated datePublished" datetime="2025-06-03T00:00:00+08:00">2025-06-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -334,7 +335,7 @@ mjx-container[display="true"] + br {
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+          <a href="/categories/%E5%A4%87%E5%BF%98/" itemprop="url" rel="index"><span itemprop="name">备忘</span></a>
         </span>
     </span>
 
@@ -344,7 +345,7 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>162</span>
+      <span>396</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -361,9 +362,17 @@ mjx-container[display="true"] + br {
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>https://download.pytorch.org/whl/cu124/torch/
-https://download.pytorch.org/whl/cu124/torchvision/</p>
-<p>https://mirror.sjtu.edu.cn/pytorch-wheels/cu124/?mirror_intel_list</p>
+    <div class="post-body" itemprop="articleBody"><p>vscode-server下载特别慢，每次连接服务器都要等很久，配置了
+<code>~/.bashrc</code> 全局代理也没用。</p>
+<p><strong>原因：</strong></p>
+<p>VSCode Remote SSH 使用的是 <strong>login shell</strong>，所以只会加载
+~/.bash_profile，<strong>不会自动加载 ~/.bashrc</strong>。</p>
+<p>如果你只写在 ~/.bashrc，VSCode 就看不到设置的代理变量了。</p>
+<p><strong>解决方案：</strong></p>
+<p>需要在 <code>~/.bash_profile</code> 中配置代理：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'export http_proxy=http://192.168.3.129:21882'</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'export https_proxy=http://192.168.3.129:21882'</span> &gt;&gt; ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<p>或者直接加入：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> [ -f ~/.bashrc ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">source</span> ~/.bashrc</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
 <span id="more"></span>
 
     </div>
@@ -374,20 +383,21 @@ https://download.pytorch.org/whl/cu124/torchvision/</p>
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
+              <a href="/tags/vscode/" rel="tag"><i class="fa fa-tag"></i> vscode</a>
+              <a href="/tags/cursor/" rel="tag"><i class="fa fa-tag"></i> cursor</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/graduation-project/11/" rel="prev" title="毕设11 - 解耦 CosmWasm 模块">
-                  <i class="fa fa-angle-left"></i> 毕设11 - 解耦 CosmWasm 模块
+                <a href="/cs231n/02/" rel="prev" title="cs231n - 反向传播">
+                  <i class="fa fa-angle-left"></i> cs231n - 反向传播
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/graduation-project/10/" rel="next" title="毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践">
-                  毕设10 - Juno(wasmd) 初见，节点部署和简单功能实践 <i class="fa fa-angle-right"></i>
+                <a href="/cs231n/01/" rel="next" title="cs231n - KNN & SVM & Softmax">
+                  cs231n - KNN & SVM & Softmax <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
