@@ -1,6 +1,6 @@
 ---
 title: python torch cuda
-categories: [笔记]
+categories: [备忘]
 tags: [python]
 date: 2024-11-17
 ---
