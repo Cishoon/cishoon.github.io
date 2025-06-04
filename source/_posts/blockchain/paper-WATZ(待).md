@@ -1,5 +1,5 @@
 ---
-title: WATZ: A Trusted WebAssembly Runtime Environment with Remote Attestation for TrustZone 论文笔记
+title: A Trusted WebAssembly Runtime Environment with Remote Attestation for TrustZone 论文笔记
 categories: [笔记]
 tags: [TrustZone, 论文, WebAssembly]
 date: 2024-10-04

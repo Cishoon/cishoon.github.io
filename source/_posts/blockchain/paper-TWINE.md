@@ -1,5 +1,5 @@
 ---
-title: TWINE: An Embedded Trusted Runtime for WebAssembly 论文笔记
+title: An Embedded Trusted Runtime for WebAssembly 论文笔记
 categories: [笔记]
 tags: [TrustZone, 论文, WebAssembly]
 date: 2024-10-06

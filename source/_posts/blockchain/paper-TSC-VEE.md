@@ -1,5 +1,5 @@
 ---
-title: TSC-VEE: A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记
+title: A TrustZone-Based Smart Contract Virtual Execution Environment 论文笔记
 categories: [笔记]
 tags: [区块链, 以太坊, 智能合约, TrustZone, 论文]
 date: 2024-09-05
@@ -265,7 +265,6 @@ CIEP（Cross-Isolation-Environment Prefetching）
 2. 所有数据将通过 TSC-VEE 主机应用程序复制到 REE 和 TEE 之间的共享内存中。
 3. 通过世界切换调用 TSC-VEE TA。
 4. 使用这些数据，TSC-VEE 解释器可以在不同的执行阶段根据需要从共享内存中获取参数、操作码和存储数据。
-
 
 
 
