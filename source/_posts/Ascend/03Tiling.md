@@ -225,15 +225,3 @@ __aicore__ inline void Process()
 2. 计算出总 block 数
 3. 在各个核里平分 block 
 
-
-
-
-
-workload
-
-机器上搭的，虚拟机之间的，物理机之间的
-
-性能数据
-
-
-
