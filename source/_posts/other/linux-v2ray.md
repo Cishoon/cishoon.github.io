@@ -55,6 +55,11 @@ for i, line in enumerate(vmess_links, 1):
                     "settings": {
                         "udp": True
                     }
+                },
+                {
+                    "port": 10809,
+                    "listen": "127.0.0.1",
+                    "protocol": "http",
                 }
             ],
             "outbounds": [
@@ -95,7 +100,7 @@ for i, line in enumerate(vmess_links, 1):
             v2ray_config["outbounds"][0]["streamSettings"].pop("wsSettings")
         if v2ray_config["outbounds"][0]["streamSettings"]["tlsSettings"] is None:
             v2ray_config["outbounds"][0]["streamSettings"].pop("tlsSettings")
-        
+
         print(config["ps"], end="")
         # 写入文件
         output_path = os.path.join(output_dir, f"config_{i}.json")
@@ -105,6 +110,7 @@ for i, line in enumerate(vmess_links, 1):
 
     except Exception as e:
         print(f"[!] 第{i}个链接解析失败：{e}")
+
 ```
 
 
@@ -117,5 +123,14 @@ for i, line in enumerate(vmess_links, 1):
 
 ```
 ./v2ray run
+```
+
+
+
+然后修改 `~/.bashrc` ，增加
+
+```
+export http_proxy=http://127.0.0.1:10809
+export https_proxy=http://127.0.0.1:10809
 ```
 
