@@ -1,5 +1,5 @@
 ---
-title: linux-v2ray
+title: linux-vpn
 categories: [备忘]
 tags: [Linux]
 date: 2025-06-21
@@ -8,6 +8,8 @@ date: 2025-06-21
 在linux服务器上装梯子。
 
 <!--more-->
+
+# V2ray
 
 下载对应版本的[v2ray](https://github.com/v2fly/v2ray-core/releases/)。解压到一个文件夹里。包含 `v2ray` `config.json` 等文件。
 
@@ -47,6 +49,9 @@ for i, line in enumerate(vmess_links, 1):
 
         # 构造 V2Ray 客户端 config.json
         v2ray_config = {
+            "log": {
+                "loglevel": "warning"
+            },
             "inbounds": [
                 {
                     "port": 10808,
@@ -91,8 +96,42 @@ for i, line in enumerate(vmess_links, 1):
                             }
                         } if config.get("net") == "ws" else None
                     }
+                },
+                {
+                    "protocol": "freedom",
+                    "tag": "direct"
                 }
-            ]
+            ],
+            "routing": {
+                "domainStrategy": "IPIfNonMatch",
+                "rules": [
+                    {
+                        "type": "field",
+                        "domain": [
+                            "geosite:cn"
+                        ],
+                        "outboundTag": "direct"
+                    },
+                    {
+                        "type": "field",
+                        "ip": [
+                            "geoip:cn"
+                        ],
+                        "outboundTag": "direct"
+                    }
+                ]
+            },
+            "dns": {
+                "servers": [
+                    "https+local://dns.alidns.com/dns-query",
+                    "https+local://doh.pub/dns-query",
+                    "223.5.5.5",
+                    "114.114.114.114",
+                    "localhost"
+                ],
+                "queryStrategy": "UseIPv4",
+                "disableCache": False
+            }
         }
 
         # 清理空字段
@@ -132,5 +171,54 @@ for i, line in enumerate(vmess_links, 1):
 ```
 export http_proxy=http://127.0.0.1:10809
 export https_proxy=http://127.0.0.1:10809
+```
+
+
+
+
+
+# Clash
+
+```
+mkdir -p ~/.config/mihomo/
+cp resources/zip/mihomo-linux-amd64-v1-v1.19.12.gz ~/
+cp resources/Country.mmdb ~/.config/mihomo/
+install -D -m +x <(gzip -dc ~/mihomo-linux-amd64-v1-v1.19.12.gz) ~/bin/mihomo
+
+cat <<'EOF' >~/.config/mihomo/mihomo.sh
+mihomo() {
+    case $1 in
+    on)
+        export http_proxy=http://127.0.0.1:7890
+        export https_proxy=$http_proxy
+        export HTTP_PROXY=$http_proxym
+        export HTTPS_PROXY=$http_proxy
+        export all_proxy=$http_proxy
+        export ALL_PROXY=$http_proxy
+        export NO_PROXY="localhost,127.0.0.1,::1"
+        pgrep -f mihomo || {
+            ~/bin/mihomo -d ~/.config/mihomo/ -f ~/.config/mihomo/config.yaml >& ~/.config/mihomo/log & 
+        }
+        echo '已开启代理环境'
+        ;;
+    off)
+        unset http_proxy
+        unset https_proxy
+        unset HTTP_PROXY
+        unset HTTPS_PROXY
+        unset all_proxy
+        unset ALL_PROXY
+        unset no_proxy
+        unset NO_PROXY
+        pkill -9 -f mihomo
+        echo '已关闭代理环境'
+        ;;
+    esac
+}
+EOF
+
+echo >>~/.bashrc
+echo 'source ~/.config/mihomo/mihomo.sh' >>~/.bashrc
+echo 'mihomo on' >>~/.bashrc
 ```
 
