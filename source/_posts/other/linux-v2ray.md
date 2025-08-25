@@ -177,48 +177,82 @@ export https_proxy=http://127.0.0.1:10809
 
 
 
-# Clash
+# Clash(mihomo)
+
+## 有root
+
+https://github.com/nelvko/clash-for-linux-install，一键安装。
+
+
+
+## 无root
+
+下载对应版本的 [mihomo](https://github.com/MetaCubeX/mihomo/releases) ，解压、重命名
 
 ```
-mkdir -p ~/.config/mihomo/
-cp resources/zip/mihomo-linux-amd64-v1-v1.19.12.gz ~/
-cp resources/Country.mmdb ~/.config/mihomo/
-install -D -m +x <(gzip -dc ~/mihomo-linux-amd64-v1-v1.19.12.gz) ~/bin/mihomo
-
-cat <<'EOF' >~/.config/mihomo/mihomo.sh
-mihomo() {
-    case $1 in
-    on)
-        export http_proxy=http://127.0.0.1:7890
-        export https_proxy=$http_proxy
-        export HTTP_PROXY=$http_proxym
-        export HTTPS_PROXY=$http_proxy
-        export all_proxy=$http_proxy
-        export ALL_PROXY=$http_proxy
-        export NO_PROXY="localhost,127.0.0.1,::1"
-        pgrep -f mihomo || {
-            ~/bin/mihomo -d ~/.config/mihomo/ -f ~/.config/mihomo/config.yaml >& ~/.config/mihomo/log & 
-        }
-        echo '已开启代理环境'
-        ;;
-    off)
-        unset http_proxy
-        unset https_proxy
-        unset HTTP_PROXY
-        unset HTTPS_PROXY
-        unset all_proxy
-        unset ALL_PROXY
-        unset no_proxy
-        unset NO_PROXY
-        pkill -9 -f mihomo
-        echo '已关闭代理环境'
-        ;;
-    esac
-}
-EOF
-
-echo >>~/.bashrc
-echo 'source ~/.config/mihomo/mihomo.sh' >>~/.bashrc
-echo 'mihomo on' >>~/.bashrc
+mkdir -p ~/bin
+cd ~/bin
+wget https://github.com/MetaCubeX/mihomo/releases/latest/download/.......
+gzip -d mihomo-linux-amd64-v1.gz
+mv mihomo-linux-amd64-v1 mihomo
+chmod +x mihomo
 ```
+
+
+
+编辑配置文件，`~/.config/mihomo/config.yaml`：（rules略）
+
+```
+port: 10809
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: '127.0.0.1:9090'
+
+proxy-providers:
+  mysub:
+    type: http
+    url: "订阅链接"
+    interval: 3600
+    path: ./proxies/mysub.yaml
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 600
+      
+proxy-groups:
+  - name: Proxy
+    type: select
+    use:
+      - mysub
+    proxies:
+      - 自动选择
+      - DIRECT
+
+  - name: 自动选择
+    type: url-test
+    use:
+      - mysub
+    url: http://www.gstatic.com/generate_204
+    interval: 600
+    
+rules:
+    - 'DOMAIN-SUFFIX,mzstatic.com,DIRECT'
+    - 'DOMAIN-SUFFIX,akadns.net,DIRECT'
+    - 'DOMAIN-SUFFIX,aaplimg.com,DIRECT'
+```
+
+
+
+启动mihomo
+
+```
+mihomo
+```
+
+
+
+访问 http://yacd.haishan.me 面板用webui设置代理。
+
+服务器上可以先转发端口。
 
