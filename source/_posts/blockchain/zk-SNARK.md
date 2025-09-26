@@ -17,7 +17,9 @@ date: 2025-09-25
 
 ## 1.0 数学知识
 
-参考 BLS，BBS与其数学基础
+参考这篇文章：[BLS、BBS、BBS+与其数学基础](https://cishoon.github.io/blockchain/BBS)
+
+或者 [参考教程](https://learnblockchain.cn/column/117) 的前几章。
 
 
 
@@ -45,4 +47,4 @@ date: 2025-09-25
 
 
 
-# Rank 1 Constraint System
+https://learnblockchain.cn/article/11313
