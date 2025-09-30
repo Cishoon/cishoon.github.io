@@ -21,7 +21,7 @@ date: 2025-09-25
 
 或者 [参考教程](https://learnblockchain.cn/column/117) 的前几章。
 
-
+  
 
 ## 1.1 将解决方案变成布尔表达式
 
@@ -200,11 +200,176 @@ $$
 
 
 
-# 3 Circom
+
+
+# 3 二次算数程序（QAP）
+
+## 3.1 目的
+
+R1CS 左右两侧的结果是一个向量：
+$$
+\textbf{O} \, \mathbf{a} = (\textbf{L} \, \mathbf{a}) \circ (\textbf{R} \, \mathbf{a})
+$$
+假设现在有 3 个约束，见证向量 4 维，展开：
+$$
+\begin{bmatrix}
+O_{11} & O_{12} & O_{13} & O_{14} \\
+O_{21} & O_{22} & O_{23} & O_{24} \\
+O_{31} & O_{32} & O_{33} & O_{34}
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ a_1 \\ a_2 \\ a_3
+\end{bmatrix}
+
+=
+
+\begin{bmatrix}
+L_{11} & L_{12} & L_{13} & L_{14} \\
+L_{21} & L_{22} & L_{23} & L_{24} \\
+L_{31} & L_{32} & L_{33} & L_{34}
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ a_1 \\ a_2 \\ a_3
+\end{bmatrix}
+
+\circ
+
+\begin{bmatrix}
+R_{11} & R_{12} & R_{13} & R_{14} \\
+R_{21} & R_{22} & R_{23} & R_{24} \\
+R_{31} & R_{32} & R_{33} & R_{34}
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ a_1 \\ a_2 \\ a_3
+\end{bmatrix}
+$$
+其中 $\circ$ 表示逐元素相乘。
+
+可见等式两边最终的结果是 4 维的向量。
+
+要比较两个 n 维向量是否相等，最朴素的方法就是遍历，逐个对比。
+
+**因此，R1CS 验证需要遍历所有约束，时间复杂度是 $\mathcal{O}(n)$ 。**
+
+如果见证向量维度很大，验证的时间成本就会很高。
+
+有没有方法快速验证？
+
+
+
+## 3.2 Schwatz-Zippel引理
+
+Schwatz-Zippel引理：如果有两个多项式 $p(x)$ 和 $q(x)$ ，他们的次数分别为 $d_p$ 和 $d_q$ ，并且 $p(x) \ne q(x)$ ，那么 $p(x)$ 与 $q(x)$ 的**交点**数量**小于等于 **$\max(d_p, d_q)$ 。
+
+该引理对于有限域中的多项式也成立。
+
+
+
+这个引理其实挺符合直觉的，但是有什么用？举个例子：判断两个多项式是否相等。
+
+理论上，我们得判断两个多项式的每个系数，时间复杂度是 $\mathcal{O}(d)$ 。
+
+但是，在一个比较大的有限域上，随机取一个点，他们相交的概率非常小。几乎就可以通过随机取点以 $\mathcal{O}(1)$ 的时间复杂度判断。
+
+
+
+进一步延伸：判断多项式相等→判断两个向量是否相等。
+
+向量可以转换成多项式。
+
+转换的方法有：
+
+- 直接把向量的值当做多项式的系数
+- 拉格朗日差值
+
+虽然转换和计算这个多项式仍然需要很多时间，但是验证者可以高速验证。
+
+
+
+> QAP里采用的转换方式是拉格朗日差值，为什么不直接把向量当做系数？
+>
+> - 把向量当做系数构造的多项式，我不能预先知道这个多项式会通过哪些点
+> - 拉格朗日差值构造的多项式，我可以保证当 x = i 时，多项式的结果是向量的第 i 个值
+
+
+
+## 3.3 方法
+
+将 R1CS 中的系数矩阵纵向拆分，每一列用拉格朗日差值得到一个多项式：
+$$
+\mathbf{L} =
+\underbrace{\begin{bmatrix}
+l_{11}\\ l_{12}\\ l_{13}\\ l_{14}
+\end{bmatrix}}_{u_1(x)} \quad
+\underbrace{\begin{bmatrix}
+l_{21}\\ l_{22}\\ l_{23}\\ l_{24}
+\end{bmatrix}}_{u_2(x)} \quad
+\underbrace{\begin{bmatrix}
+l_{31}\\ l_{32}\\ l_{33}\\ l_{34}
+\end{bmatrix}}_{u_3(x)} \quad
+\underbrace{\begin{bmatrix}
+l_{41}\\ l_{42}\\ l_{43}\\ l_{44}
+\end{bmatrix}}_{u_4(x)}
+
+\\
+
+\mathbf{R} =
+\underbrace{\begin{bmatrix}
+r_{11}\\ r_{12}\\ r_{13}\\ r_{14}
+\end{bmatrix}}_{v_1(x)} \quad
+\underbrace{\begin{bmatrix}
+r_{21}\\ r_{22}\\ r_{23}\\ r_{24}
+\end{bmatrix}}_{v_2(x)} \quad
+\underbrace{\begin{bmatrix}
+r_{31}\\ r_{32}\\ r_{33}\\ r_{34}
+\end{bmatrix}}_{v_3(x)} \quad
+\underbrace{\begin{bmatrix}
+r_{41}\\ r_{42}\\ r_{43}\\ r_{44}
+\end{bmatrix}}_{v_4(x)}
+
+\\
+
+\mathbf{O} =
+\underbrace{\begin{bmatrix}
+o_{11}\\ o_{12}\\ o_{13}\\ o_{14}
+\end{bmatrix}}_{w_1(x)} \quad
+\underbrace{\begin{bmatrix}
+o_{21}\\ o_{22}\\ o_{23}\\ o_{24}
+\end{bmatrix}}_{w_2(x)} \quad
+\underbrace{\begin{bmatrix}
+o_{31}\\ o_{32}\\ o_{33}\\ o_{34}
+\end{bmatrix}}_{w_3(x)} \quad
+\underbrace{\begin{bmatrix}
+o_{41}\\ o_{42}\\ o_{43}\\ o_{44}
+\end{bmatrix}}_{w_4(x)}
+$$
+每个矩阵向量乘积 $\textbf{La} ~ \textbf{Ra} ~ \textbf{Wa} $ 的同态等价于以下多项式：
+$$
+\sum_{i=1}^{4} a_i u_i(x) 
+= a_1 u_1(x) + a_2 u_2(x) + a_3 u_3(x) + a_4 u_4(x) 
+= u(x) \\
+
+\sum_{i=1}^{m} a_i v_i(x) 
+= a_1 v_1(x) + a_2 v_2(x) + a_3 v_3(x) + a_4 v_4(x) 
+= v(x) \\
+
+\sum_{i=1}^{m} a_i w_i(x) 
+= a_1 w_1(x) + a_2 w_2(x) + a_3 w_3(x) + a_4 w_4(x) 
+= w(x)
+$$
+其中 $\textbf{LRW}$ 是公开的，$\textbf{a}$ 中存在部分私密数据是不公开的。
+
+
+
+# 4 Circom
 
 **Circom** 是一种 **领域专用语言 (DSL)**，用来描述 **零知识证明电路**（ZK circuits）。
 
 - “电路”指的就是算术电路
 - Circom 让开发者可以写出某个逻辑或约束，然后自动生成证明和验证代码。
 - 开发者编写的逻辑或约束必须符合R1SC，否则不能通过编译。
+
+
+
+目前为止，我们可以编写一个算数电路，然后可以提供见证向量向验证者证明。
 
