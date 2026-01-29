@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="简单学习一下基础量化知识。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="量化交易01-移动均线（MA）">
+<meta property="og:url" content="http://cishoon.top/Cryptocurrency/01-MA/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="简单学习一下基础量化知识。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-09-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-03T11:45:10.739Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="量化交易">
+<meta property="article:tag" content="加密货币">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/Cryptocurrency/01-MA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/Cryptocurrency/01-MA/","path":"Cryptocurrency/01-MA/","title":"量化交易01-移动均线（MA）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>量化交易01-移动均线（MA） | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">66</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#sma"><span class="nav-text">SMA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7"><span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E5%9D%87%E7%BA%BF%E4%BA%A4%E5%8F%89dual-sma-crossover"><span class="nav-text">1 双均线交叉（Dual Sma
+Crossover）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%87%E7%BA%BF%E7%AA%81%E7%A0%B4sma-breakout"><span class="nav-text">2 均线突破（SMA Breakout）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%9D%87%E7%BA%BF%E8%B6%8B%E5%8A%BF%E5%B8%A6multiple-sma-alignment"><span class="nav-text">3.
+多均线趋势带（Multiple SMA Alignment）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sma-%E9%80%9A%E9%81%93sma-envelope"><span class="nav-text">4. SMA 通道（SMA
+Envelope）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E7%A6%BB%E7%8E%87%E4%BA%A4%E6%98%93bias-trading"><span class="nav-text">5. 偏离率交易（Bias
+Trading）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%91%A8%E6%9C%9F%E8%BF%87%E6%BB%A4multi-timeframe-filter"><span class="nav-text">6.
+多周期过滤（Multi-timeframe Filter）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ema"><span class="nav-text">EMA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7-1"><span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E6%8C%87%E6%95%B0%E5%9D%87%E7%BA%BF%E4%BA%A4%E5%8F%89dual-ema-crossover"><span class="nav-text">1.
+双指数均线交叉（Dual EMA Crossover）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ema-%E7%AA%81%E7%A0%B4ema-breakout"><span class="nav-text">2. EMA 突破（EMA
+Breakout）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ema-%E6%89%87%E5%BD%A2%E6%8E%92%E5%88%97ema-ribbon"><span class="nav-text">3. EMA 扇形排列（EMA
+Ribbon）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ema-%E5%9B%9E%E8%B8%A9%E7%A1%AE%E8%AE%A4ema-pullback-confirmation"><span class="nav-text">4. EMA
+回踩确认（EMA Pullback Confirmation）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#wma"><span class="nav-text">WMA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7-2"><span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E5%8A%A0%E6%9D%83%E5%9D%87%E7%BA%BF%E4%BA%A4%E5%8F%89dual-wma-crossover"><span class="nav-text">1.
+双加权均线交叉（Dual WMA Crossover）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wma-%E7%AA%81%E7%A0%B4wma-breakout"><span class="nav-text">2. WMA 突破（WMA
+Breakout）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wma-%E7%9F%AD%E6%9C%9F%E9%A1%BA%E5%8A%BFwma-momentum-ride"><span class="nav-text">3. WMA 短期顺势（WMA
+Momentum Ride）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wma-%E5%81%8F%E7%A6%BBwma-deviation-reversion"><span class="nav-text">4. WMA 偏离（WMA
+Deviation Reversion）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#macd"><span class="nav-text">MACD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-3"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7-3"><span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7%E8%A7%A3%E8%AF%BB"><span class="nav-text">信号解读</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%E4%BA%A4%E5%8F%89%E4%BF%A1%E5%8F%B7---%E6%9C%80%E5%B8%B8%E7%94%A8"><span class="nav-text">第一类：交叉信号 - 最常用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%B1%BB%E9%9B%B6%E8%BD%B4%E4%BF%A1%E5%8F%B7---%E5%88%A4%E6%96%AD%E5%A4%9A%E7%A9%BA%E8%B6%8B%E5%8A%BF"><span class="nav-text">第二类：零轴信号 -
+判断多空趋势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%B1%BB%E8%83%8C%E7%A6%BB%E4%BF%A1%E5%8F%B7---%E6%9C%80%E5%BC%BA%E5%A4%A7%E6%9C%80%E5%85%B7%E5%89%8D%E7%9E%BB%E6%80%A7"><span class="nav-text">第三类：背离信号 -
+最强大、最具前瞻性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%B1%BB%E6%9F%B1%E7%8A%B6%E5%9B%BE%E4%BF%A1%E5%8F%B7---%E8%A7%82%E5%AF%9F%E5%8A%A8%E8%83%BD%E5%8F%98%E5%8C%96"><span class="nav-text">第四类：柱状图信号 -
+观察动能变化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E4%BF%A1%E5%8F%B7cross-signals"><span class="nav-text">1. 交叉信号（Cross
+Signals）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%B6%E8%BD%B4%E4%BF%A1%E5%8F%B7zero-line-signals"><span class="nav-text">2. 零轴信号（Zero Line
+Signals）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E7%A6%BB%E4%BF%A1%E5%8F%B7divergence-signals"><span class="nav-text">3. 背离信号（Divergence
+Signals）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%B1%E7%8A%B6%E5%9B%BE%E4%BF%A1%E5%8F%B7histogram-signals"><span class="nav-text">4. 柱状图信号（Histogram
+Signals）</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.png">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/Cryptocurrency/01-MA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.png">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="量化交易01-移动均线（MA） | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          量化交易01-移动均线（MA）<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9DcnlwdG9jdXJyZW5jeS8wMS1NQS5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-30 00:00:00" itemprop="dateCreated datePublished" datetime="2025-09-30T00:00:00+08:00">2025-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>简单学习一下基础量化知识。</p>
+<span id="more"></span>
+<h1 id="sma">SMA</h1>
+<h2 id="定义">定义</h2>
+<p><span class="math display"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -2.819ex;" xmlns="http://www.w3.org/2000/svg" width="22.132ex" height="6.354ex" role="img" focusable="false" viewbox="0 -1562.5 9782.2 2808.5"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D446" d="M308 24Q367 24 416 76T466 197Q466 260 414 284Q308 311 278 321T236 341Q176 383 176 462Q176 523 208 573T273 648Q302 673 343 688T407 704H418H425Q521 704 564 640Q565 640 577 653T603 682T623 704Q624 704 627 704T632 705Q645 705 645 698T617 577T585 459T569 456Q549 456 549 465Q549 471 550 475Q550 478 551 494T553 520Q553 554 544 579T526 616T501 641Q465 662 419 662Q362 662 313 616T263 510Q263 480 278 458T319 427Q323 425 389 408T456 390Q490 379 522 342T554 242Q554 216 546 186Q541 164 528 137T492 78T426 18T332 -20Q320 -22 298 -22Q199 -22 144 33L134 44L106 13Q83 -14 78 -18T65 -22Q52 -22 52 -14Q52 -11 110 221Q112 227 130 227H143Q149 221 149 216Q149 214 148 207T144 186T142 153Q144 114 160 87T203 47T255 29T308 24Z"/></g><g data-mml-node="mi" transform="translate(645,0)"><path data-c="1D440" d="M289 629Q289 635 232 637Q208 637 201 638T194 648Q194 649 196 659Q197 662 198 666T199 671T201 676T203 679T207 681T212 683T220 683T232 684Q238 684 262 684T307 683Q386 683 398 683T414 678Q415 674 451 396L487 117L510 154Q534 190 574 254T662 394Q837 673 839 675Q840 676 842 678T846 681L852 683H948Q965 683 988 683T1017 684Q1051 684 1051 673Q1051 668 1048 656T1045 643Q1041 637 1008 637Q968 636 957 634T939 623Q936 618 867 340T797 59Q797 55 798 54T805 50T822 48T855 46H886Q892 37 892 35Q892 19 885 5Q880 0 869 0Q864 0 828 1T736 2Q675 2 644 2T609 1Q592 1 592 11Q592 13 594 25Q598 41 602 43T625 46Q652 46 685 49Q699 52 704 61Q706 65 742 207T813 490T848 631L654 322Q458 10 453 5Q451 4 449 3Q444 0 433 0Q418 0 415 7Q413 11 374 317L335 624L267 354Q200 88 200 79Q206 46 272 46H282Q288 41 289 37T286 19Q282 3 278 1Q274 0 267 0Q265 0 255 0T221 1T157 2Q127 2 95 1T58 0Q43 0 39 2T35 11Q35 13 38 25T43 40Q45 46 65 46Q135 46 154 86Q158 92 223 354T289 629Z"/></g><g data-mml-node="msub" transform="translate(1696,0)"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"/></g><g data-mml-node="mi" transform="translate(783,-150) scale(0.707)"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="mo" transform="translate(3231,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mfrac" transform="translate(4286.8,0)"><g data-mml-node="mn" transform="translate(270,676)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="mi" transform="translate(220,-686)"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g><rect width="800" height="60" x="120" y="220"/></g><g data-mml-node="munderover" transform="translate(5493.5,0)"><g data-mml-node="mo"><path data-c="2211" d="M60 948Q63 950 665 950H1267L1325 815Q1384 677 1388 669H1348L1341 683Q1320 724 1285 761Q1235 809 1174 838T1033 881T882 898T699 902H574H543H251L259 891Q722 258 724 252Q725 250 724 246Q721 243 460 -56L196 -356Q196 -357 407 -357Q459 -357 548 -357T676 -358Q812 -358 896 -353T1063 -332T1204 -283T1307 -196Q1328 -170 1348 -124H1388Q1388 -125 1381 -145T1356 -210T1325 -294L1267 -449L666 -450Q64 -450 61 -448Q55 -446 55 -439Q55 -437 57 -433L590 177Q590 178 557 222T452 366T322 544L56 909L55 924Q55 945 60 948Z"/></g><g data-mml-node="TeXAtom" transform="translate(148.2,-1087.9) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g><g data-mml-node="mo" transform="translate(345,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mn" transform="translate(1123,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g></g><g data-mml-node="TeXAtom" transform="translate(509.9,1150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g></g></g><g data-mml-node="msub" transform="translate(7104.2,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g><g data-mml-node="TeXAtom" transform="translate(675,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"/></g><g data-mml-node="mo" transform="translate(361,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="mi" transform="translate(1139,0)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g><g data-mml-node="mo" transform="translate(1484,0)"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"/></g><g data-mml-node="mn" transform="translate(2262,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g></g></g></g></g></svg></mjx-container></span></p>
+<p>就是 n 天的平均，用来反应价格变化的趋势。</p>
+<h2 id="信号">信号</h2>
+<h3 id="双均线交叉dual-sma-crossover">1 双均线交叉（Dual Sma
+Crossover）</h3>
+<ul>
+<li><strong>时间片</strong>：4H、日线（BTC/ETH 建议 4H，山寨币可用
+1H）</li>
+<li><strong>参数</strong>：SMA20（短期） vs SMA50（中期）</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>GC</strong> = Golden Cross（金叉，短上穿长）</li>
+<li><strong>DC</strong> = Death Cross（死叉，短下穿长）</li>
+</ul></li>
+<li><strong>直觉</strong>：短期的市场战胜了长期市场，近期有强烈的趋势。</li>
+</ul>
+<h3 id="均线突破sma-breakout">2 均线突破（SMA Breakout）</h3>
+<ul>
+<li><strong>时间片</strong>：1H、4H</li>
+<li><strong>参数</strong>：SMA50</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>PBup</strong> = Price Breakout Up（价格突破 SMA 上方）</li>
+<li><strong>PBdn</strong> = Price Breakout Down（价格突破 SMA
+下方）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>收盘价突破 SMA50 并站稳 → 多</li>
+<li>收盘价跌破 SMA50 并站稳 → 空</li>
+</ul></li>
+<li><strong>直觉</strong>：资金突破平均成本，说明新趋势确立。</li>
+</ul>
+<h3 id="多均线趋势带multiple-sma-alignment"><strong>3.
+多均线趋势带（Multiple SMA Alignment）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：日线</li>
+<li><strong>参数</strong>：SMA5、SMA20、SMA60、SMA200</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>MAup</strong> = Multi-MA Uptrend（多头排列：5 &gt; 20 &gt;
+60 &gt; 200）</li>
+<li><strong>MAdn</strong> = Multi-MA Downtrend（空头排列：5 &lt; 20 &lt;
+60 &lt; 200）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>MAup → 多头趋势确认，只做多</li>
+<li>MAdn → 空头趋势确认，只做空</li>
+</ul></li>
+<li><strong>直觉</strong>：短、中、长不同层级的资金都站在同一边，说明现在的大趋势。</li>
+</ul>
+<h3 id="sma-通道sma-envelope"><strong>4. SMA 通道（SMA
+Envelope）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：15M、1H</li>
+<li><strong>参数</strong>：SMA20 ± 2%</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>BE</strong> = Buy Envelope（触下轨买入）</li>
+<li><strong>SE</strong> = Sell Envelope（触上轨卖出）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>价格 ≤ SMA20 × (1 - 2%) → 买入</li>
+<li>价格 ≥ SMA20 × (1 + 2%) → 卖出</li>
+</ul></li>
+<li><strong>直觉</strong>：价格大多数时间在均线附近震荡，偏离后倾向回归。</li>
+</ul>
+<h3 id="偏离率交易bias-trading"><strong>5. 偏离率交易（Bias
+Trading）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：1H、4H</li>
+<li><strong>参数</strong>：SMA30，阈值 ±5%</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>BP</strong> = Buy Positive Bias（负偏离过大 → 买入）</li>
+<li><strong>SP</strong> = Sell Positive Bias（正偏离过大 → 卖出）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>(P - SMA30)/SMA30 &lt; -5% → 买入</li>
+<li>(P - SMA30)/SMA30 &gt; +5% → 卖出</li>
+</ul></li>
+<li><strong>直觉</strong>：均线是资金成本锚点，极端偏离多半是情绪化行情。</li>
+</ul>
+<h3 id="多周期过滤multi-timeframe-filter"><strong>6.
+多周期过滤（Multi-timeframe Filter）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：
+<ul>
+<li>大周期 = 日线 SMA200（宏观趋势过滤）</li>
+<li>小周期 = 1H SMA20（入场触发）</li>
+</ul></li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>LTB</strong> = Long Trend Bias（价格 &gt; 日线 SMA200 →
+只做多）</li>
+<li><strong>STB</strong> = Short Trend Bias（价格 &lt; 日线 SMA200 →
+只做空）</li>
+<li><strong>LC</strong> = Long Confirm（小周期 SMA20 上穿价格 →
+入多）</li>
+<li><strong>SC</strong> = Short Confirm（小周期 SMA20 下穿价格 →
+入空）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>如果 LTB：仅采纳小周期多头信号 LC</li>
+<li>如果 STB：仅采纳小周期空头信号 SC</li>
+</ul></li>
+<li><strong>直觉</strong>：先顺从长期资金的方向，再用短期信号择时。</li>
+<li><strong>出场</strong>：小周期信号反转，或价格触及 SMA200。</li>
+</ul>
+<h1 id="ema">EMA</h1>
+<h2 id="定义-1">定义</h2>
+<p><span class="math display"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -0.566ex;" xmlns="http://www.w3.org/2000/svg" width="44.246ex" height="2.262ex" role="img" focusable="false" viewbox="0 -750 19556.8 1000"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D438" d="M492 213Q472 213 472 226Q472 230 477 250T482 285Q482 316 461 323T364 330H312Q311 328 277 192T243 52Q243 48 254 48T334 46Q428 46 458 48T518 61Q567 77 599 117T670 248Q680 270 683 272Q690 274 698 274Q718 274 718 261Q613 7 608 2Q605 0 322 0H133Q31 0 31 11Q31 13 34 25Q38 41 42 43T65 46Q92 46 125 49Q139 52 144 61Q146 66 215 342T285 622Q285 629 281 629Q273 632 228 634H197Q191 640 191 642T193 659Q197 676 203 680H757Q764 676 764 669Q764 664 751 557T737 447Q735 440 717 440H705Q698 445 698 453L701 476Q704 500 704 528Q704 558 697 578T678 609T643 625T596 632T532 634H485Q397 633 392 631Q388 629 386 622Q385 619 355 499T324 377Q347 376 372 376H398Q464 376 489 391T534 472Q538 488 540 490T557 493Q562 493 565 493T570 492T572 491T574 487T577 483L544 351Q511 218 508 216Q505 213 492 213Z"/></g><g data-mml-node="mi" transform="translate(764,0)"><path data-c="1D440" d="M289 629Q289 635 232 637Q208 637 201 638T194 648Q194 649 196 659Q197 662 198 666T199 671T201 676T203 679T207 681T212 683T220 683T232 684Q238 684 262 684T307 683Q386 683 398 683T414 678Q415 674 451 396L487 117L510 154Q534 190 574 254T662 394Q837 673 839 675Q840 676 842 678T846 681L852 683H948Q965 683 988 683T1017 684Q1051 684 1051 673Q1051 668 1048 656T1045 643Q1041 637 1008 637Q968 636 957 634T939 623Q936 618 867 340T797 59Q797 55 798 54T805 50T822 48T855 46H886Q892 37 892 35Q892 19 885 5Q880 0 869 0Q864 0 828 1T736 2Q675 2 644 2T609 1Q592 1 592 11Q592 13 594 25Q598 41 602 43T625 46Q652 46 685 49Q699 52 704 61Q706 65 742 207T813 490T848 631L654 322Q458 10 453 5Q451 4 449 3Q444 0 433 0Q418 0 415 7Q413 11 374 317L335 624L267 354Q200 88 200 79Q206 46 272 46H282Q288 41 289 37T286 19Q282 3 278 1Q274 0 267 0Q265 0 255 0T221 1T157 2Q127 2 95 1T58 0Q43 0 39 2T35 11Q35 13 38 25T43 40Q45 46 65 46Q135 46 154 86Q158 92 223 354T289 629Z"/></g><g data-mml-node="msub" transform="translate(1815,0)"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"/></g><g data-mml-node="mi" transform="translate(783,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"/></g></g><g data-mml-node="mo" transform="translate(3181,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mi" transform="translate(4236.8,0)"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"/></g><g data-mml-node="msub" transform="translate(4876.8,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g><g data-mml-node="mi" transform="translate(675,-150) scale(0.707)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"/></g></g><g data-mml-node="mo" transform="translate(6079.3,0)"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"/></g><g data-mml-node="mo" transform="translate(7079.5,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"/></g><g data-mml-node="mn" transform="translate(7468.5,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="mo" transform="translate(8190.8,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="mi" transform="translate(9191,0)"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"/></g><g data-mml-node="mo" transform="translate(9831,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"/></g><g data-mml-node="mi" transform="translate(10220,0)"><path data-c="1D438" d="M492 213Q472 213 472 226Q472 230 477 250T482 285Q482 316 461 323T364 330H312Q311 328 277 192T243 52Q243 48 254 48T334 46Q428 46 458 48T518 61Q567 77 599 117T670 248Q680 270 683 272Q690 274 698 274Q718 274 718 261Q613 7 608 2Q605 0 322 0H133Q31 0 31 11Q31 13 34 25Q38 41 42 43T65 46Q92 46 125 49Q139 52 144 61Q146 66 215 342T285 622Q285 629 281 629Q273 632 228 634H197Q191 640 191 642T193 659Q197 676 203 680H757Q764 676 764 669Q764 664 751 557T737 447Q735 440 717 440H705Q698 445 698 453L701 476Q704 500 704 528Q704 558 697 578T678 609T643 625T596 632T532 634H485Q397 633 392 631Q388 629 386 622Q385 619 355 499T324 377Q347 376 372 376H398Q464 376 489 391T534 472Q538 488 540 490T557 493Q562 493 565 493T570 492T572 491T574 487T577 483L544 351Q511 218 508 216Q505 213 492 213Z"/></g><g data-mml-node="mi" transform="translate(10984,0)"><path data-c="1D440" d="M289 629Q289 635 232 637Q208 637 201 638T194 648Q194 649 196 659Q197 662 198 666T199 671T201 676T203 679T207 681T212 683T220 683T232 684Q238 684 262 684T307 683Q386 683 398 683T414 678Q415 674 451 396L487 117L510 154Q534 190 574 254T662 394Q837 673 839 675Q840 676 842 678T846 681L852 683H948Q965 683 988 683T1017 684Q1051 684 1051 673Q1051 668 1048 656T1045 643Q1041 637 1008 637Q968 636 957 634T939 623Q936 618 867 340T797 59Q797 55 798 54T805 50T822 48T855 46H886Q892 37 892 35Q892 19 885 5Q880 0 869 0Q864 0 828 1T736 2Q675 2 644 2T609 1Q592 1 592 11Q592 13 594 25Q598 41 602 43T625 46Q652 46 685 49Q699 52 704 61Q706 65 742 207T813 490T848 631L654 322Q458 10 453 5Q451 4 449 3Q444 0 433 0Q418 0 415 7Q413 11 374 317L335 624L267 354Q200 88 200 79Q206 46 272 46H282Q288 41 289 37T286 19Q282 3 278 1Q274 0 267 0Q265 0 255 0T221 1T157 2Q127 2 95 1T58 0Q43 0 39 2T35 11Q35 13 38 25T43 40Q45 46 65 46Q135 46 154 86Q158 92 223 354T289 629Z"/></g><g data-mml-node="msub" transform="translate(12035,0)"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"/></g><g data-mml-node="TeXAtom" transform="translate(783,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"/></g><g data-mml-node="mo" transform="translate(361,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="mn" transform="translate(1139,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g></g></g><g data-mml-node="mo" transform="translate(14026.9,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"/></g><g data-mml-node="mstyle" transform="translate(14304.9,0)"><g data-mml-node="mspace"/></g><g data-mml-node="mi" transform="translate(15471.6,0)"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"/></g><g data-mml-node="mo" transform="translate(16389.4,0)"><path data-c="2208" d="M84 250Q84 372 166 450T360 539Q361 539 377 539T419 540T469 540H568Q583 532 583 520Q583 511 570 501L466 500Q355 499 329 494Q280 482 242 458T183 409T147 354T129 306T124 272V270H568Q583 262 583 250T568 230H124V228Q124 207 134 177T167 112T231 48T328 7Q355 1 466 0H570Q583 -10 583 -20Q583 -32 568 -40H471Q464 -40 446 -40T417 -41Q262 -41 172 45Q84 127 84 250Z"/></g><g data-mml-node="mo" transform="translate(17334.1,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"/></g><g data-mml-node="mn" transform="translate(17723.1,0)"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"/></g><g data-mml-node="mo" transform="translate(18223.1,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"/></g><g data-mml-node="mn" transform="translate(18667.8,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="mo" transform="translate(19167.8,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"/></g></g></g></svg></mjx-container></span></p>
+<p>（常把 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.566ex;" xmlns="http://www.w3.org/2000/svg" width="13.742ex" height="2.262ex" role="img" focusable="false" viewbox="0 -750 6074 1000"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"/></g><g data-mml-node="mo" transform="translate(917.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mn" transform="translate(1973.6,0)"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"/></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(2473.6,0)"><g data-mml-node="mo"><path data-c="2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"/></g></g><g data-mml-node="mo" transform="translate(2973.6,0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"/></g><g data-mml-node="mi" transform="translate(3362.6,0)"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g><g data-mml-node="mo" transform="translate(4184.8,0)"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"/></g><g data-mml-node="mn" transform="translate(5185,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="mo" transform="translate(5685,0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"/></g></g></g></svg></mjx-container></span>
+当作“等效周期” n）</p>
+<p>更侧重于最新价格的平均线，能够更快的反应最新的价格变化。</p>
+<h2 id="信号-1">信号</h2>
+<h3 id="双指数均线交叉dual-ema-crossover"><strong>1.
+双指数均线交叉（Dual EMA Crossover）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：1H、4H（BTC/ETH 用 4H 更稳，山寨币用 1H
+更灵敏）</li>
+<li><strong>参数</strong>：EMA12（快线） vs EMA26（慢线）</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>EGC</strong> = EMA Golden Cross（快线向上穿慢线）</li>
+<li><strong>EDC</strong> = EMA Death Cross（快线向下穿慢线）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>EGC → 做多</li>
+<li>EDC → 做空</li>
+</ul></li>
+<li><strong>直觉</strong>：快EMA代表“市场的短期情绪”，慢EMA代表“更久的共识”；当短期压过长期时，趋势正在加速。</li>
+</ul>
+<h3 id="ema-突破ema-breakout"><strong>2. EMA 突破（EMA
+Breakout）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：15M、1H（适合短线或合约交易）</li>
+<li><strong>参数</strong>：EMA20</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>EBup</strong> = EMA Breakout Up（价格突破 EMA20 上方）</li>
+<li><strong>EBdn</strong> = EMA Breakout Down（价格突破 EMA20
+下方）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>价格突破 EMA20 并收稳 → 买入</li>
+<li>价格跌破 EMA20 并收稳 → 卖出</li>
+</ul></li>
+<li><strong>直觉</strong>：EMA
+对近期价格反应快，突破往往意味着动量爆发。</li>
+</ul>
+<h3 id="ema-扇形排列ema-ribbon"><strong>3. EMA 扇形排列（EMA
+Ribbon）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：1H、4H</li>
+<li><strong>参数</strong>：EMA5、EMA10、EMA20、EMA50</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>ERup</strong> = EMA Ribbon
+Uptrend（多头扇形发散：5&gt;10&gt;20&gt;50）</li>
+<li><strong>ERdn</strong> = EMA Ribbon
+Downtrend（空头扇形发散：5&lt;10&lt;20&lt;50）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>ERup → 确认强趋势，只做多</li>
+<li>ERdn → 确认强空头，只做空</li>
+</ul></li>
+<li><strong>直觉</strong>：当不同级别的EMA依次发散，说明短中长期资金“步调一致”，趋势健康而有力。</li>
+</ul>
+<h3 id="ema-回踩确认ema-pullback-confirmation"><strong>4. EMA
+回踩确认（EMA Pullback Confirmation）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：15M、1H、4H</li>
+<li><strong>参数</strong>：EMA20、EMA50</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>EPC</strong> = EMA Pullback Confirm（价格回踩 EMA20/50 不破
+→ 顺势做多/空）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>上升趋势中，价格回踩 EMA20 或 EMA50 企稳 → 做多</li>
+<li>下降趋势中，价格反抽 EMA20 或 EMA50 受阻 → 做空</li>
+</ul></li>
+<li><strong>直觉</strong>：EMA
+是“资金最近的平均锚点”，趋势中反复成为支撑/压力。</li>
+</ul>
+<h1 id="wma">WMA</h1>
+<h2 id="定义-2">定义</h2>
+<p><span class="math display"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -2.473ex;" xmlns="http://www.w3.org/2000/svg" width="35.001ex" height="6.077ex" role="img" focusable="false" viewbox="0 -1592.9 15470.3 2685.9"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D44A" d="M436 683Q450 683 486 682T553 680Q604 680 638 681T677 682Q695 682 695 674Q695 670 692 659Q687 641 683 639T661 637Q636 636 621 632T600 624T597 615Q597 603 613 377T629 138L631 141Q633 144 637 151T649 170T666 200T690 241T720 295T759 362Q863 546 877 572T892 604Q892 619 873 628T831 637Q817 637 817 647Q817 650 819 660Q823 676 825 679T839 682Q842 682 856 682T895 682T949 681Q1015 681 1034 683Q1048 683 1048 672Q1048 666 1045 655T1038 640T1028 637Q1006 637 988 631T958 617T939 600T927 584L923 578L754 282Q586 -14 585 -15Q579 -22 561 -22Q546 -22 542 -17Q539 -14 523 229T506 480L494 462Q472 425 366 239Q222 -13 220 -15T215 -19Q210 -22 197 -22Q178 -22 176 -15Q176 -12 154 304T131 622Q129 631 121 633T82 637H58Q51 644 51 648Q52 671 64 683H76Q118 680 176 680Q301 680 313 683H323Q329 677 329 674T327 656Q322 641 318 637H297Q236 634 232 620Q262 160 266 136L501 550L499 587Q496 629 489 632Q483 636 447 637Q428 637 422 639T416 648Q416 650 418 660Q419 664 420 669T421 676T424 680T428 682T436 683Z"/></g><g data-mml-node="mi" transform="translate(1048,0)"><path data-c="1D440" d="M289 629Q289 635 232 637Q208 637 201 638T194 648Q194 649 196 659Q197 662 198 666T199 671T201 676T203 679T207 681T212 683T220 683T232 684Q238 684 262 684T307 683Q386 683 398 683T414 678Q415 674 451 396L487 117L510 154Q534 190 574 254T662 394Q837 673 839 675Q840 676 842 678T846 681L852 683H948Q965 683 988 683T1017 684Q1051 684 1051 673Q1051 668 1048 656T1045 643Q1041 637 1008 637Q968 636 957 634T939 623Q936 618 867 340T797 59Q797 55 798 54T805 50T822 48T855 46H886Q892 37 892 35Q892 19 885 5Q880 0 869 0Q864 0 828 1T736 2Q675 2 644 2T609 1Q592 1 592 11Q592 13 594 25Q598 41 602 43T625 46Q652 46 685 49Q699 52 704 61Q706 65 742 207T813 490T848 631L654 322Q458 10 453 5Q451 4 449 3Q444 0 433 0Q418 0 415 7Q413 11 374 317L335 624L267 354Q200 88 200 79Q206 46 272 46H282Q288 41 289 37T286 19Q282 3 278 1Q274 0 267 0Q265 0 255 0T221 1T157 2Q127 2 95 1T58 0Q43 0 39 2T35 11Q35 13 38 25T43 40Q45 46 65 46Q135 46 154 86Q158 92 223 354T289 629Z"/></g><g data-mml-node="msub" transform="translate(2099,0)"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"/></g><g data-mml-node="mi" transform="translate(783,-150) scale(0.707)"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="mo" transform="translate(3634,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mfrac" transform="translate(4689.8,0)"><g data-mml-node="mrow" transform="translate(220,803.3)"><g data-mml-node="munderover"><g data-mml-node="mo"><path data-c="2211" d="M61 748Q64 750 489 750H913L954 640Q965 609 976 579T993 533T999 516H979L959 517Q936 579 886 621T777 682Q724 700 655 705T436 710H319Q183 710 183 709Q186 706 348 484T511 259Q517 250 513 244L490 216Q466 188 420 134T330 27L149 -187Q149 -188 362 -188Q388 -188 436 -188T506 -189Q679 -189 778 -162T936 -43Q946 -27 959 6H999L913 -249L489 -250Q65 -250 62 -248Q56 -246 56 -239Q56 -234 118 -161Q186 -81 245 -11L428 206Q428 207 242 462L57 717L56 728Q56 744 61 748Z"/></g><g data-mml-node="TeXAtom" transform="translate(1089,477.1) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="TeXAtom" transform="translate(1089,-285.4) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g><g data-mml-node="mo" transform="translate(345,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mn" transform="translate(1123,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g></g></g><g data-mml-node="msub" transform="translate(2453.3,0)"><g data-mml-node="mi"><path data-c="1D464" d="M580 385Q580 406 599 424T641 443Q659 443 674 425T690 368Q690 339 671 253Q656 197 644 161T609 80T554 12T482 -11Q438 -11 404 5T355 48Q354 47 352 44Q311 -11 252 -11Q226 -11 202 -5T155 14T118 53T104 116Q104 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Q21 293 29 315T52 366T96 418T161 441Q204 441 227 416T250 358Q250 340 217 250T184 111Q184 65 205 46T258 26Q301 26 334 87L339 96V119Q339 122 339 128T340 136T341 143T342 152T345 165T348 182T354 206T362 238T373 281Q402 395 406 404Q419 431 449 431Q468 431 475 421T483 402Q483 389 454 274T422 142Q420 131 420 107V100Q420 85 423 71T442 42T487 26Q558 26 600 148Q609 171 620 213T632 273Q632 306 619 325T593 357T580 385Z"/></g><g data-mml-node="mi" transform="translate(749,-150) scale(0.707)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="msub" transform="translate(3496.3,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g><g data-mml-node="TeXAtom" transform="translate(675,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"/></g><g data-mml-node="mo" transform="translate(361,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="mi" transform="translate(1139,0)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g><g data-mml-node="mo" transform="translate(1484,0)"><path data-c="2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"/></g><g data-mml-node="mn" transform="translate(2262,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g></g></g></g><g data-mml-node="mrow" transform="translate(1559,-749.6)"><g data-mml-node="munderover"><g data-mml-node="mo"><path data-c="2211" d="M61 748Q64 750 489 750H913L954 640Q965 609 976 579T993 533T999 516H979L959 517Q936 579 886 621T777 682Q724 700 655 705T436 710H319Q183 710 183 709Q186 706 348 484T511 259Q517 250 513 244L490 216Q466 188 420 134T330 27L149 -187Q149 -188 362 -188Q388 -188 436 -188T506 -189Q679 -189 778 -162T936 -43Q946 -27 959 6H999L913 -249L489 -250Q65 -250 62 -248Q56 -246 56 -239Q56 -234 118 -161Q186 -81 245 -11L428 206Q428 207 242 462L57 717L56 728Q56 744 61 748Z"/></g><g data-mml-node="TeXAtom" transform="translate(1089,477.1) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="TeXAtom" transform="translate(1089,-285.4) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g><g data-mml-node="mo" transform="translate(345,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mn" transform="translate(1123,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g></g></g><g data-mml-node="msub" transform="translate(2453.3,0)"><g data-mml-node="mi"><path data-c="1D464" d="M580 385Q580 406 599 424T641 443Q659 443 674 425T690 368Q690 339 671 253Q656 197 644 161T609 80T554 12T482 -11Q438 -11 404 5T355 48Q354 47 352 44Q311 -11 252 -11Q226 -11 202 -5T155 14T118 53T104 116Q104 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Q21 293 29 315T52 366T96 418T161 441Q204 441 227 416T250 358Q250 340 217 250T184 111Q184 65 205 46T258 26Q301 26 334 87L339 96V119Q339 122 339 128T340 136T341 143T342 152T345 165T348 182T354 206T362 238T373 281Q402 395 406 404Q419 431 449 431Q468 431 475 421T483 402Q483 389 454 274T422 142Q420 131 420 107V100Q420 85 423 71T442 42T487 26Q558 26 600 148Q609 171 620 213T632 273Q632 306 619 325T593 357T580 385Z"/></g><g data-mml-node="mi" transform="translate(749,-150) scale(0.707)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g></g></g><rect width="6374.3" height="60" x="120" y="220"/></g><g data-mml-node="mo" transform="translate(11304.1,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"/></g><g data-mml-node="mstyle" transform="translate(11582.1,0)"><g data-mml-node="mspace"/></g><g data-mml-node="msub" transform="translate(12748.8,0)"><g data-mml-node="mi"><path data-c="1D464" d="M580 385Q580 406 599 424T641 443Q659 443 674 425T690 368Q690 339 671 253Q656 197 644 161T609 80T554 12T482 -11Q438 -11 404 5T355 48Q354 47 352 44Q311 -11 252 -11Q226 -11 202 -5T155 14T118 53T104 116Q104 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Q21 293 29 315T52 366T96 418T161 441Q204 441 227 416T250 358Q250 340 217 250T184 111Q184 65 205 46T258 26Q301 26 334 87L339 96V119Q339 122 339 128T340 136T341 143T342 152T345 165T348 182T354 206T362 238T373 281Q402 395 406 404Q419 431 449 431Q468 431 475 421T483 402Q483 389 454 274T422 142Q420 131 420 107V100Q420 85 423 71T442 42T487 26Q558 26 600 148Q609 171 620 213T632 273Q632 306 619 325T593 357T580 385Z"/></g><g data-mml-node="mi" transform="translate(749,-150) scale(0.707)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="mo" transform="translate(14069.5,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mi" transform="translate(15125.3,0)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"/></g></g></g></svg></mjx-container></span></p>
+<p>类似 EMA ，只是权重曲线不同。</p>
+<h2 id="信号-2">信号</h2>
+<h3 id="双加权均线交叉dual-wma-crossover"><strong>1.
+双加权均线交叉（Dual WMA Crossover）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：30M、1H（高频适用，因为 WMA
+对最近几根K线更敏感）</li>
+<li><strong>参数</strong>：WMA9（快线） vs WMA30（慢线）</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>WGC</strong> = WMA Golden Cross（短期上穿长期）</li>
+<li><strong>WDC</strong> = WMA Death Cross（短期下穿长期）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>WGC → 买入</li>
+<li>WDC → 卖出</li>
+</ul></li>
+<li><strong>直觉</strong>：WMA 权重线性下降，更看重最新几根K线；信号比
+EMA 还要快，适合追逐短期波动。</li>
+</ul>
+<h3 id="wma-突破wma-breakout"><strong>2. WMA 突破（WMA
+Breakout）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：15M、1H</li>
+<li><strong>参数</strong>：WMA20</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>WBup</strong> = WMA Breakout Up（价格突破 WMA20 上方）</li>
+<li><strong>WBdn</strong> = WMA Breakout Down（价格突破 WMA20
+下方）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>收盘价突破 WMA20 → 多</li>
+<li>收盘价跌破 WMA20 → 空</li>
+</ul></li>
+<li><strong>直觉</strong>：WMA
+更快响应最新行情，突破往往意味着“非常近期的资金情绪突然反转”。</li>
+</ul>
+<h3 id="wma-短期顺势wma-momentum-ride"><strong>3. WMA 短期顺势（WMA
+Momentum Ride）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：5M、15M（极短线）</li>
+<li><strong>参数</strong>：WMA5、WMA10</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>WRL</strong> = WMA Ride Long（WMA5、10 向上并在价格下方 →
+短线多）</li>
+<li><strong>WRS</strong> = WMA Ride Short（WMA5、10 向下并在价格上方 →
+短线空）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>WRL → 短线跟多</li>
+<li>WRS → 短线跟空</li>
+</ul></li>
+<li><strong>直觉</strong>：像“贴着均线骑行”，捕捉极短周期的动量。</li>
+</ul>
+<h3 id="wma-偏离wma-deviation-reversion"><strong>4. WMA 偏离（WMA
+Deviation Reversion）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：30M、1H</li>
+<li><strong>参数</strong>：WMA30 ± 1.5%</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>WBR</strong> = WMA Bias Reversion（价格偏离 WMA30 超过阈值 →
+反向入场）</li>
+</ul></li>
+<li><strong>规则</strong>：
+<ul>
+<li>偏离上轨 → 卖出</li>
+<li>偏离下轨 → 买入</li>
+</ul></li>
+<li><strong>直觉</strong>：WMA
+太快，容易过度跟随短期波动；反而可以用它当“极端情绪检测器”，走均值回归。</li>
+</ul>
+<h1 id="macd">MACD</h1>
+<h2 id="定义-3">定义</h2>
+<p>指数平滑异同移动平均线。</p>
+<p>标准的MACD指标由三部分组成：</p>
+<ol type="1">
+<li><strong>DIF线（快线/差离值）</strong>
+<ul>
+<li><strong>计算公式</strong>：DIF = EMA(12) - EMA(26)</li>
+<li><strong>解释</strong>：这是MACD的核心。它计算了12日指数移动平均线（代表短期趋势）与26日指数移动平均线（代表长期趋势）之间的<strong>差值</strong>。当短期趋势比长期趋势更强时，DIF为正值，且会增大；反之则为负值，且会减小。</li>
+</ul></li>
+<li><strong>DEA线（慢线/信号线）</strong>
+<ul>
+<li><strong>计算公式</strong>：DEA = EMA(DIF, 9)</li>
+<li><strong>解释</strong>：这是DIF线的9日指数移动平均线。它比DIF线更加平滑，反应更慢，其主要作用是作为判断DIF线变化的“信号”或“触发器”。</li>
+</ul></li>
+<li><strong>MACD柱状图</strong>
+<ul>
+<li><strong>计算公式</strong>：MACD柱 = (DIF - DEA) * 2</li>
+<li><strong>解释</strong>：它直观地表示了DIF线与DEA线之间的<strong>距离差</strong>。在图表上通常以红绿相间的柱子显示。
+<ul>
+<li><strong>零轴上方（通常为红色/空心柱）</strong>：表示DIF &gt;
+DEA，市场动能偏多。</li>
+<li><strong>零轴下方（通常为绿色/实心柱）</strong>：表示DIF &lt;
+DEA，市场动能偏空。</li>
+<li><strong>柱子的长短</strong>：代表动能强弱。柱子越长，动能越强。</li>
+</ul></li>
+</ul></li>
+</ol>
+<p><strong>零轴</strong>：一个非常重要的参考基准线，是市场多空力量的分水岭。</p>
+<h2 id="信号-3">信号</h2>
+<h3 id="信号解读">信号解读</h3>
+<h4 id="第一类交叉信号---最常用">第一类：交叉信号 - 最常用</h4>
+<p>这是由DIF线（快线）和DEA线（慢线）的交叉产生的信号。</p>
+<ol type="1">
+<li><strong>金叉</strong>
+<ul>
+<li><strong>定义</strong>：DIF线自下而上穿越DEA线。</li>
+<li><strong>信号含义</strong>：短期动能转强，为<strong>买入信号</strong>。</li>
+<li><strong>细分类型</strong>：
+<ul>
+<li><strong>零下金叉</strong>：发生在零轴下方。
+<ul>
+<li><strong>解读</strong>：通常认为是<strong>弱势反弹信号</strong>。市场可能仍处于空头趋势中，此金叉可能仅是下跌途中的一次反弹。需谨慎对待，结合其他指标确认。</li>
+</ul></li>
+<li><strong>零上金叉</strong>：发生在零轴上方。
+<ul>
+<li><strong>解读</strong>：被认为是<strong>强势买入信号</strong>。市场本身处于多头趋势，此金叉意味着上涨动能再次增强，是趋势加速的信号，可靠性高。</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><strong>死叉</strong>
+<ul>
+<li><strong>定义</strong>：DIF线自上而下穿越DEA线。</li>
+<li><strong>信号含义</strong>：短期动能转弱，为<strong>卖出信号</strong>。</li>
+<li><strong>细分类型</strong>：
+<ul>
+<li><strong>零上死叉</strong>：发生在零轴上方。
+<ul>
+<li><strong>解读</strong>：通常认为是<strong>上涨回调信号</strong>。市场可能仍处于多头趋势中，此死叉可能仅是上涨途中的一次正常回调或整理。</li>
+</ul></li>
+<li><strong>零下死叉</strong>：发生在零轴下方。
+<ul>
+<li><strong>解读</strong>：被认为是<strong>强势卖出信号</strong>。市场本身处于空头趋势，此死叉意味着下跌动能再次加强，是下跌趋势延续或加速的信号，可靠性高。</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ol>
+<h4 id="第二类零轴信号---判断多空趋势">第二类：零轴信号 -
+判断多空趋势</h4>
+<p>这是由DIF线和DEA线与零轴的相对位置关系产生的信号。</p>
+<ol type="1">
+<li><strong>零轴之上</strong>
+<ul>
+<li><strong>信号含义</strong>：<strong>多头市场</strong>。表明12日EMA在26日EMA之上，市场处于中期上升趋势中。</li>
+<li><strong>操作策略</strong>：以做多或持有多头仓位为主。在此区域发生的金叉信号更可靠。</li>
+</ul></li>
+<li><strong>零轴之下</strong>
+<ul>
+<li><strong>信号含义</strong>：<strong>空头市场</strong>。表明12日EMA在26日EMA之下，市场处于中期下跌趋势中。</li>
+<li><strong>操作策略</strong>：以做空或持有空头仓位为主，或保持观望。在此区域发生的死叉信号更可靠。</li>
+</ul></li>
+<li><strong>上穿零轴</strong>
+<ul>
+<li><strong>定义</strong>：DIF线从零轴下方穿越至零轴上方。</li>
+<li><strong>信号含义</strong>：<strong>中线级别的买入信号</strong>。标志着市场由空头主导转为多头主导，趋势发生了重要转变。</li>
+</ul></li>
+<li><strong>下穿零轴</strong>
+<ul>
+<li><strong>定义</strong>：DIF线从零轴上方穿越至零轴下方。</li>
+<li><strong>信号含义</strong>：<strong>中线级别的卖出信号</strong>。标志着市场由多头主导转为空头主导，下跌趋势得到确认。</li>
+</ul></li>
+</ol>
+<h4 id="第三类背离信号---最强大最具前瞻性">第三类：背离信号 -
+最强大、最具前瞻性</h4>
+<p>这是指价格走势与MACD指标走势发生<strong>相反方向</strong>的运动，预示着当前趋势可能即将终结。这是MACD最核心的反转信号。</p>
+<ol type="1">
+<li><strong>顶背离</strong>
+<ul>
+<li><strong>形态特征</strong>：
+<ul>
+<li><strong>价格（K线）</strong>：创出<strong>更高的高点</strong>。</li>
+<li><strong>MACD指标</strong>：DIF线或MACD柱状图却走出<strong>更低的高点</strong>。</li>
+</ul></li>
+<li><strong>信号含义</strong>：<strong>看跌反转信号</strong>。</li>
+<li><strong>解读</strong>：虽然价格还在创新高，但推动上涨的动能（MACD）已经在减弱。表明上涨趋势可能已经“外强中干”，即将见顶回落。</li>
+<li><strong>注意</strong>：顶背离可以发生在DIF线上，也可以更灵敏地体现在MACD柱状图（红柱堆）的面积和高度上。</li>
+</ul></li>
+<li><strong>底背离</strong>
+<ul>
+<li><strong>形态特征</strong>：
+<ul>
+<li><strong>价格（K线）</strong>：创出<strong>更低的低点</strong>。</li>
+<li><strong>MACD指标</strong>：DIF线或MACD柱状图却走出<strong>更高的低点</strong>。</li>
+</ul></li>
+<li><strong>信号含义</strong>：<strong>看涨反转信号</strong>。</li>
+<li><strong>解读</strong>：虽然价格还在创新低，但推动下跌的动能（MACD）已经在衰竭。表明下跌趋势可能已经“跌不动了”，即将触底反弹。</li>
+<li><strong>注意</strong>：同样，底背离在DIF线和MACD绿柱堆上均可观察。</li>
+</ul></li>
+<li><strong>隐性背离</strong>
+<ul>
+<li>这是背离的一种特殊形式，通常发生在趋势回调过程中，预示着主要趋势将继续。</li>
+<li><strong>看涨隐性背离</strong>：在上升趋势的回调中，价格回调的<strong>低点</strong>变低，但MACD指标回调的<strong>低点</strong>却变高。这预示着回调结束，将继续上涨。</li>
+<li><strong>看跌隐性背离</strong>：在下降趋势的反弹中，价格反弹的<strong>高点</strong>变高，但MACD指标反弹的<strong>高点</strong>却变低。这预示着反弹结束，将继续下跌。</li>
+</ul></li>
+</ol>
+<h4 id="第四类柱状图信号---观察动能变化">第四类：柱状图信号 -
+观察动能变化</h4>
+<p>MACD柱状图是动能最直观的体现，其变化有时能提供最早的线索。</p>
+<ol type="1">
+<li><strong>柱状线缩放</strong>
+<ul>
+<li><strong>加速信号</strong>：红柱持续变长，表明<strong>上涨动能在加速</strong>；绿柱持续变长，表明<strong>下跌动能在加速</strong>。</li>
+<li><strong>减速信号</strong>：红柱开始缩短，表明<strong>上涨动能在衰减</strong>（即使价格可能还在涨）；绿柱开始缩短，表明<strong>下跌动能在衰减</strong>（即使价格可能还在跌）。</li>
+</ul></li>
+<li><strong>柱状线翻红/翻绿</strong>
+<ul>
+<li><strong>翻红</strong>：柱状线由绿变红（从零下升至零上）。
+<ul>
+<li><strong>信号</strong>：短期动能由空转多，是<strong>买入信号</strong>，其意义类似于“金叉”，有时甚至更早出现。</li>
+</ul></li>
+<li><strong>翻绿</strong>：柱状线由红变绿（从零上降至零下）。
+<ul>
+<li><strong>信号</strong>：短期动能由多转空，是<strong>卖出信号</strong>，其意义类似于“死叉”。</li>
+</ul></li>
+</ul></li>
+</ol>
+<h3 id="交叉信号cross-signals"><strong>1. 交叉信号（Cross
+Signals）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：1H、4H、1D</li>
+<li><strong>参数</strong>：DIF = EMA12 − EMA26，DEA = DIF 的 9 日
+EMA</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>MACD_GC</strong> = Golden Cross（金叉：DIF 上穿 DEA）</li>
+<li><strong>MACD_DC</strong> = Death Cross（死叉：DIF 下穿 DEA）</li>
+</ul></li>
+<li><strong>细分与解读</strong>：
+<ul>
+<li><strong>零上金叉</strong>（MACD_GC_Pos）：发生在零轴上方 →
+<strong>强势买入信号</strong>，趋势加速。</li>
+<li><strong>零下金叉</strong>（MACD_GC_Neg）：发生在零轴下方 →
+<strong>弱势反弹信号</strong>，可靠性低。</li>
+<li><strong>零上死叉</strong>（MACD_DC_Pos）：发生在零轴上方 →
+<strong>上涨回调信号</strong>，可能只是整理。</li>
+<li><strong>零下死叉</strong>（MACD_DC_Neg）：发生在零轴下方 →
+<strong>强势卖出信号</strong>，下跌延续。</li>
+</ul></li>
+</ul>
+<h3 id="零轴信号zero-line-signals"><strong>2. 零轴信号（Zero Line
+Signals）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：4H、1D</li>
+<li><strong>参数</strong>：同上</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>MACD_PosZone</strong> = DIF/DEA &gt;
+0（零上区域，多头市场）</li>
+<li><strong>MACD_NegZone</strong> = DIF/DEA &lt;
+0（零下区域，空头市场）</li>
+<li><strong>MACD_ZU</strong> = Zero Up（上穿零轴）</li>
+<li><strong>MACD_ZD</strong> = Zero Down（下穿零轴）</li>
+</ul></li>
+<li><strong>规则与直觉</strong>：
+<ul>
+<li>DIF 上穿零轴（ZU）→ 市场由空转多，中期买入信号。</li>
+<li>DIF 下穿零轴（ZD）→ 市场由多转空，中期卖出信号。</li>
+<li>零上金叉更强，零下死叉更强。</li>
+</ul></li>
+</ul>
+<h3 id="背离信号divergence-signals"><strong>3. 背离信号（Divergence
+Signals）</strong></h3>
+<ul>
+<li><strong>时间片</strong>：4H、1D（在加密货币中常见）</li>
+<li><strong>参数</strong>：观察价格与 DIF 或柱状图的相对变化</li>
+<li><strong>信号简称</strong>：
+<ul>
+<li><strong>MACD_TopDiv</strong> = 顶背离（价格创新高，但 DIF/柱状图走低
+→ 看跌反转）</li>
+<li><strong>MACD_BotDiv</strong> = 底背离（价格创新低，但 DIF/柱状图走高
+→ 看涨反转）</li>
+<li><strong>MACD_HidBull</strong> = Hidden Bullish
+Divergence（隐性底背离，趋势延续上升）</li>
+<li><strong>MACD_HidBear</strong> = Hidden Bearish
+Divergence（隐性顶背离，趋势延续下跌）</li>
+</ul></li>
+<li><strong>直觉</strong>：
+<ul>
+<li>背离意味着“价格在走，动能在虚”，即
+<strong>趋势虚弱，可能反转</strong>。</li>
+<li>隐性背离意味着 <strong>趋势没死，只是中途休息</strong>。</li>
+</ul></li>
+</ul>
+<h3 id="柱状图信号histogram-signals"><strong>4. 柱状图信号（Histogram
+Signals）</strong></h3>
+<ul>
+<li><p><strong>时间片</strong>：15M、1H（短线），4H（日内趋势）</p></li>
+<li><p><strong>参数</strong>：MACD 柱状图 = DIF − DEA</p></li>
+<li><p><strong>信号简称</strong>：</p>
+<ul>
+<li><strong>MACD_HR</strong> = Histogram Red（翻红，动能转空）</li>
+<li><strong>MACD_HG</strong> = Histogram Green（翻绿，动能转多）</li>
+<li><strong>MACD_RGrow</strong> = Red
+Growing（红柱伸长，下跌动能加速）</li>
+<li><strong>MACD_RShrt</strong> = Red
+Shrink（红柱缩短，下跌动能衰减）</li>
+<li><strong>MACD_GGrow</strong> = Green
+Growing（绿柱伸长，上涨动能加速）</li>
+<li><strong>MACD_GShrt</strong> = Green
+Shrink（绿柱缩短，上涨动能衰减）</li>
+</ul></li>
+<li><p><strong>直觉</strong>：</p>
+<ul>
+<li>翻红/翻绿往往比金叉/死叉更早给出信号。</li>
+<li>柱体缩短 → 提前预警动能衰竭。</li>
+<li>柱体伸长 → 趋势确认，可以加仓或持有。</li>
+</ul></li>
+</ul>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 15%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr>
+<th><strong>信号类别</strong></th>
+<th><strong>信号简称</strong></th>
+<th><strong>定义/形态</strong></th>
+<th><strong>信号含义</strong></th>
+<th><strong>强度与备注</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>交叉信号</strong></td>
+<td>MACD_GC_Pos</td>
+<td>DIF 上穿 DEA 且在零上方</td>
+<td>强买入</td>
+<td>可靠性高</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_GC_Neg</td>
+<td>DIF 上穿 DEA 且在零下方</td>
+<td>弱反弹</td>
+<td>可靠性低</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_DC_Pos</td>
+<td>DIF 下穿 DEA 且在零上方</td>
+<td>回调/卖出</td>
+<td>中等</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_DC_Neg</td>
+<td>DIF 下穿 DEA 且在零下方</td>
+<td>强卖出</td>
+<td>可靠性高</td>
+</tr>
+<tr>
+<td><strong>零轴信号</strong></td>
+<td>MACD_PosZone</td>
+<td>DIF/DEA &gt; 0</td>
+<td>多头市场</td>
+<td>趋势确认</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_NegZone</td>
+<td>DIF/DEA &lt; 0</td>
+<td>空头市场</td>
+<td>趋势确认</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_ZU</td>
+<td>DIF 从负转正，上穿零轴</td>
+<td>中期买入</td>
+<td>转多信号</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_ZD</td>
+<td>DIF 从正转负，下穿零轴</td>
+<td>中期卖出</td>
+<td>转空信号</td>
+</tr>
+<tr>
+<td><strong>背离信号</strong></td>
+<td>MACD_TopDiv</td>
+<td>价高，指标低</td>
+<td>看跌反转</td>
+<td>强信号</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_BotDiv</td>
+<td>价低，指标高</td>
+<td>看涨反转</td>
+<td>强信号</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_HidBull</td>
+<td>回调低点价更低，指标更高</td>
+<td>上升延续</td>
+<td>中继信号</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_HidBear</td>
+<td>反弹高点价更高，指标更低</td>
+<td>下跌延续</td>
+<td>中继信号</td>
+</tr>
+<tr>
+<td><strong>柱状图信号</strong></td>
+<td>MACD_HR</td>
+<td>柱状图翻红</td>
+<td>短期卖出</td>
+<td>早期信号</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_HG</td>
+<td>柱状图翻绿</td>
+<td>短期买入</td>
+<td>早期信号</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_RGrow</td>
+<td>红柱伸长</td>
+<td>动能加速下跌</td>
+<td>做空确认</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_RShrt</td>
+<td>红柱缩短</td>
+<td>下跌动能衰减</td>
+<td>警惕底部</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_GGrow</td>
+<td>绿柱伸长</td>
+<td>动能加速上涨</td>
+<td>持仓加码</td>
+</tr>
+<tr>
+<td></td>
+<td>MACD_GShrt</td>
+<td>绿柱缩短</td>
+<td>上涨动能衰减</td>
+<td>警惕顶部</td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%87%8F%E5%8C%96%E4%BA%A4%E6%98%93/" rel="tag"><i class="fa fa-tag"></i> 量化交易</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86%E8%B4%A7%E5%B8%81/" rel="tag"><i class="fa fa-tag"></i> 加密货币</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Cryptocurrency/04-%E6%88%90%E4%BA%A4%E9%87%8F/" rel="prev" title="量化交易04-成交量指标">
+                  <i class="fa fa-angle-left"></i> 量化交易04-成交量指标
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blockchain/zk-SNARK/" rel="next" title="零知识证明">
+                  零知识证明 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

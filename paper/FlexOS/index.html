@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="这篇笔记没有记的特别完整。因为看代码花的时间有点多了，已经比较理解这个实现了。写太多感觉有点浪费时间。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FlexOS论文笔记">
+<meta property="og:url" content="http://cishoon.top/paper/FlexOS/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="这篇笔记没有记的特别完整。因为看代码花的时间有点多了，已经比较理解这个实现了。写太多感觉有点浪费时间。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cishoon.top/paper/FlexOS/image-20251012145812708.png">
+<meta property="article:published_time" content="2025-10-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-13T07:31:19.871Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="论文">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cishoon.top/paper/FlexOS/image-20251012145812708.png">
+
+
+<link rel="canonical" href="http://cishoon.top/paper/FlexOS/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/paper/FlexOS/","path":"paper/FlexOS/","title":"FlexOS论文笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>FlexOS论文笔记 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">66</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E8%A1%A5%E5%85%85"><span class="nav-text">0 基础知识补充</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E9%97%B4compartment"><span class="nav-text">0.1 隔间（compartment）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%94%E9%97%B4%E7%9A%84%E7%9B%AE%E6%A0%87"><span class="nav-text">隔间的目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%94%E9%97%B4%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">隔间的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%94%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1"><span class="nav-text">隔间的通信</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1"><span class="nav-text">1 系统设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E5%88%92%E5%88%86api%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%BD%AC%E6%8D%A2"><span class="nav-text">1.1 组件划分API与代码转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#call-gates-%E8%B0%83%E7%94%A8%E7%BD%91%E5%85%B3"><span class="nav-text">1.1.1 Call Gates 调用网关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BD%92%E5%B1%9E%E6%96%B9%E6%B3%95"><span class="nav-text">1.1.2 数据归属方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mpk-%E5%90%8E%E7%AB%AF"><span class="nav-text">1.2 MPK 后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dss-%E5%BD%B1%E5%AD%90%E6%95%B0%E6%8D%AE%E6%A0%88"><span class="nav-text">1.2.1 DSS 影子数据栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E6%B5%81%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="nav-text">1.2.2 控制流完整性</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.png">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/paper/FlexOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.png">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="FlexOS论文笔记 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FlexOS论文笔记<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9wYXBlci9GbGV4T1MubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-11 00:00:00" itemprop="dateCreated datePublished" datetime="2025-10-11T00:00:00+08:00">2025-10-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>这篇笔记没有记的特别完整。因为看代码花的时间有点多了，已经比较理解这个实现了。写太多感觉有点浪费时间。</p>
+<span id="more"></span>
+<blockquote>
+<p>我们提出 <strong>FlexOS</strong> ——
+一种新型操作系统，允许用户在<strong>编译或部署阶段</strong>而非设计阶段，<strong>灵活定制操作系统的安全与隔离策略</strong>。</p>
+<p>该系统以<strong>模块化
+LibOS（库操作系统）的形式构建，由细粒度组件组成，每个组件都可以通过不同的硬件保护机制</strong>进行隔离，并支持多种<strong>数据共享策略</strong>与<strong>软件加固选项</strong>。</p>
+<p>此外，FlexOS 还配备了一种<strong>探索技术（exploration
+technique）</strong>，帮助用户在这一庞大的安全/性能设计空间中进行高效导航和选择。</p>
+</blockquote>
+<p>问题：</p>
+<ul>
+<li>什么是在编译部署阶段定制操作系统</li>
+<li>组件之间通过什么机制隔离、如何共享数据，什么是软件加固。</li>
+<li>探索技术是什么</li>
+</ul>
+<blockquote>
+<p>为实现这一目标，我们在 <strong>LibOS（Library
+OS，库操作系统）</strong>
+模型的基础上进行了扩展，使其能够<strong>不仅在性能维度上（过去主要为了提升性能而进行的特化）</strong>【24,
+39, 60, 62】，</p>
+<p>还可以在<strong>安全性维度（safety
+dimension）</strong>上进行灵活的定制与优化。</p>
+</blockquote>
+<p>问题：</p>
+<ul>
+<li>基于LibOS进行了什么扩展，怎么提升的性能</li>
+<li>安全性的定制与优化指什么</li>
+</ul>
+<blockquote>
+<p>在 <strong>FlexOS</strong> 中，用户可以在<strong>构建阶段（build
+time）</strong>灵活地决定：</p>
+<ul>
+<li>哪些<strong>细粒度的操作系统组件</strong>（例如调度器、TCP/IP
+协议栈等）应被放入哪个<strong>隔间（compartment）</strong>；</li>
+<li>每个隔间应使用哪种<strong>隔离与保护原语（isolation and protection
+primitive）</strong>；</li>
+<li>隔间之间通信应采用何种<strong>数据共享策略（data sharing
+strategy）</strong>；</li>
+<li>以及应当对哪些隔间应用哪些<strong>软件加固机制（software hardening
+mechanism）</strong>。</li>
+</ul>
+</blockquote>
+<p>问题：</p>
+<ul>
+<li>隔间的概念是什么</li>
+<li>如何实现的后续安全、共享操作</li>
+</ul>
+<blockquote>
+<p>为实现这一点，FlexOS
+将<strong>组件化任意软件</strong>时所需的常见操作<strong>抽象为一个通用
+API</strong>。</p>
+<p>通过该 API，可以将现有的 <strong>LibOS</strong>
+系统<strong>改造（retrofit）</strong>为
+FlexOS，且无需大规模重写代码。</p>
+<p>这使得将<strong>内核或应用中的旧有组件（legacy
+components）</strong>迁移到 FlexOS
+的工作量被显著降低——开发者只需通过<strong>标注（annotation）</strong>来指明哪些数据需要共享即可。</p>
+<p>在构建阶段，这些标注及其他抽象的源代码结构会经过<strong>代码转换步骤（code
+transformation step）</strong>，</p>
+<p>自动生成对应的 <strong>FlexOS 安全配置（safety
+configuration）</strong> 的实现代码。</p>
+</blockquote>
+<p>问题：</p>
+<ul>
+<li>API具体是怎么实现的</li>
+<li>标注是什么，如何降低工作量</li>
+<li>代码转换步骤是什么</li>
+</ul>
+<blockquote>
+<p>由 FlexOS 所启用的<strong>设计空间（design space）非常庞大（如图 1
+所示），</strong></p>
+<p><strong>对于非专家用户</strong>而言，想要手动探索这一空间几乎是不可能的。</p>
+<p>因此，我们提出了第二个研究问题：</p>
+<p>👉 <strong>如何帮助用户在 FlexOS
+所解锁的庞大设计空间中高效地进行导航与选择？</strong></p>
+<p>为此，我们设计了一种<strong>半自动化的探索技术</strong>，称为
+<strong>部分安全排序（partial safety ordering）</strong>。</p>
+<p>该方法利用<strong>偏序集（partially ordered sets, posets）来描述不同
+FlexOS 配置的概率化安全等级（probabilistic security
+degrees），</strong></p>
+<p><strong>并在给定的性能预算（performance
+budget）下，帮助用户识别出最安全的配置方案</strong>。</p>
+</blockquote>
+<p>问题：</p>
+<ul>
+<li>这个空间具体如何理解？</li>
+<li>如何实现的选择</li>
+</ul>
+<h1 id="基础知识补充">0 基础知识补充</h1>
+<h2 id="隔间compartment">0.1 隔间（compartment）</h2>
+<p><strong>隔间（Compartment）</strong>
+是操作系统或安全架构中，用于实现<strong>最小特权原则（Principle of Least
+Privilege）的一种逻辑分区。</strong></p>
+<p><strong>它是一个受保护的执行环境</strong>，有自己独立的代码、数据和权限边界，</p>
+<p>不同隔间之间的交互必须通过受控接口（gate/call gate/syscall/RPC
+等）。</p>
+<p>隔间是一个抽象的概念，不是一种具体的实现。</p>
+<ul>
+<li>传统Linux系统中，隔间就是整个内核。</li>
+<li>微内核系统中，隔间就是用户空间服务进程。</li>
+<li>TEE中，隔间就是可信执行环境。</li>
+<li>LibOS中，隔间就是每个库。</li>
+</ul>
+<h3 id="隔间的目标">隔间的目标</h3>
+<ol type="1">
+<li><p><strong>防止漏洞扩散</strong>：</p>
+<p>如果一个组件（比如网络协议栈）被攻击，攻击者的权限应被限制在该隔间中，不能随意访问文件系统、内核数据等。</p></li>
+<li><p><strong>支持最小信任计算（Least Privilege）</strong>：</p>
+<p>每个隔间只拥有完成自己任务所需的最小权限。</p></li>
+<li><p><strong>提高可靠性</strong>：</p>
+<p>某个隔间崩溃不会影响整个系统（例如驱动程序崩溃不会让整个 OS
+宕机）。</p></li>
+<li><p><strong>提升灵活性</strong>：</p>
+<p>不同应用或库可以用不同隔离级别（例如 Redis 高性能但隔离弱，TLS
+库隔离强）。</p></li>
+</ol>
+<h3 id="隔间的实现">隔间的实现</h3>
+<p><strong>硬件层隔离</strong></p>
+<p>依赖 CPU 的内存访问控制或虚拟化特性：</p>
+<table>
+<colgroup>
+<col style="width: 36%">
+<col style="width: 35%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr>
+<th><strong>技术</strong></th>
+<th><strong>特点</strong></th>
+<th><strong>举例</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>页表隔离（Page Table / EPT）</strong></td>
+<td>最强隔离，彻底分离地址空间</td>
+<td>虚拟机（VM）、Xen、KVM</td>
+</tr>
+<tr>
+<td><strong>MPK（Memory Protection Keys）</strong></td>
+<td>同地址空间内多区权限切换（轻量）</td>
+<td>Intel MPK</td>
+</tr>
+<tr>
+<td><strong>Capability-based (CHERI)</strong></td>
+<td>每个指针都携带访问权限</td>
+<td>CHERI CPU</td>
+</tr>
+<tr>
+<td><strong>TrustZone / SGX / SEV</strong></td>
+<td>可信执行环境，保护机密计算</td>
+<td>ARM TZ, Intel SGX, AMD SEV</td>
+</tr>
+</tbody>
+</table>
+<p><strong>软件层隔离</strong></p>
+<p>依赖编译器或运行时检查：</p>
+<table>
+<colgroup>
+<col style="width: 43%">
+<col style="width: 32%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr>
+<th><strong>技术</strong></th>
+<th><strong>特点</strong></th>
+<th><strong>举例</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SFI（Software Fault Isolation）</strong></td>
+<td>编译时在指令层面加越界检查</td>
+<td>NaCl, RLBox</td>
+</tr>
+<tr>
+<td><strong>CFI（Control Flow Integrity）</strong></td>
+<td>限制控制流跳转目标</td>
+<td>LLVM CFI, clang CFI</td>
+</tr>
+<tr>
+<td><strong>Language-based Isolation</strong></td>
+<td>利用安全语言特性隔离</td>
+<td>Rust, WebAssembly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="隔间的通信">隔间的通信</h3>
+<p>隔间之间是不共享内存的（或只共享标记的区域）。因此跨隔间通信必须通过：</p>
+<ul>
+<li><strong>Call gates（调用门）</strong>：受控函数调用入口（如
+flexos_gate()）</li>
+<li><strong>RPC（远程过程调用）</strong>：消息传递机制（常见于
+VM/TEE）</li>
+<li><strong>共享内存通道</strong>：显式定义哪些数据可共享</li>
+</ul>
+<h1 id="系统设计">1 系统设计</h1>
+<h2 id="组件划分api与代码转换">1.1 组件划分API与代码转换</h2>
+<h3 id="call-gates-调用网关">1.1.1 Call Gates 调用网关</h3>
+<p>在 <strong>FlexOS</strong>
+中，不同库之间的跨库调用在源代码中通过<strong>抽象调用网关（abstract
+call gates）</strong>来表示。</p>
+<p>在<strong>构建阶段（build
+time）</strong>的代码转换过程中，这些抽象网关会被替换为具体的实现方式。</p>
+<p>例如：</p>
+<ul>
+<li>当<strong>调用者（caller）和被调用者（callee）被配置在同一隔间（compartment）时，调用网关会被替换为普通的函数调用</strong>；</li>
+<li>当它们位于<strong>不同隔间</strong>（例如通过 <strong>Intel
+MPK</strong>
+隔离）时，调用网关会在执行函数调用前先执行一次<strong>保护域切换（protection
+domain switch）</strong>；</li>
+<li>若库之间的隔离是通过<strong>虚拟机（VM）实现的，则调用网关会被实现为远程过程调用（RPC）</strong>。</li>
+</ul>
+<p>从编译器、调用方与被调用方的角度来看，调用网关是<strong>完全透明的</strong>，因为它遵循
+<strong>System V ABI 调用约定</strong>。但与典型的 System V
+函数调用不同的是，FlexOS 的调用网关还会<strong>确保寄存器隔离（register
+isolation）</strong>——即在调用前会保存并清空所有非参数相关的寄存器，从而防止跨隔间的信息泄露。</p>
+<p>来看具体的例子：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">init_stdio</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">{</span><br><span class="line">	<span class="type">int</span> fd;</span><br><span class="line"></span><br><span class="line">	fd = vfscore_alloc_fd();</span><br><span class="line">	UK_ASSERT(fd == <span class="number">0</span>);</span><br><span class="line">	vfscore_install_fd(<span class="number">0</span>, &amp;stdio_file);</span><br><span class="line">	<span class="keyword">if</span> (dup2(<span class="number">0</span>, <span class="number">1</span>) != <span class="number">1</span>)</span><br><span class="line">		flexos_gate(ukdebug, uk_pr_err, FLEXOS_SHARED_LITERAL(<span class="string">"failed to dup to stdin\n"</span>));</span><br><span class="line">	<span class="keyword">if</span> (dup2(<span class="number">0</span>, <span class="number">2</span>) != <span class="number">2</span>)</span><br><span class="line">		flexos_gate(ukdebug, uk_pr_err, FLEXOS_SHARED_LITERAL(<span class="string">"failed to dup to stderr\n"</span>));</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>flexos中，想要调用别的库函数（例如ukdebug中的uk_pr_err函数），均需要通过<code>flexos_gate</code>。</p>
+<p>代码中，<code>#define flexos_gate UK_CTASSERT(0)</code>
+意思是如果出现flexos_gate直接报错。这强制检查了是否所有flexos_gate均被替换了。</p>
+<p><code>FLEXOS_SHARED_LITERAL</code>
+这段头文件定义了一个“把字符串字面量放进共享内存段”的小技巧宏。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FLEXOS_SHARED_LITERAL(str) (						\</span></span><br><span class="line"><span class="meta">	{									\</span></span><br><span class="line"><span class="meta">		static char __attribute__((section(<span class="string">".data_shared"</span>)))		\</span></span><br><span class="line"><span class="meta">			__str[] = str; __str;					\</span></span><br><span class="line"><span class="meta">	}									\</span></span><br><span class="line"><span class="meta">)</span></span><br></pre></td></tr></table></figure>
+<p>它解决的是：在 FlexOS 里<strong>跨隔间调用</strong>时，如果把普通的
+"Hello!" 直接当参数传给另一个隔间（比如通过 MPK/PKU 或
+VM/EPT），<strong>对方可能读不到</strong>，因为编译器会把字面量放在<strong>当前库的只读段
+.rodata</strong>（在隔离下这通常属于“本隔间私有”）。这个宏强制把字符串放到
+<code>.data_shared</code> 段。</p>
+<p>flexos提供了一些脚本 <code>unikraft/flexos-support/porthelper/</code>
+用于一键修改某个c文件，将其中的函数调用变为
+flexos_gate。具体来说，这个脚本会先使用 <code>cscope</code>
+找出源代码中所有符号定义在哪个库里，然后用python代码生成一个csv
+（function_name, lib_name）。然后使用 Coccinelle ，将原始代码变成
+flexos_gate。</p>
+<p>例子：</p>
+<p>原始代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">run_server</span><span class="params">(<span class="type">void</span>)</span> {</span><br><span class="line">    <span class="type">int</span> fd = accept(<span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Accepted connection!\n"</span>);</span><br><span class="line">    uk_pr_info(<span class="string">"Server is running.\n"</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<ul>
+<li>accept() → 来自 <strong>liblwip</strong>（网络库）</li>
+<li>printf() → 来自 <strong>libc</strong></li>
+<li>uk_pr_info() → 来自 <strong>ukdebug</strong></li>
+</ul>
+<p>转换后：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">run_server</span><span class="params">(<span class="type">void</span>)</span> {</span><br><span class="line">    flexos_gate(liblwip, fd, accept, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    flexos_gate(libc, <span class="built_in">printf</span>, FLEXOS_SHARED_LITERAL(<span class="string">"Accepted connection!\n"</span>));</span><br><span class="line">    flexos_gate(ukdebug, uk_pr_info, FLEXOS_SHARED_LITERAL(<span class="string">"Server is running.\n"</span>));</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="数据归属方法">1.1.2 数据归属方法</h3>
+<ul>
+<li><strong>静态数据共享（<code>__shared</code> 注解的落地）</strong>
+<ul>
+<li>link64.lds.S 中 <code>_sshared</code>/<code>_eshared</code> 以及
+<code>.data_shared</code> 段定义了共享区域；sections.h 则导出了
+<code>__SHARED_START</code> / <code>__SHARED_END</code> 宏。</li>
+<li>各库通过 <code>__section(".data_shared")</code>（例如
+mount.c、intelpku.c）或
+<code>FLEXOS_SHARED_LITERAL</code>（literals.h）把静态变量或字符串放入共享段，对应论文里“手动白名单”式注释。</li>
+</ul></li>
+<li><strong>动态堆内存共享</strong>
+<ul>
+<li>boot.c 的
+<code>ASSIGN_HEAP("shared", 15, …, flexos_shared_alloc);</code>
+在启动阶段创建共享堆并用 <code>PROTECT_SECTION</code> 绑定到 PKU
+key=15。</li>
+<li>各库调用
+<code>flexos_malloc_whitelist</code>/<code>flexos_calloc_whitelist</code>（由工具链回填实现）时会从
+<code>flexos_shared_alloc</code>
+获取内存，代表“动态数据需显式声明共享”。</li>
+<li>对 VM/EPT 后端，vmept.h 硬编码了共享内存地址段，并在 boot.c 的
+<code>CONFIG_LIBFLEXOS_VMEPT</code> 分支映射这些页面。</li>
+</ul></li>
+<li><strong>栈数据共享与私有化</strong>
+<ul>
+<li><code>CONFIG_LIBFLEXOS_GATE_INTELPKU_SHARED_STACKS</code>/<code>PRIVATE_STACKS</code>
+选项（见 intelpku.h）切换共享/私有栈策略。</li>
+<li>私有栈模式下，intelpku-impl.h 的汇编宏
+<code>__ASM_SWITCH_STACK</code>
+等会在跨隔间调用时切换到目标隔间的栈副本；对应的栈指针表
+<code>tsb_comp*</code> 由工具链注入到 <code>.data_comp*</code>
+段（intelpku.c 中的 <code>__FLEXOS MARKER__</code>
+注释即是插桩位置）。</li>
+<li>thread.c 的 <code>SETUP_STACK</code>/<code>SET_TSB</code>
+宏展示了线程启动时如何为每个隔间准备栈并记录 TID 页。</li>
+</ul></li>
+<li><strong>共享区域数量受限</strong>
+<ul>
+<li>VM/EPT 后端使用的共享段容量由
+<code>FLEXOS_VMEPT_SHARED_DATA_SIZE</code>、<code>FLEXOS_VMEPT_RPC_PAGES_SIZE</code>
+等常量限定，<code>FLEXOS_VMEPT_MAX_COMPS</code>（16）和
+<code>FLEXOS_VMEPT_MAX_THREADS</code>（256）体现了论文中“共享 zone
+数量受硬件限制”的说法。</li>
+<li>MPK 后端同样只使用 15 号 key
+作为共享区（<code>PROTECT_SECTION("shared", 15, …)</code>），其它 key
+由工具链为不同库分配。</li>
+</ul></li>
+<li><strong>手动注解/工具链插桩</strong>
+<ul>
+<li>源码中大量 <code>__attribute__((flexos_whitelist))</code>（如
+ramfs_vnops.c、alloc.c）表明开发者手动标记需要共享的全局变量。</li>
+<li>isolation.h 里
+<code>flexos_gate</code>/<code>flexos_malloc_whitelist</code>
+等宏默认触发
+<code>UK_CTASSERT(0)</code>，提示这些调用必须由工具链重写，呼应论文中“依赖外部工具进行注解和转换”。</li>
+</ul></li>
+</ul>
+<h1 id="mpk-后端">1.2 MPK 后端</h1>
+<h3 id="dss-影子数据栈">1.2.1 DSS 影子数据栈</h3>
+<ul>
+<li>普通栈在私有域（private domain）；</li>
+<li>影子栈在共享域（shared domain）；</li>
+<li>每个共享变量 x 的影子位置为 &amp;x + STACK_SIZE；</li>
+<li>编译时自动将访问共享变量的代码改为访问其影子变量；</li>
+<li>不需要任何运行时堆分配，性能几乎与普通栈相同。</li>
+</ul>
+<p>这相当于在栈上“虚拟地”划出一块影子区域，实现零开销共享。</p>
+<ul>
+<li>它首次在 MPK / EPT
+这类共享内存隔离中实现了<strong>低成本的共享栈变量</strong>；</li>
+<li>保留了隔离安全性；</li>
+<li>几乎没有性能损耗。</li>
+</ul>
+<blockquote>
+<p>辨析一下这里的 <strong>共享变量</strong>。</p>
+<p>并不是两个线程之间共享一个变量。</p>
+<p>是一个线程在执行过程中，会切换到多个隔间。隔间之间是独立的。隔间之间通信需要能访问共享变量。</p>
+</blockquote>
+<figure>
+<img src="/paper/FlexOS/image-20251012145812708.png" alt="image-20251012145812708">
+<figcaption aria-hidden="true">image-20251012145812708</figcaption>
+</figure>
+<p>如图。如果一个栈中的变量需要作为另一个函数实参（另一个函数可能是另个隔间的，无法共享变量）。这时候构建阶段会自动发现这种变量，将他移动到DSS区域。函数访问这个变量的时候，也会自动从DSS中获取。</p>
+<p>下面来看具体实现：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> *<span class="title function_">create_stack</span><span class="params">(<span class="keyword">struct</span> uk_alloc *allocator)</span></span><br><span class="line">{</span><br><span class="line">	<span class="type">void</span> *<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (uk_posix_memalign(allocator, &amp;<span class="built_in">stack</span>,</span><br><span class="line">	<span class="comment">/* TODO FLEXOS for some reason with DSS the allocation always fails</span></span><br><span class="line"><span class="comment">	 * with the buddy allocator, commenting this should be fine though. */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> 0 &amp;&amp; CONFIG_LIBFLEXOS_ENABLE_DSS</span></span><br><span class="line">	<span class="comment">/* if the DSS is enabled, allocate two times the size of the</span></span><br><span class="line"><span class="comment">	 * stack; the second half is then used as data shadow stack */</span></span><br><span class="line">			      STACK_SIZE, STACK_SIZE * <span class="number">2</span>) != <span class="number">0</span>) {</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">			      STACK_SIZE, STACK_SIZE) != <span class="number">0</span>) {</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_LIBFLEXOS_ENABLE_DSS */</span></span></span><br><span class="line">		flexos_gate(libc, uk_pr_err, FLEXOS_SHARED_LITERAL(</span><br><span class="line">			<span class="string">"Failed to allocate thread stack: Not enough memory\n"</span>));</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> CONFIG_LIBFLEXOS_GATE_INTELPKU_SHARED_STACKS</span></span><br><span class="line">	flexos_intelpku_mem_set_key(<span class="built_in">stack</span>, STACK_SIZE / __PAGE_SIZE, <span class="number">15</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_LIBFLEXOS_INTELPKU */</span></span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">stack</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>直接拦腰斩断 <code>uk_posix_memalign</code>
+函数，如果启用了DSS，将栈空间分配为原来的两倍。</p>
+<p>论文里说 <code>*(&amp;var + STACK_SIZE)</code>
+的替换发生在构建阶段：工具链用 Coccinelle 规则扫描所有带有共享注解（如
+<code>flexos_whitelist</code>）的局部变量，把对变量的访问替换成其 DSS
+阴影位置。换句话说，在源代码中你看不到 <code>+ STACK_SIZE</code>
+的手写逻辑；它是在编译前的自动转换里完成的。影子地址位于同一栈块的上半部分，所以仍然具备栈分配的高效特性。</p>
+<p>但是有点搞笑的是，DSS并没有真正在LibOS里实现：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">	<span class="keyword">if</span> (uk_posix_memalign(allocator, &amp;<span class="built_in">stack</span>,</span><br><span class="line">	<span class="comment">/* TODO FLEXOS for some reason with DSS the allocation always fails</span></span><br><span class="line"><span class="comment">	 * with the buddy allocator, commenting this should be fine though. */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> 0 &amp;&amp; CONFIG_LIBFLEXOS_ENABLE_DSS</span></span><br><span class="line">	<span class="comment">/* if the DSS is enabled, allocate two times the size of the</span></span><br><span class="line"><span class="comment">	 * stack; the second half is then used as data shadow stack */</span></span><br><span class="line">			      STACK_SIZE, STACK_SIZE * <span class="number">2</span>) != <span class="number">0</span>) {</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br></pre></td></tr></table></figure>
+<p>论文还能这样写啊2333</p>
+<p>不管了，先看整体思路吧。</p>
+<p>原始线程的“真实”栈空间和 DSS
+影子栈实际上是同一块连续内存，只是上半段被当作影子栈，下半段当普通栈。</p>
+<p>组合过程分两步：</p>
+<ol type="1">
+<li><strong>分配时一次性申请两倍大小</strong> 在 sched.c 的
+<code>ALLOC_COMP_STACK()</code>/<code>uk_sched_thread_create()</code>
+中，每个线程的 <code>stack</code> 指针指向的内存块大小是
+<code>2 * STACK_SIZE</code>。随后的
+<code>SHARE_DSS(stack, thread-&gt;tid)</code> 会把
+<code>stack + STACK_SIZE</code> 这半段标记成共享区域（并配好
+PKU/页表权限），所以这块内存自然划成“下半私有 + 上半影子”两部分。</li>
+<li><strong>初始化时给线程暴露同一基地址</strong> 进入 thread.c 的
+<code>uk_thread_init()</code> 或
+<code>uk_thread_init_main()</code>，先调用
+<code>SETUP_STACK(stack, ...)</code>。这里的
+<code>init_sp(&amp;sp, stack, ...)</code> 把运行时栈指针设在
+<code>(unsigned long)stack + STACK_SIZE</code>，也就是这块双倍内存的中点——线程看到的栈顶仍是它自己的私有栈一端。紧接着，编译工具链会在那个
+“__FLEXOS MARKER” 位置自动插入额外的
+<code>SETUP_STACK(stack_compN, ...)</code>
+调用，用于把其余隔离区的栈（包括
+DSS）和这个线程绑定在一起。由于所有栈段都来自同一块连续内存，插桩只需要把对应的
+<code>stack_compX</code> 指针设为 <code>stack + offset</code>（例如 DSS
+就是
+<code>stack + STACK_SIZE</code>），这样就实现了“影子栈与真实栈同块内存”的效果。</li>
+</ol>
+<ul>
+<li><strong>分配阶段</strong> <code>ALLOC_COMP_STACK</code>
+在创建线程时负责拿到一块“主栈”内存。开启 DSS 时这块内存视为“真实栈 +
+影子栈”的连续区域。
+<ul>
+<li><code>PROTECT_STACK(stack, key)</code> 给真实栈部分打上当前隔离区的
+PKU key，使其保持私有。</li>
+<li><code>SHARE_DSS(stack)</code> 则直接作用在地址
+<code>stack + STACK_SIZE</code>（也就是内存的上半段），调用
+<code>flexos_intelpku_mem_set_key(..., 15)</code>。key 15 是 FlexOS
+约定的“共享域”，所有需要访问 DSS 的隔离区都拥有这个权限。</li>
+</ul></li>
+<li><strong>初始化阶段 (<code>thread.c</code>)</strong>
+<code>SETUP_STACK(stack, …)</code> 负责把线程的 <code>sp</code> 指到
+<code>stack + STACK_SIZE</code>（真实栈起点）。真正决定“还有哪些隔离区能访问这块影子栈”的逻辑，是由工具链在
+<code>/* __FLEXOS MARKER__: insert stack installations here. */</code>
+处自动插入的额外 <code>SETUP_STACK(stack_compX, …)</code>
+调用。每个隔离区拿到的 <code>stack_compX</code>
+指针本质上都指向同一块物理内存的不同视图，但 <code>SHARE_DSS</code>
+事先已经把影子部分设为 key 15，可供所有隔离区访问。</li>
+<li><strong>结果</strong> 每个线程的影子栈部分都在 key 15
+下；任意隔离区切换到这个 key
+时，都能访问它。这就实现了“线程影子栈在隔离区之间共享”。真实栈仍然只对各自的隔离区开放，借此隔离普通局部变量。</li>
+</ul>
+<h3 id="控制流完整性">1.2.2 控制流完整性</h3>
+<p>Intel MPK
+本身并不提供执行流保护。因此，如果某个隔间被攻破，攻击者通过
+ROP（返回导向编程）跳转到另一个隔间中，硬件并不会立即触发异常。</p>
+<p>FlexOS 的 MPK 后端通过一种形式的 CFI
+机制来弥补这一缺陷，确保各隔间只能从预定义的、受控的入口点进入。这种能力得益于第
+3.1 节中所描述的 <strong>“硬编码调用门（hardcoded gates）”</strong>
+设计。</p>
+<p>如果某个隔间的控制流被破坏，攻击者直接 ROP 跳转到另一个隔间
+c，那么只要访问该隔间 c
+的本地数据，系统就会立刻崩溃，从而防止攻击继续进行。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BA%E6%96%87/" rel="tag"><i class="fa fa-tag"></i> 论文</a>
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> 操作系统</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/paper/Enhancing%20Blockchain%20Performance%20via%20Unikraft/" rel="prev" title="Enhancing Blockchain Performance via Unikraft">
+                  <i class="fa fa-angle-left"></i> Enhancing Blockchain Performance via Unikraft
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Cryptocurrency/05-%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B/" rel="next" title="量化交易05-支撑与阻力">
+                  量化交易05-支撑与阻力 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>

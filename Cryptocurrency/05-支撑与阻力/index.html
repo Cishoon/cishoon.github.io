@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cishoon.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/config.min.js"></script>
+
+    <meta name="description" content="支撑与阻力是技术分析的基石。其他所有指标，最终都是为了回答一个问题：“当前的支撑或阻力是否会有效？”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="量化交易05-支撑与阻力">
+<meta property="og:url" content="http://cishoon.top/Cryptocurrency/05-%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B/index.html">
+<meta property="og:site_name" content="Cishoon&#39;s Blog">
+<meta property="og:description" content="支撑与阻力是技术分析的基石。其他所有指标，最终都是为了回答一个问题：“当前的支撑或阻力是否会有效？”">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-03T11:59:18.162Z">
+<meta property="article:author" content="Cishoon">
+<meta property="article:tag" content="量化交易">
+<meta property="article:tag" content="加密货币">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://cishoon.top/Cryptocurrency/05-%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://cishoon.top/Cryptocurrency/05-%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B/","path":"Cryptocurrency/05-支撑与阻力/","title":"量化交易05-支撑与阻力"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>量化交易05-支撑与阻力 | Cishoon's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="Cishoon's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Cishoon's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">66</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          目 录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-text">核心概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B0%B4%E5%B9%B3%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B"><span class="nav-text">水平支撑与阻力</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95"><span class="nav-text">1. 识别方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%82%E5%9C%BA%E8%A1%8C%E4%B8%BA%E4%B8%8E%E4%BA%A4%E6%98%93%E9%80%BB%E8%BE%91"><span class="nav-text">2. 市场行为与交易逻辑</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B"><span class="nav-text">动态支撑与阻力</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%8B%E5%8A%BF%E7%BA%BF"><span class="nav-text">1. 趋势线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%9D%87%E7%BA%BF"><span class="nav-text">2. 移动平均线</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%83%E9%87%8C%E4%BB%B7%E4%BD%8D"><span class="nav-text">心里价位</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%82%E5%9C%BA%E8%A1%8C%E4%B8%BA%E4%B8%8E%E4%BA%A4%E6%98%93%E9%80%BB%E8%BE%91-1"><span class="nav-text">市场行为与交易逻辑</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E5%9B%9E%E6%92%A4"><span class="nav-text">斐波那契回撤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E6%B0%B4%E5%B9%B3%E4%B8%8E%E7%94%BB%E6%B3%95"><span class="nav-text">关键水平与画法</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cishoon"
+      src="/images/cishoon.png">
+  <p class="site-author-name" itemprop="name">Cishoon</p>
+  <div class="site-description" itemprop="description">一条数学公式 + 一个简单的故事</div>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Npc2hvb24=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cishoon"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMTA2Njk1NDg4" title="哔哩哔哩 → https:&#x2F;&#x2F;space.bilibili.com&#x2F;106695488"><i class="fa-brands fa-bilibili fa-fw"></i></span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cishoon.top/Cryptocurrency/05-%E6%94%AF%E6%92%91%E4%B8%8E%E9%98%BB%E5%8A%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/cishoon.png">
+      <meta itemprop="name" content="Cishoon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cishoon's Blog">
+      <meta itemprop="description" content="一条数学公式 + 一个简单的故事">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="量化交易05-支撑与阻力 | Cishoon's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          量化交易05-支撑与阻力<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZy90cmVlL21haW4vc291cmNlL19wb3N0cy9DcnlwdG9jdXJyZW5jeS8wNS3mlK/mkpHkuI7pmLvlipsubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-03 00:00:00" itemprop="dateCreated datePublished" datetime="2025-10-03T00:00:00+08:00">2025-10-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>支撑与阻力是技术分析的基石。其他所有指标，最终都是为了回答一个问题：<strong>“当前的支撑或阻力是否会有效？”</strong></p>
+<span id="more"></span>
+<h1 id="核心概念">核心概念</h1>
+<ul>
+<li><strong>支撑</strong>：价格下跌时，可能遇到买方力量增强、卖方力量减弱，从而使价格暂停下跌或反弹的水平。可以想象成
+<strong>“地板”</strong>。</li>
+<li><strong>阻力</strong>：价格上涨时，可能遇到卖方力量增强、买方力量减弱，从而使价格暂停上涨或回落的水平。可以想象成
+<strong>“天花板”</strong>。</li>
+</ul>
+<p>其背后的核心心理是<strong>市场记忆</strong>：交易者会记住之前价格在某个水平反转过，从而在未来再次到达该水平时采取类似行动。</p>
+<h1 id="水平支撑与阻力">水平支撑与阻力</h1>
+<p>这是最基本、最有效的一种。</p>
+<h4 id="识别方法">1. 识别方法</h4>
+<ul>
+<li><strong>前期高点</strong>：尤其是多次测试未能突破的高点，构成强阻力。</li>
+<li><strong>前期低点</strong>：尤其是多次测试未能跌破的低点，构成强支撑。</li>
+<li><strong>成交密集区</strong>：价格在某个区域横盘整理了很长时间，这个区域积累了大量的成交量，之后无论价格从哪个方向离开，这个区域都会成为强大的支撑或阻力。</li>
+</ul>
+<h4 id="市场行为与交易逻辑">2. 市场行为与交易逻辑</h4>
+<ul>
+<li><strong>反弹与回落</strong>：在支撑位附近，寻找价格止跌反弹的信号（如看涨K线形态、RSI底背离）作为买入机会。在阻力位附近则相反。</li>
+<li><strong>突破与回踩</strong>：当价格强势突破阻力位后，<strong>角色转换</strong>
+发生：原来的阻力位变成了新的支撑位。当价格回踩这个新支撑位并企稳时，是极佳的买入时机。跌破支撑位后同理。</li>
+</ul>
+<h1 id="动态支撑与阻力">动态支撑与阻力</h1>
+<p>这类支撑阻力不是水平的，而是随着时间移动的，它们能更好地捕捉趋势。</p>
+<h4 id="趋势线">1. 趋势线</h4>
+<ul>
+<li><strong>画法</strong>：
+<ul>
+<li><strong>上升趋势线</strong>：连接连续两个或多个<strong>逐渐抬高的低点</strong>。</li>
+<li><strong>下降趋势线</strong>：连接连续两个或多个<strong>逐渐降低的高点</strong>。</li>
+</ul></li>
+<li><strong>用法</strong>：趋势线本身就是一个动态的支撑（上升趋势线）或阻力（下降趋势线）。价格回踩趋势线是趋势交易者的经典入场点。</li>
+</ul>
+<h4 id="移动平均线">2. 移动平均线</h4>
+<ul>
+<li>像EMA， SMA这样的均线，本身就是非常有效的动态支撑阻力。</li>
+<li><strong>用法</strong>：在上升趋势中，价格回踩关键均线（如20期或50期EMA）是常见的加仓或入场点。在下降趋势中，均线则构成反弹的阻力。</li>
+</ul>
+<h1 id="心里价位">心里价位</h1>
+<p>例如，股票价格的整十、整百元关口（如<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.452ex;" xmlns="http://www.w3.org/2000/svg" width="5.656ex" height="2.149ex" role="img" focusable="false" viewbox="0 -750 2500 950"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(500,0)"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(1000,0)"/></g><g data-mml-node="mi" transform="translate(1500,0)"><text data-variant="italic" transform="scale(1,-1)" font-size="884px" font-family="serif" font-style="italic">，</text></g></g></g></svg></mjx-container>500），股指的整千点（如3000点），比特币的整万美金关口。这些位置因为引人注目，所以容易形成支撑阻力。</p>
+<p>心理价位不是基于复杂的计算，而是基于人类最基础的认知习惯：<strong>我们天生对“整数”和“规整的数字”更敏感，更容易记住它们，并以此作为决策参考。</strong></p>
+<p>在市场中，这种集体心理会形成一种无形的力量，导致价格在接近这些关键整数时，买卖订单会自然聚集，从而使价格行为在此处出现停顿、反弹或突破。</p>
+<h4 id="市场行为与交易逻辑-1">市场行为与交易逻辑</h4>
+<ul>
+<li><strong>作为阻力</strong>：
+<ul>
+<li><strong>行为</strong>：当价格<strong>接近</strong>一个重要的心理价位（如$100）时，会有交易者开始提前卖出以锁定利润，也会有做空者在此处开仓。这会增加卖压。</li>
+<li><strong>交易思路</strong>：在价格首次接近心理阻力位时，<strong>不要急于追高</strong>。应观察是否有价格动能减弱（如出现长上影线、看跌吞没等K线形态）和成交量放大的迹象。可以将其作为<strong>减仓</strong>或<strong>尝试做空</strong>的区域。</li>
+</ul></li>
+<li><strong>作为支撑</strong>：
+<ul>
+<li><strong>行为</strong>：当价格从高处<strong>回落至</strong>一个心理价位时，会有交易者认为“便宜了”而开始买入，形成买盘支撑。</li>
+<li><strong>交易思路</strong>：在价格首次跌至心理支撑位时，观察是否有止跌信号（如锤子线、看涨吞没）。可以将其作为<strong>潜在买入</strong>区域。</li>
+</ul></li>
+<li><strong>突破的关键</strong>：
+<ul>
+<li><strong>假突破很常见</strong>：价格可能会瞬间刺破心理关口，但很快又回落回来。</li>
+<li><strong>确认真突破</strong>：需要一个强烈的<strong>确认信号</strong>。这通常包括：
+<ol type="1">
+<li><strong>强劲的K线</strong>：一根坚决的<strong>大阳线（对于向上突破）</strong>
+或<strong>大阴线（对于向下跌破）</strong>，收盘价牢牢站在心理关口之上/之下。</li>
+<li><strong>成交量的放大</strong>：突破时必须伴随成交量的显著放大，代表有真正的资金在推动。</li>
+<li><strong>角色转换</strong>：一旦被<strong>有效突破</strong>，原来的心理阻力位就会转变为未来的心理支撑位（反之亦然）。例如，股价有效突破<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.452ex;" xmlns="http://www.w3.org/2000/svg" width="21.493ex" height="2.149ex" role="img" focusable="false" viewbox="0 -750 9500 950"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(500,0)"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(1000,0)"/></g><g data-mml-node="mi" transform="translate(1500,0)"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">后</text></g><g data-mml-node="mi" transform="translate(2500,0)"><text data-variant="italic" transform="scale(1,-1)" font-size="884px" font-family="serif" font-style="italic">，</text></g><g data-mml-node="mi" transform="translate(3500,0)"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">下</text></g><g data-mml-node="mi" transform="translate(4500,0)"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">次</text></g><g data-mml-node="mi" transform="translate(5500,0)"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">回</text></g><g data-mml-node="mi" transform="translate(6500,0)"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">调</text></g><g data-mml-node="mi" transform="translate(7500,0)"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">时</text></g><g data-mml-node="mi" transform="translate(8500,0)"><text data-variant="italic" transform="scale(1,-1)" font-size="884px" font-family="serif" font-style="italic">，</text></g></g></g></svg></mjx-container>100就会成为一个强大的支撑。</li>
+</ol></li>
+</ul></li>
+</ul>
+<h1 id="斐波那契回撤">斐波那契回撤</h1>
+<p>斐波那契回撤工具基于斐波那契数列（一个每个数字都是前两个数字之和的数列：0，
+1, 1, 2, 3, 5, 8, 13,
+21...）。这个数列在自然界中无处不在，而交易者相信金融市场也受其影响。</p>
+<p>其核心思想是：<strong>在一波显著的价格运动（上涨或下跌）之后，其反向的回调运动往往会在一系列关键的斐波那契比例处遇到支撑或阻力并暂停/结束。</strong></p>
+<h2 id="关键水平与画法">关键水平与画法</h2>
+<ul>
+<li><strong>核心水平</strong>（按重要性排序）：
+<ul>
+<li><strong>61.8%</strong>：<strong>“黄金分割”回撤位</strong>，这是最重要、最受关注的水平。回调在此处止跌反弹的概率极高。</li>
+<li><strong>38.2%</strong>：次重要的水平。</li>
+<li><strong>50.0%</strong>：虽然不是一个严格的斐波那契比率，但它是一个非常符合市场心理的“半途点”，因此被广泛使用，效果显著。</li>
+<li><strong>23.6%</strong>：浅度回调位，表明趋势非常强劲。</li>
+<li><strong>78.6%</strong>：深度回调位，如果跌破此位，通常意味着这不是回调，而是趋势反转的开始。</li>
+</ul></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%87%8F%E5%8C%96%E4%BA%A4%E6%98%93/" rel="tag"><i class="fa fa-tag"></i> 量化交易</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86%E8%B4%A7%E5%B8%81/" rel="tag"><i class="fa fa-tag"></i> 加密货币</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/paper/FlexOS/" rel="prev" title="FlexOS论文笔记">
+                  <i class="fa fa-angle-left"></i> FlexOS论文笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/Cryptocurrency/02-RSI/" rel="next" title="量化交易02-相对强弱指数（RSI）">
+                  量化交易02-相对强弱指数（RSI） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Cishoon</span>
+  </div><div class="footer-custom">
+Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24vYmxvZw==">here</span>
+</div>
+
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL0Npc2hvb24=" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/sidebar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":"true                   ---------------------> 设置为true","tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.20.0/third-party/math/mathjax.min.js"></script>
+
+
+
+</body>
+</html>
