@@ -98,9 +98,12 @@ symbols_count_time:
 
 
 deploy:
-  type: git
-  repo: git@github.com:Cishoon/cishoon.github.io.git
-  branch: main
+  - type: git
+    repo: git@github.com:Cishoon/cishoon.github.io.git
+    branch: main
+  - type: git
+    repo: root@cishoon.top:/home/git/hexo.git
+    branch: main
   
 mathjax:
   tags: none # or 'ams' or 'all'
