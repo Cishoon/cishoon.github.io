@@ -40,7 +40,7 @@ const { Content } = await post.render();
           <span>{post.body.split(' ').length > 500 ? Math.ceil(post.body.split(' ').length / 200) + ' MIN READ' : 'SHORT READ'}</span>
         </div>
 
-        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-100 mb-6 leading-tight">
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-800 dark:text-zinc-100 mb-6 leading-tight">
           {post.data.title}
         </h1>
 
@@ -49,7 +49,7 @@ const { Content } = await post.render();
             {post.data.tags.map((tag) => (
               <a 
                 href={`/tags/${tag}`} 
-                class="px-2 py-1 text-[10px] font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 rounded hover:border-zinc-700 hover:text-zinc-200 transition-colors uppercase tracking-wider"
+                class="px-2 py-1 text-[10px] font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors uppercase tracking-wider"
               >
                 #{tag}
               </a>
@@ -59,12 +59,12 @@ const { Content } = await post.render();
       </header>
 
       <!-- 文章正文 -->
-      <div class="prose prose-invert prose-zinc prose-lg max-w-none 
-        prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-zinc-100
-        prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:text-indigo-300
-        prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800
-        prose-code:text-indigo-300 prose-code:bg-zinc-900/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-        prose-img:rounded-xl prose-img:border prose-img:border-zinc-800"
+      <div class="prose prose-zinc prose-lg max-w-none dark:prose-invert
+        prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-zinc-800 dark:prose-headings:text-zinc-100
+        prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:text-indigo-500 dark:hover:prose-a:text-indigo-300
+        prose-pre:bg-zinc-100 dark:prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-200 dark:prose-pre:border-zinc-800
+        prose-code:text-indigo-600 dark:prose-code:text-indigo-300 prose-code:bg-zinc-100 dark:prose-code:bg-zinc-900/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+        prose-img:rounded-xl prose-img:border prose-img:border-zinc-200 dark:prose-img:border-zinc-800"
       >
         <Content />
       </div>

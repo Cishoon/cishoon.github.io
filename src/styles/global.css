@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* 默认（亮色模式）变量 */
   --color-canvas: #fafafa; /* Zinc-50 */
