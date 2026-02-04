@@ -17,7 +17,7 @@ const navItems = [
 ---
 
 <!doctype html>
-<html lang="zh-CN" class="dark">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -175,6 +175,16 @@ const navItems = [
       }
 
       initInteractive();
+      
+      document.addEventListener('astro:before-swap', (ev) => {
+        // Pass the current theme class to the new document to prevent flashing
+        if (document.documentElement.classList.contains('dark')) {
+          ev.newDocument.documentElement.classList.add('dark');
+        } else {
+          ev.newDocument.documentElement.classList.remove('dark');
+        }
+      });
+
       document.addEventListener('astro:after-swap', () => {
         restoreTheme();
         initInteractive();
