@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Group by year
+const postsByYear = posts.reduce((acc, post) => {
+  const year = post.data.date.getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {} as Record<number, typeof posts>);
+
+const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<BaseLayout title="全部文章">
+  <h1>全部文章</h1>
+  <p class="post-count">共 {posts.length} 篇</p>
+
+  {years.map((year) => (
+    <section class="year-section">
+      <h2>{year}</h2>
+      <ul class="post-list">
+        {postsByYear[Number(year)].map((post) => (
+          <li>
+            <a href={`/posts/${post.slug}`}>
+              <span class="post-title">{post.data.title}</span>
+              <time datetime={post.data.date.toISOString()}>
+                {post.data.date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+              </time>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .post-count {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  .year-section {
+    margin-bottom: 2rem;
+  }
+
+  .year-section h2 {
+    color: var(--accent);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-list {
+    list-style: none;
+  }
+
+  .post-list li {
+    padding: 0.5rem 0;
+  }
+
+  .post-list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text);
+  }
+
+  .post-list a:hover {
+    text-decoration: none;
+  }
+
+  .post-list a:hover .post-title {
+    color: var(--accent);
+  }
+
+  .post-list time {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-family: monospace;
+  }
+</style>
