@@ -58,7 +58,7 @@ const navItems = [
     </div>
 
     <!-- Top Dynamic Island Nav -->
-    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50" transition:persist>
+    <nav id="nav-wrapper" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-[top] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" transition:persist>
       <div id="nav-container" class="group flex items-center justify-center p-1.5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 transition-[max-width,padding,background] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:duration-400 hover:ease-[cubic-bezier(0.22,1,0.36,1)] h-12 max-w-[3rem] hover:max-w-[18rem] hover:px-4 [&.expanded]:max-w-[18rem] [&.expanded]:px-4 overflow-hidden">
         
         <!-- Logo -->
@@ -90,19 +90,50 @@ const navItems = [
        <p class="text-[10px] text-zinc-400 dark:text-zinc-600 font-mono tracking-widest uppercase opacity-70">Designed by Cishoon</p>
     </footer>
 
+    <style is:global>
+      /* Docked State Logic */
+      #nav-wrapper.docked {
+        top: -1.5rem; /* Half height (24px) visible */
+      }
+      
+      #nav-wrapper.docked:hover {
+        top: 1.5rem; /* Restore to original top-6 (24px) */
+      }
+
+      /* Bridge to prevent flickering when hovering from top edge */
+      #nav-wrapper.docked::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 100px; /* Extend hit area upwards */
+        z-index: -1;
+      }
+    </style>
+
     <script>
       // Navigation State Logic
       function updateNavState() {
         const nav = document.getElementById('nav-container');
-        if (!nav) return;
+        const navWrapper = document.getElementById('nav-wrapper');
+        if (!nav || !navWrapper) return;
+        
         // Check if we are on a "special" page (blog/tags/post)
         const isSpecialPage = /^\/(posts|tags)/.test(window.location.pathname);
         const isScrolled = window.scrollY > 50; // Threshold
         
-        if (isSpecialPage && !isScrolled) {
-          nav.classList.add('expanded');
-        } else {
+        if (isScrolled) {
+          navWrapper.classList.add('docked');
           nav.classList.remove('expanded');
+        } else {
+          navWrapper.classList.remove('docked');
+          if (isSpecialPage) {
+            nav.classList.add('expanded');
+          } else {
+            nav.classList.remove('expanded');
+          }
         }
       }
       
