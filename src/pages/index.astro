@@ -4,85 +4,87 @@ import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 5); // 取前5篇，凑够网格
+  .slice(0, 5);
 
-const latestPost = posts[0];
-const otherPosts = posts.slice(1);
+function getExcerpt(body: string) {
+  return body
+    .replace(/[#*`]/g, '')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+    .split('\n')
+    .filter(line => line.trim().length > 0)
+    .join(' ')
+    .slice(0, 150) + '...';
+}
 ---
 
 <BaseLayout title="首页">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]">
-    
-    <!-- Profile Cell: 个人简介 (占1格) -->
-    <div class="group relative flex flex-col justify-between p-6 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:bg-zinc-800/30 transition-colors duration-300">
-      <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+  
+  <!-- Hero Section -->
+  <section class="min-h-[80vh] flex flex-col justify-center items-center text-center relative">
+    <div class="relative z-10">
+      <h1 class="text-7xl md:text-9xl font-black tracking-tighter text-zinc-900 dark:text-white mb-6 select-none">
+        STAY<br/>COOL
+      </h1>
       
-      <div>
-        <h1 class="text-xl font-bold text-zinc-100 tracking-tight">Cishoon</h1>
-        <p class="text-sm text-zinc-400 mt-1">Fullstack Engineer</p>
-      </div>
-
-      <div class="mt-8 font-mono text-xs text-zinc-500">
-        <span class="text-indigo-400">root@cishoon:~$</span> <span id="typewriter"></span><span class="animate-pulse">_</span>
+      <div class="font-mono text-sm md:text-base text-zinc-500 dark:text-zinc-400 h-6">
+        <span class="text-indigo-500">></span> <span id="typewriter"></span><span class="animate-pulse">_</span>
       </div>
     </div>
 
-    <!-- Feature Post: 最新文章 (占2格) -->
-    <a href={`/posts/${latestPost.slug}`} class="group relative md:col-span-2 p-6 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-all duration-300">
-      <div class="absolute inset-0 bg-gradient-to-r from-zinc-900/0 via-zinc-800/0 to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      
-      <div class="relative z-10 flex flex-col justify-between h-full">
-        <div>
-          <div class="flex items-center gap-3 mb-3">
-            <span class="px-2 py-0.5 text-[10px] font-mono text-indigo-300 bg-indigo-500/10 rounded-full border border-indigo-500/20">LATEST</span>
-            <time datetime={latestPost.data.date.toISOString()} class="text-xs text-zinc-500 font-mono">
-              {latestPost.data.date.toLocaleDateString('zh-CN')}
-            </time>
-          </div>
-          <h2 class="text-2xl font-bold text-zinc-100 group-hover:text-indigo-300 transition-colors">{latestPost.data.title}</h2>
-          <p class="mt-3 text-sm text-zinc-400 line-clamp-2 leading-relaxed">
-            {latestPost.data.description || "点击阅读全文..."}
-          </p>
-        </div>
-        
-        <div class="mt-4 flex items-center text-xs text-zinc-500 font-mono group-hover:text-indigo-400 transition-colors">
-          READ ARTICLE <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-        </div>
-      </div>
-    </a>
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-12 animate-bounce">
+      <svg class="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </div>
+  </section>
 
-    <!-- Other Posts List (占3格，横向铺开) -->
-    {otherPosts.map((post) => (
-      <a href={`/posts/${post.slug}`} class="group relative p-6 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:bg-zinc-800/30 hover:scale-[1.02] transition-all duration-300">
-        <div class="flex flex-col justify-between h-full">
-          <div>
-             <time datetime={post.data.date.toISOString()} class="text-[10px] text-zinc-600 font-mono block mb-2">
-              {post.data.date.toLocaleDateString('zh-CN')}
-            </time>
-            <h3 class="text-lg font-semibold text-zinc-200 group-hover:text-white leading-tight">
-              {post.data.title}
-            </h3>
-          </div>
+  <!-- Latest Posts Section -->
+  <section class="py-20 border-t border-zinc-200 dark:border-white/5">
+    <div class="mb-12 flex items-baseline justify-between">
+      <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">Latest Logs</h2>
+      <a href="/posts" class="text-xs font-mono text-zinc-500 hover:text-indigo-500 transition-colors">VIEW ARCHIVE →</a>
+    </div>
+
+    <div class="space-y-16">
+      {posts.map((post) => (
+        <article class="group relative flex flex-col md:flex-row gap-8 items-baseline">
           
-          <div class="mt-4">
-             {post.data.tags && (
-                <div class="flex flex-wrap gap-2">
-                  {post.data.tags.slice(0, 2).map(tag => (
-                    <span class="text-[10px] text-zinc-500">#{tag}</span>
-                  ))}
-                </div>
-             )}
+          <div class="md:w-32 flex-shrink-0 md:sticky md:top-32">
+            <time datetime={post.data.date.toISOString()} class="text-xs font-mono text-zinc-400 dark:text-zinc-500">
+              {post.data.date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+            </time>
           </div>
-        </div>
-      </a>
-    ))}
 
-    <!-- More Link (占1格) -->
-    <a href="/posts" class="group flex items-center justify-center p-6 bg-transparent border border-dashed border-zinc-800 rounded-2xl text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 transition-all duration-300">
-      <span class="text-sm font-mono">VIEW ARCHIVE</span>
-    </a>
-    
-  </div>
+          <div class="flex-1 border-l border-zinc-200 dark:border-zinc-800 pl-8 relative">
+            <div class="absolute -left-[5px] top-2 w-2.5 h-2.5 bg-zinc-200 dark:bg-zinc-800 rounded-full border-2 border-white dark:border-zinc-950 group-hover:bg-indigo-500 group-hover:border-indigo-400 transition-colors"></div>
+            
+            <a href={`/posts/${post.slug}`} class="block group-hover:translate-x-1 transition-transform duration-300">
+              <h3 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                {post.data.title}
+              </h3>
+              
+              <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 text-sm">
+                {post.data.description || getExcerpt(post.body)}
+              </p>
+
+              <div class="flex items-center gap-4">
+                 <span class="text-xs font-mono text-indigo-500 font-medium group-hover:underline decoration-indigo-500/30 underline-offset-4">Read Article</span>
+                 {post.data.tags && (
+                    <div class="flex gap-2">
+                      {post.data.tags.slice(0, 3).map(tag => (
+                        <span class="text-[10px] text-zinc-400">#{tag}</span>
+                      ))}
+                    </div>
+                 )}
+              </div>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
 </BaseLayout>
 
 <script>
@@ -90,11 +92,17 @@ const otherPosts = posts.slice(1);
     const element = document.getElementById("typewriter");
     if (!element) return;
 
-    const text = "echo 'Stay curious.'";
+    const phrases = [
+      "Keep it simple.",
+      "Code with passion.",
+      "Stay curious.",
+      "Engineering art."
+    ];
+    const text = phrases[Math.floor(Math.random() * phrases.length)];
     const speed = 100;
     let i = 0;
     
-    element.innerHTML = ''; // 清空内容
+    element.innerHTML = ''; 
 
     function type() {
       if (i < text.length) {
@@ -107,6 +115,5 @@ const otherPosts = posts.slice(1);
     type();
   }
 
-  // 初始加载和视图转换后均触发
   document.addEventListener('astro:page-load', initTypewriter);
 </script>

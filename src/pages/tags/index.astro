@@ -11,28 +11,46 @@ const tagCounts = posts.reduce((acc, post) => {
   return acc;
 }, {} as Record<string, number>);
 
-const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+const tags = Object.entries(tagCounts).map(([name, count]) => ({ name, count }));
+
+// 计算字体大小范围 (1rem - 3rem)
+const maxCount = Math.max(...tags.map(t => t.count));
+const minCount = Math.min(...tags.map(t => t.count));
+const getFontSize = (count: number) => {
+    if (maxCount === minCount) return 1.5;
+    const size = 1 + ((count - minCount) / (maxCount - minCount)) * 2;
+    return size.toFixed(2);
+};
 ---
 
 <BaseLayout title="Tags">
-  <div class="max-w-4xl mx-auto">
-    <div class="mb-12 text-center">
-      <h1 class="text-3xl font-bold text-zinc-100 tracking-tight mb-4">Topics</h1>
-      <p class="text-zinc-500 font-mono text-sm">Explore {sortedTags.length} different topics</p>
+  <div class="min-h-[60vh] flex flex-col justify-center items-center text-center relative">
+    
+    <div class="mb-12">
+      <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-2">Topics Cloud</h1>
+      <p class="text-zinc-500 font-mono text-xs">Explore {tags.length} dimensions</p>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {sortedTags.map(([tag, count]) => (
+    <div class="flex flex-wrap justify-center gap-8 max-w-4xl px-4 group/cloud">
+      {tags.map((tag) => (
         <a 
-          href={`/tags/${tag}`} 
-          class="group flex items-center justify-between p-4 bg-zinc-900/30 border border-white/5 rounded-xl hover:border-indigo-500/30 hover:bg-zinc-800/50 transition-all duration-300"
+          href={`/tags/${tag.name}`}
+          class="relative transition-all duration-500 hover:!opacity-100 group-hover/cloud:opacity-20 hover:scale-110"
+          style={{
+            fontSize: `${getFontSize(tag.count)}rem`,
+            animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 5}s`
+          }}
         >
-          <span class="text-sm font-medium text-zinc-300 group-hover:text-indigo-300 transition-colors truncate">#{tag}</span>
-          <span class="text-xs font-mono text-zinc-600 group-hover:text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-800 group-hover:border-zinc-700">
-            {count}
+          <span class="font-bold text-zinc-700 dark:text-zinc-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
+            #{tag.name}
+          </span>
+          <span class="absolute -top-2 -right-3 text-[10px] font-mono text-zinc-400 opacity-0 hover:opacity-100 transition-opacity">
+            {tag.count}
           </span>
         </a>
       ))}
     </div>
+
   </div>
 </BaseLayout>
