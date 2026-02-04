@@ -58,8 +58,8 @@ const navItems = [
     </div>
 
     <!-- Top Dynamic Island Nav -->
-    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50">
-      <div class="group flex items-center justify-center p-1.5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 transition-[max-width,padding,background] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:duration-400 hover:ease-[cubic-bezier(0.22,1,0.36,1)] h-12 max-w-[3rem] hover:max-w-[18rem] hover:px-4 overflow-hidden">
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50" transition:persist>
+      <div id="nav-container" class="group flex items-center justify-center p-1.5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 transition-[max-width,padding,background] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:duration-400 hover:ease-[cubic-bezier(0.22,1,0.36,1)] h-12 max-w-[3rem] hover:max-w-[18rem] hover:px-4 [&.expanded]:max-w-[18rem] [&.expanded]:px-4 overflow-hidden">
         
         <!-- Logo -->
         <a href="/" class="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-indigo-500 hover:text-white transition-colors duration-300">
@@ -67,7 +67,7 @@ const navItems = [
         </a>
 
         <!-- Menu Items -->
-        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out ml-2 whitespace-nowrap">
+        <div id="nav-menu" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-[.expanded]:opacity-100 transition-opacity duration-300 ease-out ml-2 whitespace-nowrap">
           {navItems.map((item) => (
             <a href={item.href} class="px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
               {item.name}
@@ -82,7 +82,7 @@ const navItems = [
       </div>
     </nav>
 
-    <main class="relative z-10 w-full max-w-4xl mx-auto px-6 py-24 lg:py-32">
+    <main class="relative z-10 w-full max-w-4xl mx-auto px-6 pt-24 pb-24 lg:pt-28 lg:pb-32">
       <slot />
     </main>
 
@@ -91,6 +91,24 @@ const navItems = [
     </footer>
 
     <script>
+      // Navigation State Logic
+      function updateNavState() {
+        const nav = document.getElementById('nav-container');
+        if (!nav) return;
+        // Check if we are on a "special" page (blog/tags/post)
+        const isSpecialPage = /^\/(posts|tags)/.test(window.location.pathname);
+        const isScrolled = window.scrollY > 50; // Threshold
+        
+        if (isSpecialPage && !isScrolled) {
+          nav.classList.add('expanded');
+        } else {
+          nav.classList.remove('expanded');
+        }
+      }
+      
+      // Run once on load
+      window.addEventListener('scroll', updateNavState, { passive: true });
+
       function initInteractive() {
         const spotlight = document.getElementById('spotlight');
         if (spotlight) {
@@ -110,6 +128,9 @@ const navItems = [
         // Remove old listener if exists (optional but good practice)
         themeToggleBtn?.replaceWith(themeToggleBtn.cloneNode(true));
         document.getElementById('theme-toggle')?.addEventListener("click", handleToggleClick);
+        
+        // Update Nav on interactive init (page load / swap)
+        updateNavState();
       }
 
       // 恢复主题状态（页面切换后 html class 会被重置）
