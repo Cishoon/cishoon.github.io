@@ -1,140 +1,96 @@
 ---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
 interface Props {
   title: string;
   description?: string;
 }
 
 const { title, description = "Cishoon's Blog" } = Astro.props;
+
+const navItems = [
+  { name: 'Home', href: '/' },
+  { name: 'Blog', href: '/posts' },
+  { name: 'Tags', href: '/tags' },
+];
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <title>{title} | Cishoon's Blog</title>
+    <title>{title} | Cishoon</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <ClientRouter />
   </head>
-  <body>
-    <header>
-      <nav>
-        <a href="/" class="logo">Cishoon</a>
-        <div class="nav-links">
-          <a href="/">首页</a>
-          <a href="/posts">文章</a>
-          <a href="/tags">标签</a>
-        </div>
-      </nav>
-    </header>
-    <main>
+  <body class="bg-zinc-950 text-zinc-300 relative min-h-screen selection:bg-zinc-800 selection:text-zinc-50 overflow-x-hidden">
+    
+    <!-- 背景层：噪点 + 氛围光 -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <div class="bg-noise absolute inset-0 mix-blend-overlay opacity-20"></div>
+      <!-- 氛围光斑 1 -->
+      <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] animate-pulse-slow"></div>
+      <!-- 氛围光斑 2 -->
+      <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-zinc-800/20 rounded-full blur-[120px]"></div>
+      <!-- 鼠标跟随聚光灯 (JS控制) -->
+      <div id="spotlight" class="absolute inset-0 bg-transparent transition-opacity duration-500 opacity-0 lg:opacity-100"></div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="relative z-10 w-full max-w-4xl mx-auto px-6 py-20 lg:py-32">
       <slot />
     </main>
-    <footer>
-      <p>© 2024-{new Date().getFullYear()} Cishoon. All rights reserved.</p>
+
+    <!-- 底部悬浮导航 Dock -->
+    <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+      <div class="flex items-center gap-1 px-4 py-3 bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-full shadow-2xl shadow-black/50 ring-1 ring-white/10 transition-all hover:scale-105 duration-300">
+        {navItems.map((item) => (
+          <a 
+            href={item.href} 
+            class="px-4 py-1.5 text-sm font-medium text-zinc-400 hover:text-white transition-colors relative group"
+          >
+            {item.name}
+            <!-- 激活/Hover 指示器 -->
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+          </a>
+        ))}
+        
+        <div class="w-[1px] h-4 bg-white/10 mx-2"></div>
+        
+        <a href="https://github.com/cishoon" target="_blank" class="p-2 text-zinc-400 hover:text-white transition-colors" aria-label="GitHub">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+        </a>
+      </div>
+    </nav>
+
+    <footer class="absolute bottom-4 w-full text-center pointer-events-none">
+       <p class="text-[10px] text-zinc-600 font-mono tracking-widest uppercase opacity-50">Designed by Cishoon</p>
     </footer>
+
+    <script>
+      // 聚光灯效果逻辑 - View Transitions 兼容版
+      function initSpotlight() {
+        const spotlight = document.getElementById('spotlight');
+        if (!spotlight) return;
+
+        function updateSpotlight(e) {
+          spotlight.style.background = `radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(255, 255, 255, 0.03), transparent 40%)`;
+        }
+
+        window.addEventListener('mousemove', updateSpotlight);
+        
+        // 清理函数，防止内存泄漏 (可选，因为 window 监听器在 SPA 中通常持续存在，但为了严谨最好清理旧的)
+        // 但由于这是一个全局效果，且 layout 结构不变，简单的做法是只绑一次或者每次都重新获取元素
+      }
+
+      // 初始加载
+      initSpotlight();
+
+      // 页面切换后重新初始化
+      document.addEventListener('astro:after-swap', initSpotlight);
+    </script>
   </body>
 </html>
-
-<style is:global>
-  :root {
-    --bg: #0d1117;
-    --bg-secondary: #161b22;
-    --text: #c9d1d9;
-    --text-muted: #8b949e;
-    --accent: #58a6ff;
-    --border: #30363d;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-  }
-
-  a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 100;
-  }
-
-  nav {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--text);
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .nav-links a {
-    color: var(--text-muted);
-  }
-
-  .nav-links a:hover {
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-    min-height: calc(100vh - 200px);
-  }
-
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-muted);
-  }
-
-  code {
-    background: var(--bg-secondary);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-size: 0.9em;
-  }
-
-  pre {
-    background: var(--bg-secondary) !important;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-  }
-
-  pre code {
-    background: none;
-    padding: 0;
-  }
-</style>

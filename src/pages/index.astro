@@ -4,85 +4,109 @@ import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 10);
+  .slice(0, 5); // 取前5篇，凑够网格
+
+const latestPost = posts[0];
+const otherPosts = posts.slice(1);
 ---
 
 <BaseLayout title="首页">
-  <section class="hero">
-    <h1>Cishoon's Blog</h1>
-    <p>一条数学公式 + 一个简单的故事</p>
-  </section>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]">
+    
+    <!-- Profile Cell: 个人简介 (占1格) -->
+    <div class="group relative flex flex-col justify-between p-6 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:bg-zinc-800/30 transition-colors duration-300">
+      <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      
+      <div>
+        <h1 class="text-xl font-bold text-zinc-100 tracking-tight">Cishoon</h1>
+        <p class="text-sm text-zinc-400 mt-1">Fullstack Engineer</p>
+      </div>
 
-  <section class="recent-posts">
-    <h2>最新文章</h2>
-    <ul class="post-list">
-      {posts.map((post) => (
-        <li>
-          <a href={`/posts/${post.slug}`}>
-            <span class="post-title">{post.data.title}</span>
-            <time datetime={post.data.date.toISOString()}>
+      <div class="mt-8 font-mono text-xs text-zinc-500">
+        <span class="text-indigo-400">root@cishoon:~$</span> <span id="typewriter"></span><span class="animate-pulse">_</span>
+      </div>
+    </div>
+
+    <!-- Feature Post: 最新文章 (占2格) -->
+    <a href={`/posts/${latestPost.slug}`} class="group relative md:col-span-2 p-6 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-all duration-300">
+      <div class="absolute inset-0 bg-gradient-to-r from-zinc-900/0 via-zinc-800/0 to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      
+      <div class="relative z-10 flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="px-2 py-0.5 text-[10px] font-mono text-indigo-300 bg-indigo-500/10 rounded-full border border-indigo-500/20">LATEST</span>
+            <time datetime={latestPost.data.date.toISOString()} class="text-xs text-zinc-500 font-mono">
+              {latestPost.data.date.toLocaleDateString('zh-CN')}
+            </time>
+          </div>
+          <h2 class="text-2xl font-bold text-zinc-100 group-hover:text-indigo-300 transition-colors">{latestPost.data.title}</h2>
+          <p class="mt-3 text-sm text-zinc-400 line-clamp-2 leading-relaxed">
+            {latestPost.data.description || "点击阅读全文..."}
+          </p>
+        </div>
+        
+        <div class="mt-4 flex items-center text-xs text-zinc-500 font-mono group-hover:text-indigo-400 transition-colors">
+          READ ARTICLE <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Other Posts List (占3格，横向铺开) -->
+    {otherPosts.map((post) => (
+      <a href={`/posts/${post.slug}`} class="group relative p-6 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:bg-zinc-800/30 hover:scale-[1.02] transition-all duration-300">
+        <div class="flex flex-col justify-between h-full">
+          <div>
+             <time datetime={post.data.date.toISOString()} class="text-[10px] text-zinc-600 font-mono block mb-2">
               {post.data.date.toLocaleDateString('zh-CN')}
             </time>
-          </a>
-        </li>
-      ))}
-    </ul>
-    <a href="/posts" class="view-all">查看全部文章 →</a>
-  </section>
+            <h3 class="text-lg font-semibold text-zinc-200 group-hover:text-white leading-tight">
+              {post.data.title}
+            </h3>
+          </div>
+          
+          <div class="mt-4">
+             {post.data.tags && (
+                <div class="flex flex-wrap gap-2">
+                  {post.data.tags.slice(0, 2).map(tag => (
+                    <span class="text-[10px] text-zinc-500">#{tag}</span>
+                  ))}
+                </div>
+             )}
+          </div>
+        </div>
+      </a>
+    ))}
+
+    <!-- More Link (占1格) -->
+    <a href="/posts" class="group flex items-center justify-center p-6 bg-transparent border border-dashed border-zinc-800 rounded-2xl text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 transition-all duration-300">
+      <span class="text-sm font-mono">VIEW ARCHIVE</span>
+    </a>
+    
+  </div>
 </BaseLayout>
 
-<style>
-  .hero {
-    text-align: center;
-    padding: 4rem 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 2rem;
+<script>
+  function initTypewriter() {
+    const element = document.getElementById("typewriter");
+    if (!element) return;
+
+    const text = "echo 'Stay curious.'";
+    const speed = 100;
+    let i = 0;
+    
+    element.innerHTML = ''; // 清空内容
+
+    function type() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      }
+    }
+    
+    type();
   }
 
-  .hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .hero p {
-    color: var(--text-muted);
-  }
-
-  .recent-posts h2 {
-    margin-bottom: 1.5rem;
-  }
-
-  .post-list {
-    list-style: none;
-  }
-
-  .post-list li {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .post-list a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    color: var(--text);
-  }
-
-  .post-list a:hover {
-    text-decoration: none;
-  }
-
-  .post-list a:hover .post-title {
-    color: var(--accent);
-  }
-
-  .post-list time {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
-
-  .view-all {
-    display: inline-block;
-    margin-top: 1.5rem;
-  }
-</style>
+  // 初始加载和视图转换后均触发
+  document.addEventListener('astro:page-load', initTypewriter);
+</script>

@@ -18,70 +18,68 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts } = Astro.props;
+
+// Group by year
+const postsByYear = posts.reduce((acc, post) => {
+  const year = post.data.date.getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {} as Record<number, typeof posts>);
+
+const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
-<BaseLayout title={`标签: ${tag}`}>
-  <h1>#{tag}</h1>
-  <p class="post-count">共 {posts.length} 篇文章</p>
+<BaseLayout title={`Tag: #${tag}`}>
+  <div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-16 text-center relative">
+      <div class="absolute inset-0 flex items-center justify-center -z-10 opacity-5 blur-3xl pointer-events-none">
+         <div class="w-40 h-40 bg-indigo-500 rounded-full"></div>
+      </div>
+      <h1 class="text-6xl font-bold text-zinc-100 tracking-tighter mb-4">#{tag}</h1>
+      <p class="text-zinc-500 font-mono text-sm">{posts.length} posts related to this topic</p>
+    </div>
 
-  <ul class="post-list">
-    {posts.map((post) => (
-      <li>
-        <a href={`/posts/${post.slug}`}>
-          <span class="post-title">{post.data.title}</span>
-          <time datetime={post.data.date.toISOString()}>
-            {post.data.date.toLocaleDateString('zh-CN')}
-          </time>
+    <!-- Timeline List -->
+    <div class="space-y-16">
+      {years.map((year) => (
+        <section class="relative">
+          <div class="flex items-start gap-8">
+            <h2 class="text-lg font-mono font-bold text-zinc-700 sticky top-24 w-12 text-right">
+              {year}
+            </h2>
+            
+            <div class="flex-1 space-y-6 border-l border-zinc-800 pl-8 relative">
+               <div class="absolute left-[-1px] top-0 bottom-0 w-px bg-zinc-800"></div>
+
+              {postsByYear[Number(year)].map((post) => (
+                <a 
+                  href={`/posts/${post.slug}`} 
+                  class="group block relative transition-all duration-300 hover:translate-x-1"
+                >
+                  <div class="absolute -left-[37px] top-1.5 w-2 h-2 bg-zinc-800 rounded-full border border-zinc-950 group-hover:bg-indigo-500 group-hover:border-indigo-400 transition-colors"></div>
+                  
+                  <div class="flex flex-col">
+                    <h3 class="text-lg font-medium text-zinc-300 group-hover:text-indigo-300 transition-colors">
+                      {post.data.title}
+                    </h3>
+                    <time datetime={post.data.date.toISOString()} class="text-xs font-mono text-zinc-500 mt-1">
+                      {post.data.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                    </time>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <div class="mt-20 text-center">
+        <a href="/tags" class="text-sm font-mono text-zinc-500 hover:text-zinc-300 underline underline-offset-4 transition-colors">
+            View All Tags
         </a>
-      </li>
-    ))}
-  </ul>
-
-  <a href="/tags" class="back-link">← 返回标签列表</a>
+    </div>
+  </div>
 </BaseLayout>
-
-<style>
-  h1 {
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-  }
-
-  .post-count {
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-  }
-
-  .post-list {
-    list-style: none;
-    margin-bottom: 2rem;
-  }
-
-  .post-list li {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .post-list a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    color: var(--text);
-  }
-
-  .post-list a:hover {
-    text-decoration: none;
-  }
-
-  .post-list a:hover .post-title {
-    color: var(--accent);
-  }
-
-  .post-list time {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
-
-  .back-link {
-    display: inline-block;
-  }
-</style>

@@ -5,7 +5,6 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// Group by year
 const postsByYear = posts.reduce((acc, post) => {
   const year = post.data.date.getFullYear();
   if (!acc[year]) acc[year] = [];
@@ -16,77 +15,50 @@ const postsByYear = posts.reduce((acc, post) => {
 const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
-<BaseLayout title="全部文章">
-  <h1>全部文章</h1>
-  <p class="post-count">共 {posts.length} 篇</p>
+<BaseLayout title="Archive">
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-12">
+      <h1 class="text-3xl font-bold text-zinc-100 tracking-tight">Archive</h1>
+      <p class="text-zinc-500 mt-2 font-mono text-sm">{posts.length} posts in total</p>
+    </div>
 
-  {years.map((year) => (
-    <section class="year-section">
-      <h2>{year}</h2>
-      <ul class="post-list">
-        {postsByYear[Number(year)].map((post) => (
-          <li>
-            <a href={`/posts/${post.slug}`}>
-              <span class="post-title">{post.data.title}</span>
-              <time datetime={post.data.date.toISOString()}>
-                {post.data.date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
-              </time>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  ))}
+    <div class="space-y-20">
+      {years.map((year) => (
+        <section class="relative">
+          <h2 class="text-8xl font-bold text-zinc-900 absolute -top-12 -left-8 -z-10 select-none pointer-events-none opacity-50">
+            {year}
+          </h2>
+          <div class="relative pl-8 border-l border-zinc-800 space-y-8">
+             <div class="absolute -left-[5px] top-0 w-2.5 h-2.5 bg-zinc-800 rounded-full border-2 border-zinc-950"></div>
+            
+            {postsByYear[Number(year)].map((post) => (
+              <a 
+                href={`/posts/${post.slug}`} 
+                class="group block relative pl-4 transition-all duration-300 hover:translate-x-2"
+              >
+                <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-6">
+                  <time datetime={post.data.date.toISOString()} class="text-xs font-mono text-zinc-500 min-w-[5rem]">
+                    {post.data.date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })}
+                  </time>
+                  
+                  <div class="flex-1">
+                    <h3 class="text-lg font-medium text-zinc-300 group-hover:text-indigo-300 transition-colors">
+                      {post.data.title}
+                    </h3>
+                    {post.data.tags && (
+                        <div class="flex gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                            {post.data.tags.map(tag => (
+                                <span class="text-[10px] text-zinc-600 font-mono">#{tag}</span>
+                            ))}
+                        </div>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
 </BaseLayout>
-
-<style>
-  h1 {
-    margin-bottom: 0.5rem;
-  }
-
-  .post-count {
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-  }
-
-  .year-section {
-    margin-bottom: 2rem;
-  }
-
-  .year-section h2 {
-    color: var(--accent);
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .post-list {
-    list-style: none;
-  }
-
-  .post-list li {
-    padding: 0.5rem 0;
-  }
-
-  .post-list a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--text);
-  }
-
-  .post-list a:hover {
-    text-decoration: none;
-  }
-
-  .post-list a:hover .post-title {
-    color: var(--accent);
-  }
-
-  .post-list time {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-family: monospace;
-  }
-</style>
