@@ -93,7 +93,7 @@ const navItems = [
     <style is:global>
       /* Docked State Logic */
       #nav-wrapper.docked {
-        top: -1.5rem; /* Half height (24px) visible */
+        top: -2.5rem; /* Half height (24px) visible */
       }
       
       #nav-wrapper.docked:hover {
@@ -101,15 +101,25 @@ const navItems = [
       }
 
       /* Bridge to prevent flickering when hovering from top edge */
-      #nav-wrapper.docked::after {
+      #nav-wrapper.docked::before {
         content: '';
         position: absolute;
-        bottom: 0;
+        top: -50px;
         left: 50%;
         transform: translateX(-50%);
-        width: 100%;
-        height: 100px; /* Extend hit area upwards */
-        z-index: -1;
+        width: 22rem;
+        height: calc(100% + 100px);
+      }
+
+      /* When hovering the wrapper (including the ::before area), expand nav-container */
+      #nav-wrapper.docked:hover #nav-container {
+        max-width: 18rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      #nav-wrapper.docked:hover #nav-menu {
+        opacity: 1;
       }
     </style>
 
