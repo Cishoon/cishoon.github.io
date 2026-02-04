@@ -112,8 +112,21 @@ const navItems = [
         document.getElementById('theme-toggle')?.addEventListener("click", handleToggleClick);
       }
 
+      // 恢复主题状态（页面切换后 html class 会被重置）
+      function restoreTheme() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+      }
+
       initInteractive();
-      document.addEventListener('astro:after-swap', initInteractive);
+      document.addEventListener('astro:after-swap', () => {
+        restoreTheme();
+        initInteractive();
+      });
     </script>
   </body>
 </html>
