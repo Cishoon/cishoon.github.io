@@ -84,3 +84,21 @@ html, body {
     transparent 40%
   );
 }
+
+/* 代码块样式 */
+pre {
+  @apply rounded-lg p-4 overflow-x-auto my-4;
+}
+
+pre code {
+  @apply bg-transparent p-0 text-sm leading-relaxed;
+}
+
+pre code span {
+  @apply bg-transparent;
+}
+
+/* 行内代码样式 */
+:not(pre) > code {
+  @apply bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm text-zinc-800 dark:text-zinc-200;
+}
