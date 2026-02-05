@@ -8,6 +8,7 @@ interface Props {
 }
 
 const { title, description = "Cishoon's Blog" } = Astro.props;
+const currentPath = Astro.url.pathname;
 
 const navItems = [
   { name: 'Home', href: '/' },
@@ -69,7 +70,12 @@ const navItems = [
         <!-- Menu Items -->
         <div id="nav-menu" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-[.expanded]:opacity-100 transition-opacity duration-300 ease-out ml-2 whitespace-nowrap">
           {navItems.map((item) => (
-            <a href={item.href} class="px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <a 
+              href={item.href} 
+              data-nav-item
+              data-href={item.href}
+              class="nav-link px-3 py-1.5 text-xs font-medium transition-colors rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5"
+            >
               {item.name}
             </a>
           ))}
@@ -146,6 +152,28 @@ const navItems = [
           }
         }
       }
+
+      // Update active nav link based on current path
+      function updateActiveNavLink() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('[data-nav-item]');
+        
+        const activeClasses = ['bg-zinc-200/80', 'dark:bg-white/10', 'text-zinc-900', 'dark:text-white'];
+        const inactiveClasses = ['text-zinc-600', 'dark:text-zinc-400'];
+        
+        navLinks.forEach((link) => {
+          const href = link.getAttribute('data-href');
+          const isActive = href === '/' ? currentPath === '/' : currentPath.startsWith(href!);
+          
+          if (isActive) {
+            link.classList.remove(...inactiveClasses);
+            link.classList.add(...activeClasses);
+          } else {
+            link.classList.remove(...activeClasses);
+            link.classList.add(...inactiveClasses);
+          }
+        });
+      }
       
       // Run once on load
       window.addEventListener('scroll', updateNavState, { passive: true });
@@ -172,6 +200,7 @@ const navItems = [
         
         // Update Nav on interactive init (page load / swap)
         updateNavState();
+        updateActiveNavLink();
       }
 
       // 恢复主题状态（页面切换后 html class 会被重置）
