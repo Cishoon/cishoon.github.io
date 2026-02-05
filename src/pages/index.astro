@@ -20,14 +20,82 @@ function getExcerpt(body: string) {
 <BaseLayout title="首页">
   
   <!-- Hero Section -->
-  <section class="min-h-[80vh] flex flex-col justify-center items-center text-center relative">
-    <div class="relative z-10">
-      <h1 class="text-7xl md:text-9xl font-black tracking-tighter text-zinc-900 dark:text-white mb-6 select-none">
-        STAY<br/>COOL
-      </h1>
-      
-      <div class="font-mono text-sm md:text-base text-zinc-500 dark:text-zinc-400 h-6">
-        <span class="text-indigo-500">></span> <span id="typewriter"></span><span class="animate-pulse">_</span>
+  <section class="min-h-[80vh] flex flex-col justify-center items-center relative">
+    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 z-10">
+      <!-- Avatar -->
+      <div class="relative group">
+        <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-zinc-200 dark:bg-zinc-800 border-4 border-white dark:border-zinc-900 overflow-hidden shadow-xl ring-1 ring-zinc-900/5 dark:ring-white/10">
+          <img id="avatar-img" src="/avatar/sunrise.png" alt="Cishoon" class="w-full h-full object-cover" />
+        </div>
+        <!-- Status Dot -->
+        <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 rounded-full border-4 border-white dark:border-zinc-900" title="Online"></div>
+      </div>
+
+      <!-- Info -->
+      <div class="text-center md:text-left flex flex-col items-center md:items-start">
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight text-zinc-900 dark:text-white mb-3">
+          Cishoon
+        </h1>
+        
+        <!-- Interactive Sliding Section -->
+        <div class="grid grid-cols-1 mb-6 cursor-default group">
+          <!-- Ghost element for sizing (based on Bio length) -->
+          <div class="col-start-1 row-start-1 opacity-0 pointer-events-none px-2 font-medium text-lg invisible whitespace-nowrap">
+             一条数学公式 + 一个简单的故事
+          </div>
+
+          <!-- Interactive Container -->
+          <div class="col-start-1 row-start-1 relative h-full w-full">
+             
+             <!-- Layer 1: Typewriter (Wipes out on hover) -->
+             <div class="typewriter-wipe absolute inset-0 flex items-center pl-3 font-mono text-sm md:text-base text-zinc-500 dark:text-zinc-400">
+                <span class="text-indigo-500 mr-2">></span>
+                <span id="typewriter"></span>
+                <span class="animate-pulse">_</span>
+             </div>
+
+             <!-- Layer 2: Bio (Expands on hover) -->
+             <div class="absolute top-0 left-0 h-full w-[2px] group-hover:w-full overflow-hidden transition-[width] duration-700 delay-100 ease-[cubic-bezier(0.25,1,0.5,1)] flex items-center whitespace-nowrap z-10">
+                <span class="px-2 text-zinc-600 dark:text-zinc-400 font-medium">
+                  一条数学公式 + 一个简单的故事
+                </span>
+                
+                <!-- The vertical separator line -->
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 h-[60%] w-[1.5px] bg-zinc-3 00/80 dark:bg-zinc-700/80 rounded-full"></div>
+             </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="flex items-center justify-center md:justify-start gap-4">
+
+<style>
+  /* Typewriter wipe animation */
+  .typewriter-wipe {
+    clip-path: inset(0 0 0 2px);
+    transition: clip-path 700ms cubic-bezier(0.25, 1, 0.5, 1) 100ms;
+  }
+  
+  /* Trigger on group hover */
+  .group:hover .typewriter-wipe {
+    clip-path: inset(0 0 0 100%);
+  }
+</style>
+        </div>
+
+        <!-- Social Links -->
+        <div class="flex items-center justify-center md:justify-start gap-4">
+          <!-- GitHub -->
+          <a href="https://github.com/cishoon/" target="_blank" rel="noopener noreferrer" class="p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors bg-zinc-100 dark:bg-zinc-800/50 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800">
+            <span class="sr-only">GitHub</span>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+          </a>
+          <!-- Bilibili -->
+          <a href="https://space.bilibili.com/106695488" target="_blank" rel="noopener noreferrer" class="p-2 text-zinc-500 hover:text-pink-500 dark:text-zinc-400 dark:hover:text-pink-400 transition-colors bg-zinc-100 dark:bg-zinc-800/50 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800">
+            <span class="sr-only">Bilibili</span>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.758v6.844c-.036 1.51-.556 2.769-1.56 3.773-1.004.996-2.264 1.52-3.773 1.56H5.333c-1.51-.04-2.77-.564-3.773-1.56-1.005-.995-1.524-2.25-1.56-3.773V9.985c.036-1.52.555-2.774 1.56-3.773 1.004-.996 2.264-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a1.683 1.683 0 0 1 .213-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373Z"/></svg>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -93,27 +161,59 @@ function getExcerpt(body: string) {
     if (!element) return;
 
     const phrases = [
-      "Keep it simple.",
-      "Code with passion.",
-      "Stay curious.",
-      "Engineering art."
+      "STAY COOL",
+      "NEVER LIMIT YOURSELF"
     ];
-    const text = phrases[Math.floor(Math.random() * phrases.length)];
-    const speed = 100;
-    let i = 0;
     
-    element.innerHTML = ''; 
+    let loopNum = 0;
+    let isDeleting = false;
+    let txt = '';
+    
+    function tick() {
+      const i = loopNum % phrases.length;
+      const fullTxt = phrases[i];
 
-    function type() {
-      if (i < text.length) {
-        element.innerHTML += text.charAt(i);
-        i++;
-        setTimeout(type, speed);
+      if (isDeleting) {
+        txt = fullTxt.substring(0, txt.length - 1);
+      } else {
+        txt = fullTxt.substring(0, txt.length + 1);
       }
+
+      element.innerHTML = txt;
+
+      let delta = 100; // Typing speed
+
+      if (isDeleting) { delta /= 2; } // Deleting speed
+
+      if (!isDeleting && txt === fullTxt) {
+        delta = 10000; // Wait 10 seconds
+        isDeleting = true;
+      } else if (isDeleting && txt === '') {
+        isDeleting = false;
+        loopNum++;
+        delta = 500; // Pause before typing next
+      }
+
+      setTimeout(tick, delta);
     }
     
-    type();
+    tick();
   }
 
-  document.addEventListener('astro:page-load', initTypewriter);
+  function initAvatar() {
+    const avatar = document.getElementById('avatar-img') as HTMLImageElement;
+    if (!avatar) return;
+    
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 18) {
+      avatar.src = '/avatar/sunrise.png';
+    } else {
+      avatar.src = '/avatar/sunset.png';
+    }
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initTypewriter();
+    initAvatar();
+  });
 </script>
