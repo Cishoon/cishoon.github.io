@@ -28,7 +28,7 @@ function getExcerpt(body: string) {
           <img id="avatar-img" src="/avatar/sunrise.png" alt="Cishoon" class="w-full h-full object-cover" />
         </div>
         <!-- Status Dot -->
-        <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 rounded-full border-4 border-white dark:border-zinc-900"></div>
+        <div id="status-dot" class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 rounded-full border-4 border-white dark:border-zinc-900"></div>
       </div>
 
       <!-- Info -->
@@ -159,6 +159,82 @@ function getExcerpt(body: string) {
   let typewriterTimeoutId: number | null = null;
   let lastWasMobile: boolean | null = null;
 
+  // Status Dot Interaction Variables
+  let statusDotAnimationId: number | null = null;
+  let mouseX = -9999;
+  let mouseY = -9999;
+  let isMouseMoveAttached = false;
+
+  function initStatusDot() {
+    const dot = document.getElementById('status-dot');
+    if (!dot) return;
+
+    // Attach mouse listener once
+    if (!isMouseMoveAttached) {
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      isMouseMoveAttached = true;
+    }
+
+    if (statusDotAnimationId !== null) {
+      cancelAnimationFrame(statusDotAnimationId);
+    }
+
+    let dotX = 0;
+    let dotY = 0;
+    let velX = 0;
+    let velY = 0;
+    
+    // Physics config
+    const springStrength = 0.05; // Strong pull back
+    const friction = 0.85;       // Damping
+    const repelRadius = 5;     // Interaction radius
+    const repelForce = 3.0;      // Push strength
+
+    function animate() {
+      if (!dot) return;
+      
+      const rect = dot.getBoundingClientRect();
+      const currentCenterX = rect.left + rect.width / 2;
+      const currentCenterY = rect.top + rect.height / 2;
+
+      const dx = currentCenterX - mouseX;
+      const dy = currentCenterY - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      let forceX = 0;
+      let forceY = 0;
+
+      if (dist < repelRadius) {
+        // Calculate repulsion (stronger when closer)
+        const power = (repelRadius - dist) / repelRadius; 
+        const angle = Math.atan2(dy, dx);
+        forceX = Math.cos(angle) * power * repelForce;
+        forceY = Math.sin(angle) * power * repelForce;
+      }
+
+      // Spring force (pulls back to 0,0 offset)
+      const springX = -dotX * springStrength;
+      const springY = -dotY * springStrength;
+
+      velX += forceX + springX;
+      velY += forceY + springY;
+
+      velX *= friction;
+      velY *= friction;
+
+      dotX += velX;
+      dotY += velY;
+
+      dot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+      statusDotAnimationId = requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
   function initTypewriter() {
     const element = document.getElementById("typewriter");
     if (!element) return;
@@ -242,6 +318,7 @@ function getExcerpt(body: string) {
     lastWasMobile = window.matchMedia('(max-width: 768px)').matches;
     initTypewriter();
     initAvatar();
+    initStatusDot();
     
     // 监听窗口大小变化
     window.addEventListener('resize', handleResize);
