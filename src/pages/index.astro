@@ -38,7 +38,7 @@ function getExcerpt(body: string) {
         </h1>
         
         <!-- Interactive Sliding Section -->
-        <div class="grid grid-cols-1 mb-6 cursor-default group">
+        <div class="grid grid-cols-1 mb-6 cursor-default group translate-x-6 md:translate-x-0 transition-transform">
           <!-- Ghost element for sizing (based on Bio length) -->
           <div class="col-start-1 row-start-1 opacity-0 pointer-events-none px-2 font-medium text-lg invisible whitespace-nowrap">
              一条数学公式 + 一个简单的故事
@@ -160,10 +160,10 @@ function getExcerpt(body: string) {
     const element = document.getElementById("typewriter");
     if (!element) return;
 
-    const phrases = [
-      "STAY COOL",
-      "NEVER LIMIT YOURSELF"
-    ];
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const phrases = isMobile 
+      ? ["NEVER LIMIT YOURSELF"] 
+      : ["STAY COOL", "NEVER LIMIT YOURSELF"];
     
     let loopNum = 0;
     let isDeleting = false;
@@ -186,6 +186,9 @@ function getExcerpt(body: string) {
       if (isDeleting) { delta /= 2; } // Deleting speed
 
       if (!isDeleting && txt === fullTxt) {
+        // If only one phrase, stop here (don't delete)
+        if (phrases.length === 1) return;
+        
         delta = 10000; // Wait 10 seconds
         isDeleting = true;
       } else if (isDeleting && txt === '') {
