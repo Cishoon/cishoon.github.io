@@ -102,3 +102,44 @@ pre code span {
 :not(pre) > code {
   @apply bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm text-zinc-800 dark:text-zinc-200;
 }
+
+/* 文章标题样式 - 参考 GitHub 风格 */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply mt-4 mb-4 font-bold;
+  line-height: 1.4;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+  line-height: 1.2;
+  @apply border-b border-zinc-200 dark:border-zinc-800 pb-2;
+}
+
+.prose h2 {
+  font-size: 1.75em;
+  line-height: 1.225;
+  @apply border-b border-zinc-200 dark:border-zinc-800 pb-2;
+}
+
+.prose h3 {
+  font-size: 1.5em;
+  line-height: 1.43;
+}
+
+.prose h4 {
+  font-size: 1.25em;
+}
+
+.prose h5 {
+  font-size: 1em;
+}
+
+.prose h6 {
+  font-size: 1em;
+  @apply text-zinc-500;
+}
