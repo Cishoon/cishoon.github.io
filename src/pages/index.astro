@@ -155,172 +155,176 @@ function getExcerpt(body: string) {
 
 </BaseLayout>
 
-<script>
-  let typewriterTimeoutId: number | null = null;
-  let lastWasMobile: boolean | null = null;
+<script is:inline>
+  (function() {
+    // 防止重复注册事件监听器
+    if (window.__homePageInitialized) return;
+    window.__homePageInitialized = true;
 
-  // Status Dot Interaction Variables
-  let statusDotAnimationId: number | null = null;
-  let mouseX = -9999;
-  let mouseY = -9999;
-  let isMouseMoveAttached = false;
+    let typewriterTimeoutId = null;
+    let lastWasMobile = null;
+    let statusDotAnimationId = null;
+    let mouseX = -9999;
+    let mouseY = -9999;
 
-  function initStatusDot() {
-    const dot = document.getElementById('status-dot');
-    if (!dot) return;
+    function initStatusDot() {
+      const dot = document.getElementById('status-dot');
+      if (!dot) return;
 
-    // Attach mouse listener once
-    if (!isMouseMoveAttached) {
       document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
       });
-      isMouseMoveAttached = true;
-    }
 
-    if (statusDotAnimationId !== null) {
-      cancelAnimationFrame(statusDotAnimationId);
-    }
+      if (statusDotAnimationId !== null) {
+        cancelAnimationFrame(statusDotAnimationId);
+      }
 
-    let dotX = 0;
-    let dotY = 0;
-    let velX = 0;
-    let velY = 0;
-    
-    // Physics config
-    const springStrength = 0.05; // Strong pull back
-    const friction = 0.85;       // Damping
-    const repelRadius = 5;     // Interaction radius
-    const repelForce = 3.0;      // Push strength
-
-    function animate() {
-      if (!dot) return;
+      let dotX = 0;
+      let dotY = 0;
+      let velX = 0;
+      let velY = 0;
       
-      const rect = dot.getBoundingClientRect();
-      const currentCenterX = rect.left + rect.width / 2;
-      const currentCenterY = rect.top + rect.height / 2;
+      const springStrength = 0.05;
+      const friction = 0.85;
+      const repelRadius = 5;
+      const repelForce = 3.0;
 
-      const dx = currentCenterX - mouseX;
-      const dy = currentCenterY - mouseY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      let forceX = 0;
-      let forceY = 0;
-
-      if (dist < repelRadius) {
-        // Calculate repulsion (stronger when closer)
-        const power = (repelRadius - dist) / repelRadius; 
-        const angle = Math.atan2(dy, dx);
-        forceX = Math.cos(angle) * power * repelForce;
-        forceY = Math.sin(angle) * power * repelForce;
-      }
-
-      // Spring force (pulls back to 0,0 offset)
-      const springX = -dotX * springStrength;
-      const springY = -dotY * springStrength;
-
-      velX += forceX + springX;
-      velY += forceY + springY;
-
-      velX *= friction;
-      velY *= friction;
-
-      dotX += velX;
-      dotY += velY;
-
-      dot.style.transform = `translate(${dotX}px, ${dotY}px)`;
-      statusDotAnimationId = requestAnimationFrame(animate);
-    }
-
-    animate();
-  }
-
-  function initTypewriter() {
-    const element = document.getElementById("typewriter");
-    if (!element) return;
-
-    // 清除之前的定时器
-    if (typewriterTimeoutId !== null) {
-      clearTimeout(typewriterTimeoutId);
-      typewriterTimeoutId = null;
-    }
-
-    // 重置内容
-    element.innerHTML = '';
-
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const phrases = isMobile 
-      ? ["NEVER LIMIT YOURSELF"] 
-      : ["STAY COOL", "NEVER LIMIT YOURSELF"];
-    
-    let loopNum = 0;
-    let isDeleting = false;
-    let txt = '';
-    
-    function tick() {
-      const i = loopNum % phrases.length;
-      const fullTxt = phrases[i];
-
-      if (isDeleting) {
-        txt = fullTxt.substring(0, txt.length - 1);
-      } else {
-        txt = fullTxt.substring(0, txt.length + 1);
-      }
-
-      element.innerHTML = txt;
-
-      let delta = 100; // Typing speed
-
-      if (isDeleting) { delta /= 2; } // Deleting speed
-
-      if (!isDeleting && txt === fullTxt) {
-        // If only one phrase, stop here (don't delete)
-        if (phrases.length === 1) return;
+      function animate() {
+        if (!dot) return;
         
-        delta = 10000; // Wait 10 seconds
-        isDeleting = true;
-      } else if (isDeleting && txt === '') {
-        isDeleting = false;
-        loopNum++;
-        delta = 500; // Pause before typing next
+        const rect = dot.getBoundingClientRect();
+        const currentCenterX = rect.left + rect.width / 2;
+        const currentCenterY = rect.top + rect.height / 2;
+
+        const dx = currentCenterX - mouseX;
+        const dy = currentCenterY - mouseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        let forceX = 0;
+        let forceY = 0;
+
+        if (dist < repelRadius) {
+          const power = (repelRadius - dist) / repelRadius; 
+          const angle = Math.atan2(dy, dx);
+          forceX = Math.cos(angle) * power * repelForce;
+          forceY = Math.sin(angle) * power * repelForce;
+        }
+
+        const springX = -dotX * springStrength;
+        const springY = -dotY * springStrength;
+
+        velX += forceX + springX;
+        velY += forceY + springY;
+
+        velX *= friction;
+        velY *= friction;
+
+        dotX += velX;
+        dotY += velY;
+
+        dot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+        statusDotAnimationId = requestAnimationFrame(animate);
       }
 
-      typewriterTimeoutId = setTimeout(tick, delta) as unknown as number;
+      animate();
     }
-    
-    tick();
-  }
 
-  function initAvatar() {
-    const avatar = document.getElementById('avatar-img') as HTMLImageElement;
-    if (!avatar) return;
-    
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour < 18) {
-      avatar.src = '/avatar/sunrise.png';
-    } else {
-      avatar.src = '/avatar/sunset.png';
+    function initTypewriter() {
+      const element = document.getElementById("typewriter");
+      if (!element) return;
+
+      if (typewriterTimeoutId !== null) {
+        clearTimeout(typewriterTimeoutId);
+        typewriterTimeoutId = null;
+      }
+
+      element.innerHTML = '';
+
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const phrases = isMobile 
+        ? ["NEVER LIMIT YOURSELF"] 
+        : ["STAY COOL", "NEVER LIMIT YOURSELF"];
+      
+      let loopNum = 0;
+      let isDeleting = false;
+      let txt = '';
+      
+      function tick() {
+        if (!element) return;
+        
+        const i = loopNum % phrases.length;
+        const fullTxt = phrases[i];
+
+        if (isDeleting) {
+          txt = fullTxt.substring(0, txt.length - 1);
+        } else {
+          txt = fullTxt.substring(0, txt.length + 1);
+        }
+
+        element.innerHTML = txt;
+
+        let delta = 100;
+
+        if (isDeleting) { delta /= 2; }
+
+        if (!isDeleting && txt === fullTxt) {
+          if (phrases.length === 1) return;
+          
+          delta = 10000;
+          isDeleting = true;
+        } else if (isDeleting && txt === '') {
+          isDeleting = false;
+          loopNum++;
+          delta = 500;
+        }
+
+        typewriterTimeoutId = setTimeout(tick, delta);
+      }
+      
+      tick();
     }
-  }
 
-  function handleResize() {
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    
-    // 只有当模式真正切换时才重新初始化
-    if (lastWasMobile !== null && lastWasMobile !== isMobile) {
+    function initAvatar() {
+      const avatar = document.getElementById('avatar-img');
+      if (!avatar) return;
+      
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 18) {
+        avatar.src = '/avatar/sunrise.png';
+      } else {
+        avatar.src = '/avatar/sunset.png';
+      }
+    }
+
+    function cleanupHomePage() {
+      if (typewriterTimeoutId !== null) {
+        clearTimeout(typewriterTimeoutId);
+        typewriterTimeoutId = null;
+      }
+      if (statusDotAnimationId !== null) {
+        cancelAnimationFrame(statusDotAnimationId);
+        statusDotAnimationId = null;
+      }
+    }
+
+    function initHomePage() {
+      // 先清理
+      cleanupHomePage();
+      
+      // 只在主页初始化这些功能
+      if (window.location.pathname !== '/') return;
+      
+      lastWasMobile = window.matchMedia('(max-width: 768px)').matches;
       initTypewriter();
+      initAvatar();
+      initStatusDot();
     }
-    
-    lastWasMobile = isMobile;
-  }
 
-  document.addEventListener('astro:page-load', () => {
-    lastWasMobile = window.matchMedia('(max-width: 768px)').matches;
-    initTypewriter();
-    initAvatar();
-    initStatusDot();
-    
-    // 监听窗口大小变化
-    window.addEventListener('resize', handleResize);
-  });
+    // 初始加载
+    initHomePage();
+
+    // View Transitions 后重新初始化
+    document.addEventListener('astro:after-swap', initHomePage);
+  })();
 </script>
