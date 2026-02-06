@@ -167,14 +167,10 @@ const navItems = [
         lastScrollY = currentScrollY;
         
         if (!isScrolled) {
-          // 在页面顶部，正常显示
+          // 在页面顶部，始终展开导航
           navWrapper.classList.remove('docked');
           navWrapper.classList.remove('scroll-visible');
-          if (isSpecialPage) {
-            nav.classList.add('expanded');
-          } else {
-            nav.classList.remove('expanded');
-          }
+          nav.classList.add('expanded');
         } else {
           // 已滚动，根据滚动方向决定显示/隐藏
           nav.classList.remove('expanded');
@@ -262,12 +258,33 @@ const navItems = [
         }
       });
 
+      // 在 swap 之前，提前根据目标 URL 设置好 nav 状态，避免闪烁
+      document.addEventListener('astro:before-preparation', (ev) => {
+        const navContainer = document.getElementById('nav-container');
+        const navWrapper = document.getElementById('nav-wrapper');
+        if (!navContainer || !navWrapper) return;
+
+        // 页面切换时始终保持展开，禁用过渡避免闪烁
+        navContainer.style.transition = 'none';
+        navWrapper.classList.remove('docked', 'scroll-visible');
+        navContainer.classList.add('expanded');
+        navContainer.offsetHeight;
+      });
+
       document.addEventListener('astro:after-swap', () => {
         // 重置滚动状态
         lastScrollY = 0;
         scrollUpDistance = 0;
         scrollDownDistance = 0;
-        
+
+        // 恢复过渡动画（在下一帧，确保无过渡的状态已经渲染）
+        const navContainer = document.getElementById('nav-container');
+        if (navContainer) {
+          requestAnimationFrame(() => {
+            navContainer.style.transition = '';
+          });
+        }
+
         restoreTheme();
         initInteractive();
       });
