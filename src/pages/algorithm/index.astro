@@ -5,7 +5,6 @@ import { getCollection } from 'astro:content';
 const entries = (await getCollection('algorithm', ({ data }) => !data.draft))
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-// Group by tag
 const tagMap = new Map<string, typeof entries>();
 const untagged: typeof entries = [];
 
@@ -21,48 +20,285 @@ entries.forEach((entry) => {
   }
 });
 
+if (untagged.length > 0) tagMap.set('Other', untagged);
 const sortedTags = [...tagMap.keys()].sort();
+
+// Serialize data for client-side use
+const tagData = sortedTags.map(tag => ({
+  name: tag,
+  items: tagMap.get(tag)!.map(e => ({ title: e.data.title, slug: e.slug }))
+}));
 ---
 
 <BaseLayout title="Algorithm">
-  <div class="max-w-4xl mx-auto">
-    <div class="mb-10">
-      <h1 class="text-3xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">Algorithm</h1>
-      <p class="text-zinc-500 mt-2 font-mono text-sm">{entries.length} notes</p>
+  <div class="relative w-full flex flex-col items-center justify-center" style="min-height: calc(100vh - 12rem);">
+    
+    <!-- Wheel Container -->
+    <div id="wheel-container" class="relative select-none" style="width: 600px; height: 600px;">
+      
+      <!-- Center hub -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center pointer-events-none">
+        <div id="center-tag" class="text-4xl font-black text-zinc-800 dark:text-zinc-100 tracking-tight transition-all duration-500"></div>
+        <div id="center-count" class="text-xs font-mono text-zinc-400 mt-1 transition-all duration-500"></div>
+      </div>
+
+      <!-- Orbit ring (decorative) -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-zinc-200/50 dark:border-zinc-800/50 pointer-events-none"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full border border-zinc-200/30 dark:border-zinc-800/30 pointer-events-none"></div>
+
+      <!-- Items will be placed here by JS -->
+      <div id="orbit-items" class="absolute inset-0"></div>
     </div>
 
-    <div class="space-y-6">
-      {sortedTags.map((tag) => (
-        <div class="flex items-baseline gap-4">
-          <span class="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest w-24 shrink-0 text-right">{tag}</span>
-          <div class="flex flex-wrap gap-2">
-            {tagMap.get(tag)!.map((entry) => (
-              <a
-                href={`/algorithm/${entry.slug}`}
-                class="px-3 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
-              >
-                {entry.data.title}
-              </a>
-            ))}
-          </div>
-        </div>
+    <!-- Tag selector ring at bottom -->
+    <div id="tag-ring" class="flex items-center gap-3 mt-8">
+      {sortedTags.map((tag, i) => (
+        <button
+          data-tag-index={i}
+          class="tag-btn px-3 py-1.5 text-xs font-mono rounded-full border transition-all duration-300 text-zinc-500 dark:text-zinc-500 border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 dark:hover:border-indigo-500"
+        >
+          {tag}
+        </button>
       ))}
-
-      {untagged.length > 0 && (
-        <div class="flex items-baseline gap-4">
-          <span class="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest w-24 shrink-0 text-right">Other</span>
-          <div class="flex flex-wrap gap-2">
-            {untagged.map((entry) => (
-              <a
-                href={`/algorithm/${entry.slug}`}
-                class="px-3 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
-              >
-                {entry.data.title}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
+
+    <!-- Scroll hint -->
+    <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 mt-4 animate-pulse">scroll to navigate</p>
+
+    <!-- Search overlay -->
+    <div id="search-overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div class="w-full max-w-md mx-4">
+        <div class="relative">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search notes..."
+            class="w-full pl-12 pr-12 py-4 text-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 outline-none focus:border-indigo-400 dark:focus:border-indigo-500 transition-colors"
+            autocomplete="off"
+          />
+          <kbd class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-mono text-zinc-400 border border-zinc-200 dark:border-zinc-700 rounded px-1.5 py-0.5 pointer-events-none">ESC</kbd>
+        </div>
+        <div id="search-results" class="mt-2 max-h-72 overflow-y-auto rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl hidden"></div>
+      </div>
+    </div>
+
+    <!-- Search trigger button -->
+    <button id="search-btn" class="fixed bottom-8 right-8 z-40 p-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-full shadow-lg hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-xl transition-all group" aria-label="Search">
+      <svg class="w-5 h-5 text-zinc-500 group-hover:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </button>
   </div>
 </BaseLayout>
+
+<script define:vars={{ tagData }}>
+  function initWheel() {
+    const container = document.getElementById('orbit-items');
+    const centerTag = document.getElementById('center-tag');
+    const centerCount = document.getElementById('center-count');
+    const wheelContainer = document.getElementById('wheel-container');
+    const tagBtns = document.querySelectorAll('.tag-btn');
+    const searchOverlay = document.getElementById('search-overlay');
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const searchBtn = document.getElementById('search-btn');
+    
+    if (!container || !centerTag || !centerCount || !wheelContainer) return;
+
+    // -- Search --
+    const allItems = tagData.flatMap(t => t.items.map(item => ({ ...item, tag: t.name })));
+
+    function openSearch() {
+      if (!searchOverlay || !searchInput) return;
+      searchOverlay.classList.remove('hidden');
+      searchOverlay.classList.add('flex');
+      searchInput.value = '';
+      searchInput.focus();
+      renderResults('');
+    }
+
+    function closeSearch() {
+      if (!searchOverlay) return;
+      searchOverlay.classList.add('hidden');
+      searchOverlay.classList.remove('flex');
+    }
+
+    function renderResults(query) {
+      if (!searchResults) return;
+      const q = query.toLowerCase().trim();
+      const matches = q ? allItems.filter(item =>
+        item.title.toLowerCase().includes(q) || item.tag.toLowerCase().includes(q)
+      ) : allItems;
+
+      if (matches.length === 0) {
+        searchResults.classList.remove('hidden');
+        searchResults.innerHTML = '<div class="px-4 py-3 text-sm text-zinc-400">No results</div>';
+        return;
+      }
+
+      searchResults.classList.remove('hidden');
+      searchResults.innerHTML = matches.map(item =>
+        `<a href="/algorithm/${item.slug}" class="flex items-center justify-between px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors border-b border-zinc-100 dark:border-zinc-800/50 last:border-0">
+          <span class="text-sm text-zinc-700 dark:text-zinc-300">${item.title}</span>
+          <span class="text-[10px] font-mono text-zinc-400">${item.tag}</span>
+        </a>`
+      ).join('');
+    }
+
+    searchBtn?.addEventListener('click', openSearch);
+
+    searchOverlay?.addEventListener('click', (e) => {
+      if (e.target === searchOverlay) closeSearch();
+    });
+
+    searchInput?.addEventListener('input', (e) => {
+      renderResults(e.target.value);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      // Cmd/Ctrl+K to open search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const isOpen = !searchOverlay?.classList.contains('hidden');
+        isOpen ? closeSearch() : openSearch();
+        return;
+      }
+      if (e.key === 'Escape') {
+        closeSearch();
+        return;
+      }
+
+      // Only wheel nav when search is closed
+      if (!searchOverlay?.classList.contains('hidden')) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveTag((currentIndex + 1) % tagData.length);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveTag((currentIndex - 1 + tagData.length) % tagData.length);
+      }
+    });
+
+    // -- Wheel --
+    let currentIndex = 0;
+    let isAnimating = false;
+    let currentElements = [];
+
+    function createItemElements(items) {
+      container.innerHTML = '';
+      currentElements = [];
+      const radius = 200;
+      const count = items.length;
+
+      items.forEach((item, i) => {
+        const angle = (i / count) * Math.PI * 2 - Math.PI / 2;
+        const x = Math.cos(angle) * radius + 300;
+        const y = Math.sin(angle) * radius + 300;
+
+        const el = document.createElement('a');
+        el.href = `/algorithm/${item.slug}`;
+        el.className = 'absolute flex items-center justify-center transition-all duration-700 ease-out';
+        el.style.cssText = `left: ${x}px; top: ${y}px; transform: translate(-50%, -50%) scale(0); opacity: 0;`;
+        
+        const inner = document.createElement('span');
+        inner.className = 'px-4 py-2 text-sm font-medium rounded-xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:scale-110 transition-all duration-300 shadow-sm hover:shadow-md whitespace-nowrap cursor-pointer';
+        inner.textContent = item.title;
+        
+        el.appendChild(inner);
+        container.appendChild(el);
+        currentElements.push(el);
+
+        // Staggered entrance
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            el.style.transform = `translate(-50%, -50%) scale(1)`;
+            el.style.opacity = '1';
+          }, i * 60);
+        });
+      });
+    }
+
+    function setActiveTag(index) {
+      if (isAnimating || index === currentIndex && container.children.length > 0) return;
+      isAnimating = true;
+      currentIndex = index;
+
+      const data = tagData[index];
+
+      // Update center
+      centerTag.style.opacity = '0';
+      centerTag.style.transform = 'scale(0.8)';
+      centerCount.style.opacity = '0';
+
+      // Collapse existing items
+      currentElements.forEach((el, i) => {
+        el.style.transform = 'translate(-50%, -50%) scale(0)';
+        el.style.opacity = '0';
+      });
+
+      // Update tag buttons
+      tagBtns.forEach((btn, i) => {
+        if (i === index) {
+          btn.classList.add('bg-indigo-500/10', 'dark:bg-indigo-500/10', 'border-indigo-400', 'dark:border-indigo-500', 'text-indigo-600', 'dark:text-indigo-300');
+          btn.classList.remove('text-zinc-500', 'dark:text-zinc-500', 'border-zinc-200', 'dark:border-zinc-800');
+        } else {
+          btn.classList.remove('bg-indigo-500/10', 'dark:bg-indigo-500/10', 'border-indigo-400', 'dark:border-indigo-500', 'text-indigo-600', 'dark:text-indigo-300');
+          btn.classList.add('text-zinc-500', 'dark:text-zinc-500', 'border-zinc-200', 'dark:border-zinc-800');
+        }
+      });
+
+      setTimeout(() => {
+        centerTag.textContent = data.name;
+        centerTag.style.opacity = '1';
+        centerTag.style.transform = 'scale(1)';
+        centerCount.textContent = `${data.items.length} notes`;
+        centerCount.style.opacity = '1';
+
+        createItemElements(data.items);
+
+        setTimeout(() => { isAnimating = false; }, data.items.length * 60 + 300);
+      }, 350);
+    }
+
+    // Scroll navigation
+    let scrollAccum = 0;
+    const SCROLL_THRESHOLD = 50;
+
+    wheelContainer.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      scrollAccum += e.deltaY;
+
+      if (Math.abs(scrollAccum) >= SCROLL_THRESHOLD) {
+        const direction = scrollAccum > 0 ? 1 : -1;
+        scrollAccum = 0;
+        const next = (currentIndex + direction + tagData.length) % tagData.length;
+        setActiveTag(next);
+      }
+    }, { passive: false });
+
+    // Click navigation
+    tagBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-tag-index'));
+        setActiveTag(idx);
+      });
+    });
+
+    // Init
+    currentIndex = -1;
+    setActiveTag(0);
+  }
+
+  initWheel();
+  document.addEventListener('astro:after-swap', initWheel);
+</script>
+
+<style>
+  #center-tag, #center-count {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+</style>
