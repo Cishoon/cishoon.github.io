@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const entries = (await getCollection('algorithm', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+// Group by tag
+const tagMap = new Map<string, typeof entries>();
+const untagged: typeof entries = [];
+
+entries.forEach((entry) => {
+  const tags = entry.data.tags;
+  if (!tags || tags.length === 0) {
+    untagged.push(entry);
+  } else {
+    tags.forEach((tag) => {
+      if (!tagMap.has(tag)) tagMap.set(tag, []);
+      tagMap.get(tag)!.push(entry);
+    });
+  }
+});
+
+const sortedTags = [...tagMap.keys()].sort();
+---
+
+<BaseLayout title="Algorithm">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">Algorithm</h1>
+      <p class="text-zinc-500 mt-2 font-mono text-sm">{entries.length} notes</p>
+    </div>
+
+    <div class="space-y-6">
+      {sortedTags.map((tag) => (
+        <div class="flex items-baseline gap-4">
+          <span class="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest w-24 shrink-0 text-right">{tag}</span>
+          <div class="flex flex-wrap gap-2">
+            {tagMap.get(tag)!.map((entry) => (
+              <a
+                href={`/algorithm/${entry.slug}`}
+                class="px-3 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+              >
+                {entry.data.title}
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {untagged.length > 0 && (
+        <div class="flex items-baseline gap-4">
+          <span class="text-xs font-mono font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest w-24 shrink-0 text-right">Other</span>
+          <div class="flex flex-wrap gap-2">
+            {untagged.map((entry) => (
+              <a
+                href={`/algorithm/${entry.slug}`}
+                class="px-3 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+              >
+                {entry.data.title}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>
