@@ -304,6 +304,7 @@ html, body {
 
 /* 代码块 */
 .prose pre {
+  position: relative;
   border: 1px solid #e8eaed;
   background-color: #f8f8f8 !important;
   border-radius: 3px;
@@ -314,6 +315,55 @@ html, body {
   margin-bottom: 15px;
   margin-top: 15px;
   overflow-x: auto;
+}
+
+/* 复制按钮 */
+.prose pre .copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d4d4d8;
+  border-radius: 4px;
+  background: #fff;
+  color: #71717a;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.prose pre:hover .copy-btn {
+  opacity: 1;
+}
+
+.prose pre .copy-btn:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.prose pre .copy-btn.copied {
+  color: #22c55e;
+  border-color: #22c55e;
+}
+
+:root.dark .prose pre .copy-btn {
+  background: #27272a;
+  border-color: #3f3f46;
+  color: #a1a1aa;
+}
+
+:root.dark .prose pre .copy-btn:hover {
+  background: #3f3f46;
+  color: #e4e4e7;
+}
+
+:root.dark .prose pre .copy-btn.copied {
+  color: #22c55e;
+  border-color: #22c55e;
 }
 
 .prose pre code {
