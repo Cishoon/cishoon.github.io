@@ -30,14 +30,14 @@ const postsByYear = posts.reduce((acc, post) => {
 const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
-<BaseLayout title={`Tag: #${tag}`}>
+<BaseLayout title={`Tag: ${tag}`}>
   <div class="max-w-3xl mx-auto">
     <!-- Header -->
     <div class="mb-16 text-center relative">
       <div class="absolute inset-0 flex items-center justify-center -z-10 opacity-5 blur-3xl pointer-events-none">
          <div class="w-40 h-40 bg-indigo-500 rounded-full"></div>
       </div>
-      <h1 class="text-6xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tighter mb-4">#{tag}</h1>
+      <h1 class="text-6xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tighter mb-4">{tag}</h1>
       <p class="text-zinc-500 font-mono text-sm">{posts.length} posts related to this topic</p>
     </div>
 
