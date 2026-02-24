@@ -61,15 +61,8 @@ const navItems = [
 
     <!-- Top Dynamic Island Nav -->
     <nav id="nav-wrapper" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-[top] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" transition:persist>
-      <div id="nav-container" class="group flex items-center justify-center p-1.5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 transition-[max-width,padding,background] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:duration-400 hover:ease-[cubic-bezier(0.22,1,0.36,1)] h-12 max-w-[3rem] hover:max-w-[25rem] hover:px-4 [&.expanded]:max-w-[25rem] [&.expanded]:px-4 overflow-hidden">
+      <div id="nav-container" class="group flex items-center justify-center p-1.5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 transition-[max-width,padding,background] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:duration-400 hover:ease-[cubic-bezier(0.22,1,0.36,1)] h-12 max-w-[3rem] hover:max-w-[22rem] hover:px-4 [&.expanded]:max-w-[22rem] [&.expanded]:px-4 overflow-hidden">
         
-        <!-- Back Button (article pages only) -->
-        <a id="nav-back-btn" href="/" data-astro-prefetch class="hidden flex-shrink-0 w-9 h-9 items-center justify-center bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-500 dark:text-zinc-400 hover:bg-indigo-500 hover:text-white transition-colors duration-300 mr-1">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </a>
-
         <!-- Logo -->
         <a id="nav-logo" href="/" data-astro-prefetch class="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-800 dark:text-zinc-200 hover:bg-indigo-500 hover:text-white transition-colors duration-300">
           <span class="font-bold font-mono text-sm">C</span>
@@ -96,6 +89,13 @@ const navItems = [
         </div>
       </div>
     </nav>
+
+    <!-- Floating Back Button -->
+    <a id="back-ball" href="/" data-astro-prefetch class="hidden fixed top-7 left-6 z-50 w-10 h-10 items-center justify-center bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 text-zinc-500 dark:text-zinc-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-300">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </a>
 
     <main class="relative z-10 w-full max-w-4xl mx-auto px-6 pt-24 pb-24 lg:pt-28 lg:pb-32">
       <slot />
@@ -130,7 +130,7 @@ const navItems = [
       /* When hovering the wrapper (including the ::before area), expand nav-container */
       #nav-wrapper.docked:hover #nav-container,
       #nav-wrapper.scroll-visible #nav-container {
-        max-width: 25rem;
+        max-width: 22rem;
         padding-left: 1rem;
         padding-right: 1rem;
       }
@@ -249,7 +249,7 @@ const navItems = [
       }
 
       function updateBackButton() {
-        const backBtn = document.getElementById('nav-back-btn') as HTMLAnchorElement | null;
+        const backBtn = document.getElementById('back-ball') as HTMLAnchorElement | null;
         if (!backBtn) return;
         const path = window.location.pathname;
         // Show back button on article detail pages
