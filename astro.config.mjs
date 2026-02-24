@@ -7,9 +7,11 @@ import remarkMath from 'remark-math';
 import remarkBreaks from 'remark-breaks';
 import rehypeKatex from 'rehype-katex';
 
+import react from '@astrojs/react';
+
 export default defineConfig({
   site: 'https://cishoon.top',
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), sitemap(), react()],
   markdown: {
     remarkPlugins: [remarkMath, remarkBreaks],
     rehypePlugins: [rehypeKatex],
