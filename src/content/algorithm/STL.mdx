@@ -1,0 +1,59 @@
+---
+title: STL
+date: 2026-02-27
+tags: [模板]
+---
+
+## std::remove_if
+
+`remove_if` 不会真正删除元素，它把不满足条件的元素移到前面，返回一个指向"新末尾"的迭代器。需要配合 `erase` 才能真正删除。
+
+```cpp
+// 删除 vec 中所有偶数
+vec.erase(
+    std::remove_if(vec.begin(), vec.end(), [](int x) {
+        return x % 2 == 0;
+    }),
+    vec.end()
+);
+```
+
+配合 `vis` 数组过滤已访问元素：
+
+```cpp
+vec.erase(
+    std::remove_if(vec.begin(), vec.end(), [&](int x) {
+        return vis[x];
+    }),
+    vec.end()
+);
+```
+
+## std::lexicographical_compare
+
+字典序比较两个范围。返回 `true` 表示第一个范围字典序小于第二个。
+
+```cpp
+// 正序字典序比较
+std::lexicographical_compare(
+    a.begin(), a.end(),
+    b.begin(), b.end()
+);
+
+// 反序字典序比较（从末尾开始比）
+std::lexicographical_compare(
+    a.rbegin(), a.rend(),
+    b.rbegin(), b.rend()
+);
+```
+
+用在 `sort` 里做自定义排序：
+
+```cpp
+sort(l.begin(), l.end(), [](const std::vector<int>& a, const std::vector<int>& b) {
+    return std::lexicographical_compare(
+        a.rbegin(), a.rend(),
+        b.rbegin(), b.rend()
+    );
+});
+```
