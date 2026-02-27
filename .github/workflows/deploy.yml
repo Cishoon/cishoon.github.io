@@ -77,4 +77,4 @@ jobs:
           REMOTE_HOST: cishoon.top
           REMOTE_USER: root
           SOURCE: dist/
-          TARGET: /home/git/www
+          TARGET: /var/www/hexo
