@@ -107,22 +107,34 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
         <!-- Expandable content -->
         <div id="toc-body" class="toc-body">
           <ul class="px-3 pb-3 space-y-0.5">
-            {tocHeadings.map((h) => (
-              <li>
-                <a
-                  href={`#${h.slug}`}
-                  data-toc-slug={h.slug}
-                  data-depth={h.depth}
-                  class="toc-link group/item flex items-center gap-2 py-1 rounded-lg px-2 -mx-1 transition-all duration-300 hover:bg-zinc-100/80 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-500"
-                  style={`padding-left: ${0.5 + (h.depth - 1) * 0.75}rem`}
+            {tocHeadings.map((h, i) => {
+              // Find parent index: walk backwards to find the nearest heading with smaller depth
+              let parentIdx = -1;
+              for (let j = i - 1; j >= 0; j--) {
+                if (tocHeadings[j].depth < h.depth) { parentIdx = j; break; }
+              }
+              return (
+                <li
+                  class="toc-item"
+                  data-toc-index={i}
+                  data-toc-depth={h.depth}
+                  data-toc-parent={parentIdx}
                 >
-                  <span class="toc-dot w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0 transition-all duration-500"></span>
-                  <span class="text-[13px] leading-snug truncate transition-colors duration-300 group-hover/item:text-zinc-800 dark:group-hover/item:text-zinc-200">
-                    {h.text}
-                  </span>
-                </a>
-              </li>
-            ))}
+                  <a
+                    href={`#${h.slug}`}
+                    data-toc-slug={h.slug}
+                    data-depth={h.depth}
+                    class="toc-link group/item flex items-center gap-2 py-1 rounded-lg px-2 -mx-1 transition-all duration-300 hover:bg-zinc-100/80 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-500"
+                    style={`padding-left: ${0.5 + (h.depth - 1) * 0.75}rem`}
+                  >
+                    <span class="toc-dot w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0 transition-all duration-500"></span>
+                    <span class="text-[13px] leading-snug truncate transition-colors duration-300 group-hover/item:text-zinc-800 dark:group-hover/item:text-zinc-200">
+                      {h.text}
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
@@ -233,6 +245,23 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
   }
 
+  /* === Collapsible tree items === */
+  .toc-item {
+    overflow: hidden;
+    transition: max-height 400ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 300ms cubic-bezier(0.16, 1, 0.3, 1),
+                margin 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 2.5rem;
+    opacity: 1;
+  }
+
+  .toc-item.toc-hidden {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    pointer-events: none;
+  }
+
   /* === Scrollbar === */
   .toc-capsule::-webkit-scrollbar {
     width: 3px;
@@ -262,6 +291,7 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     const closeBtn = document.getElementById('toc-close');
     const progress = document.getElementById('toc-progress');
     const links = document.querySelectorAll('.toc-link');
+    const tocItems = document.querySelectorAll('.toc-item') as NodeListOf<HTMLElement>;
 
     if (!island || !capsule || !header) return;
 
@@ -269,9 +299,85 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     let autoCloseTimer: ReturnType<typeof setTimeout> | null = null;
     let lastActiveSlug = '';
     let userClosed = false;
-    let manualOpen = false; // user clicked to open — never auto-close
+    let manualOpen = false;
     let isHovering = false;
     let currentObserver: IntersectionObserver | null = null;
+
+    // === Tree visibility: show only top-level + active branch ===
+    function updateTreeVisibility(activeSlug: string) {
+      // Find the active item's index
+      let activeIndex = -1;
+      tocItems.forEach((item) => {
+        const link = item.querySelector('.toc-link') as HTMLElement | null;
+        if (link && link.dataset.tocSlug === activeSlug) {
+          activeIndex = parseInt(item.dataset.tocIndex || '-1');
+        }
+      });
+
+      // Build the set of visible indices: ancestors + siblings at each level + direct children of active
+      const visibleSet = new Set<number>();
+
+      tocItems.forEach((item) => {
+        const idx = parseInt(item.dataset.tocIndex || '-1');
+        const depth = parseInt(item.dataset.tocDepth || '1');
+        const parentIdx = parseInt(item.dataset.tocParent || '-1');
+
+        // Top-level headings (depth 1) are always visible
+        if (depth === 1) {
+          visibleSet.add(idx);
+        }
+      });
+
+      if (activeIndex >= 0) {
+        // Walk up from active to root, marking ancestors visible
+        let cur = activeIndex;
+        while (cur >= 0) {
+          visibleSet.add(cur);
+          const item = document.querySelector(`.toc-item[data-toc-index="${cur}"]`) as HTMLElement | null;
+          cur = item ? parseInt(item.dataset.tocParent || '-1') : -1;
+        }
+
+        // Mark direct children of active item visible
+        tocItems.forEach((item) => {
+          const parentIdx = parseInt(item.dataset.tocParent || '-1');
+          if (parentIdx === activeIndex) {
+            visibleSet.add(parseInt(item.dataset.tocIndex || '-1'));
+          }
+        });
+
+        // Also show siblings of each ancestor (items sharing the same parent at each level in the active path)
+        const ancestorPath = new Set<number>();
+        cur = activeIndex;
+        while (cur >= 0) {
+          ancestorPath.add(cur);
+          const item = document.querySelector(`.toc-item[data-toc-index="${cur}"]`) as HTMLElement | null;
+          cur = item ? parseInt(item.dataset.tocParent || '-1') : -1;
+        }
+
+        tocItems.forEach((item) => {
+          const parentIdx = parseInt(item.dataset.tocParent || '-1');
+          if (ancestorPath.has(parentIdx)) {
+            visibleSet.add(parseInt(item.dataset.tocIndex || '-1'));
+          }
+        });
+      }
+
+      // Apply visibility
+      tocItems.forEach((item) => {
+        const idx = parseInt(item.dataset.tocIndex || '-1');
+        if (visibleSet.has(idx)) {
+          item.classList.remove('toc-hidden');
+        } else {
+          item.classList.add('toc-hidden');
+        }
+      });
+    }
+
+    // Initialize: hide all non-top-level items
+    tocItems.forEach((item) => {
+      const depth = parseInt(item.dataset.tocDepth || '1');
+      if (depth > 1) item.classList.add('toc-hidden');
+    });
 
     function expand() {
       isOpen = true;
@@ -371,11 +477,12 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
             const active = document.querySelector(`.toc-link[data-toc-slug="${newSlug}"]`);
             if (active) {
               active.classList.add('active');
-              // Auto-scroll active link into view when panel is open
               if (isOpen) {
                 (active as HTMLElement).scrollIntoView({ block: 'nearest', behavior: 'smooth' });
               }
             }
+            // Update tree visibility
+            updateTreeVisibility(newSlug);
             // Flash open on section change
             if (newSlug !== lastActiveSlug) {
               lastActiveSlug = newSlug;
