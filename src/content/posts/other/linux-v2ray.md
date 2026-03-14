@@ -256,3 +256,79 @@ mihomo
 
 服务器上可以先转发端口。
 
+
+
+# SSH 端口转发（通用方法）
+
+如果本地已经有VPN代理（比如电脑上开着Clash/V2ray），可以通过SSH远程端口转发，把本地的代理端口映射到任意服务器上，不需要在服务器上安装任何代理软件。
+
+```bash
+ssh -o ServerAliveInterval=30 -R 7890:127.0.0.1:7890 user@server_ip
+```
+
+- `-R 7890:127.0.0.1:7890`：将服务器的 `7890` 端口转发到本地的 `7890` 端口（即本地代理监听的端口）
+- `-o ServerAliveInterval=30`：每30秒发送心跳包，防止连接断开
+- 本地代理端口号根据实际情况修改，Clash 默认 `7890`，V2ray 默认 `10809`
+
+连接后在服务器上设置环境变量即可使用：
+
+```bash
+export http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7890
+```
+
+如果需要后台保持转发（不进入交互式shell）：
+
+```bash
+ssh -o ServerAliveInterval=30 -fNT -R 7890:127.0.0.1:7890 user@server_ip
+```
+
+- `-f`：后台运行
+- `-N`：不执行远程命令
+- `-T`：不分配终端
+
+> 在有管理员权限的服务器上我更喜欢配置 Zerotier 和有vpn的机器内网穿透。
+
+
+# 快捷代理配置命令
+
+将以下内容添加到 `~/.bashrc` 或 `~/.zshrc` 中，即可使用 `proxy on` `proxy off` 快捷开关代理
+
+```bash
+proxy() {
+    local host_ip="127.0.0.1"
+    local proxy_port="7890"
+
+    case "$1" in
+        on)
+            export http_proxy="http://${host_ip}:${proxy_port}"
+            export https_proxy="http://${host_ip}:${proxy_port}"
+            export HTTP_PROXY="http://${host_ip}:${proxy_port}"
+            export HTTPS_PROXY="http://${host_ip}:${proxy_port}"
+            export ALL_PROXY="socks5://${host_ip}:${proxy_port}"
+            export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com,${host_ip}"
+
+            echo -e "\033[32m[OK] Proxy is ON. Connected to ${host_ip}:${proxy_port}\033[0m"
+            ;;
+
+        off)
+            unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY no_proxy
+            echo -e "\033[31m[OK] Proxy is OFF.\033[0m"
+            ;;
+
+        status)
+            if [ -n "$http_proxy" ]; then
+                echo -e "\033[32m[Status] Proxy is currently ON ($http_proxy)\033[0m"
+            else
+                echo -e "\033[31m[Status] Proxy is currently OFF\033[0m"
+            fi
+            ;;
+
+        *)
+            echo "Usage: proxy {on|off|status}"
+            ;;
+    esac
+}
+
+proxy on
+```
