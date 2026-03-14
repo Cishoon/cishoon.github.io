@@ -87,91 +87,135 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
 
   <!-- Floating TOC Dynamic Island -->
   {tocHeadings.length > 0 && (
-    <div id="toc-island" class="fixed right-6 top-1/2 -translate-y-1/2 z-40 flex flex-col items-end">
-      <!-- Collapsed pill (default state) -->
-      <button
-        id="toc-toggle"
-        class="toc-pill group flex items-center gap-2 px-3 py-2.5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-full shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-xl hover:scale-105 active:scale-95"
-        aria-label="Toggle table of contents"
+    <div id="toc-island" class="fixed right-6 top-1/2 -translate-y-1/2 z-40">
+      <div
+        id="toc-capsule"
+        class="toc-capsule bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 overflow-hidden cursor-pointer"
       >
-        <!-- List icon -->
-        <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-        </svg>
-        <!-- Progress indicator -->
-        <span id="toc-progress" class="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 tabular-nums min-w-[2ch] text-center">0%</span>
-      </button>
-
-      <!-- Expanded panel -->
-      <nav
-        id="toc-panel"
-        class="toc-panel mt-2 w-64 max-h-[60vh] overflow-y-auto overscroll-contain bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/5 rounded-2xl shadow-lg dark:shadow-black/50 ring-1 ring-zinc-900/5 dark:ring-white/10 p-4 origin-top-right"
-      >
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">On this page</p>
-          <button id="toc-close" class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="Close table of contents">
+        <!-- Header row: always visible, acts as the pill when collapsed -->
+        <div id="toc-header" class="flex items-center gap-2 px-3 py-2.5 select-none">
+          <svg class="toc-icon w-4 h-4 text-zinc-500 dark:text-zinc-400 flex-shrink-0 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+          <span id="toc-progress" class="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 tabular-nums min-w-[2ch] text-center transition-opacity duration-300">0%</span>
+          <!-- Close X, visible only when expanded -->
+          <button id="toc-close" class="toc-close-btn p-0.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-all duration-300 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 ml-auto" aria-label="Close">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
-        <ul class="space-y-0.5">
-          {tocHeadings.map((h) => (
-            <li>
-              <a
-                href={`#${h.slug}`}
-                data-toc-slug={h.slug}
-                data-depth={h.depth}
-                class="toc-link group/item flex items-center gap-2 py-1 rounded-lg px-2 -mx-1 transition-all duration-300 hover:bg-zinc-100/80 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-500"
-                style={`padding-left: ${0.5 + (h.depth - 1) * 0.75}rem`}
-              >
-                <span class="toc-dot w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0 transition-all duration-500"></span>
-                <span class="text-[13px] leading-snug truncate transition-colors duration-300 group-hover/item:text-zinc-800 dark:group-hover/item:text-zinc-200">
-                  {h.text}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+
+        <!-- Expandable content -->
+        <div id="toc-body" class="toc-body">
+          <ul class="px-3 pb-3 space-y-0.5">
+            {tocHeadings.map((h) => (
+              <li>
+                <a
+                  href={`#${h.slug}`}
+                  data-toc-slug={h.slug}
+                  data-depth={h.depth}
+                  class="toc-link group/item flex items-center gap-2 py-1 rounded-lg px-2 -mx-1 transition-all duration-300 hover:bg-zinc-100/80 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-500"
+                  style={`padding-left: ${0.5 + (h.depth - 1) * 0.75}rem`}
+                >
+                  <span class="toc-dot w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700 flex-shrink-0 transition-all duration-500"></span>
+                  <span class="text-[13px] leading-snug truncate transition-colors duration-300 group-hover/item:text-zinc-800 dark:group-hover/item:text-zinc-200">
+                    {h.text}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   )}
 </BaseLayout>
 
 <style>
-  /* Panel animation states */
-  #toc-panel {
-    opacity: 0;
-    transform: scale(0.9) translateY(-8px);
-    pointer-events: none;
-    transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* === Capsule: the single morphing container === */
+  /* Collapsed state: defines the COLLAPSING transition (expanded → collapsed) */
+  .toc-capsule {
+    width: 5.5rem;
+    max-height: 2.75rem;
+    border-radius: 9999px;
+    transition:
+      width 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      max-height 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-radius 500ms 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  #toc-panel.open {
+  .toc-capsule:hover:not(.expanded) {
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+    transform: scale(1.05);
+  }
+
+  /* Expanded state: defines the EXPANDING transition (collapsed → expanded) */
+  .toc-capsule.expanded {
+    width: 17rem;
+    max-height: 60vh;
+    border-radius: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transition:
+      width 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      max-height 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-radius 0ms,
+      box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* === Body: hidden when collapsed === */
+  .toc-body {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition:
+      opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+      max-height 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .toc-capsule.expanded .toc-body {
     opacity: 1;
-    transform: scale(1) translateY(0);
-    pointer-events: auto;
+    max-height: 55vh;
   }
 
-  /* Hide pill when panel is open */
-  #toc-toggle.hidden-pill {
+  /* === Close button: hidden when collapsed === */
+  .toc-close-btn {
     opacity: 0;
-    transform: scale(0.8);
-    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 300ms, width 300ms;
   }
 
-  /* Island hidden state (scrolled to top / no content) */
+  .toc-capsule.expanded .toc-close-btn {
+    opacity: 1;
+    width: 1.5rem;
+  }
+
+  /* === Progress text fades when expanded === */
+  .toc-capsule.expanded #toc-progress {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* === Icon color when expanded === */
+  .toc-capsule.expanded .toc-icon {
+    color: rgb(99, 102, 241);
+  }
+
+  /* === Island visibility === */
+  #toc-island {
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   #toc-island.island-hidden {
     opacity: 0;
     transform: translate(0, -50%) scale(0.8);
     pointer-events: none;
   }
 
-  #toc-island {
-    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
-                transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Active TOC link */
+  /* === Active TOC link === */
   .toc-link.active {
     color: var(--color-indigo-600, #4f46e5);
     background-color: rgba(99, 102, 241, 0.06);
@@ -189,120 +233,149 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
   }
 
-  /* Scrollbar for TOC panel */
-  #toc-panel::-webkit-scrollbar {
+  /* === Scrollbar === */
+  .toc-capsule::-webkit-scrollbar {
     width: 3px;
   }
-  #toc-panel::-webkit-scrollbar-track {
+  .toc-capsule::-webkit-scrollbar-track {
     background: transparent;
   }
-  #toc-panel::-webkit-scrollbar-thumb {
+  .toc-capsule::-webkit-scrollbar-thumb {
     background: rgba(161, 161, 170, 0.3);
     border-radius: 10px;
   }
 
-  /* Responsive: hide on small screens */
+  /* === Responsive === */
   @media (max-width: 1024px) {
-    #toc-island {
-      right: 0.75rem;
-    }
+    #toc-island { right: 0.75rem; }
   }
   @media (max-width: 640px) {
-    #toc-island {
-      display: none;
-    }
+    #toc-island { display: none; }
   }
 </style>
 
 <script>
   function initTocIsland() {
     const island = document.getElementById('toc-island');
-    const toggle = document.getElementById('toc-toggle');
-    const panel = document.getElementById('toc-panel');
+    const capsule = document.getElementById('toc-capsule');
+    const header = document.getElementById('toc-header');
     const closeBtn = document.getElementById('toc-close');
     const progress = document.getElementById('toc-progress');
     const links = document.querySelectorAll('.toc-link');
 
-    if (!island || !toggle || !panel) return;
+    if (!island || !capsule || !header) return;
 
     let isOpen = false;
+    let autoCloseTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastActiveSlug = '';
+    let userClosed = false; // user explicitly closed, suppress auto-open until next manual open
     let currentObserver: IntersectionObserver | null = null;
 
-    // Show/hide island based on scroll position
+    function expand() {
+      isOpen = true;
+      userClosed = false;
+      capsule!.classList.add('expanded');
+    }
+
+    function collapse() {
+      isOpen = false;
+      capsule!.classList.remove('expanded');
+    }
+
+    function cancelAutoClose() {
+      if (autoCloseTimer) { clearTimeout(autoCloseTimer); autoCloseTimer = null; }
+    }
+
+    function scheduleAutoClose(ms: number) {
+      cancelAutoClose();
+      autoCloseTimer = setTimeout(() => { collapse(); }, ms);
+    }
+
+    // Auto-expand on section change, then collapse after delay
+    function flashOpen() {
+      if (userClosed) return;
+      expand();
+      scheduleAutoClose(2500);
+    }
+
+    // Header click toggles
+    header!.addEventListener('click', (e) => {
+      // Don't toggle if clicking close button
+      if ((e.target as HTMLElement).closest('#toc-close')) return;
+      cancelAutoClose();
+      if (isOpen) {
+        userClosed = true;
+        collapse();
+      } else {
+        expand();
+      }
+    });
+
+    closeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cancelAutoClose();
+      userClosed = true;
+      collapse();
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (isOpen && !island!.contains(e.target as Node)) {
+        cancelAutoClose();
+        collapse();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) { cancelAutoClose(); userClosed = true; collapse(); }
+    });
+
+    // Click a link -> collapse after short delay
+    links.forEach((link) => {
+      link.addEventListener('click', () => {
+        cancelAutoClose();
+        setTimeout(collapse, 200);
+      });
+    });
+
+    // Visibility
     function updateIslandVisibility() {
       if (window.scrollY > 200) {
         island!.classList.remove('island-hidden');
       } else {
         island!.classList.add('island-hidden');
-        if (isOpen) closeToc();
+        if (isOpen) { cancelAutoClose(); collapse(); }
       }
     }
 
-    // Reading progress
+    // Progress
     function updateProgress() {
-      const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+      const pct = docHeight > 0 ? Math.round((window.scrollY / docHeight) * 100) : 0;
       if (progress) progress.textContent = pct + '%';
     }
 
-    function openToc() {
-      isOpen = true;
-      panel!.classList.add('open');
-      toggle!.classList.add('hidden-pill');
-    }
-
-    function closeToc() {
-      isOpen = false;
-      panel!.classList.remove('open');
-      toggle!.classList.remove('hidden-pill');
-    }
-
-    toggle!.addEventListener('click', () => {
-      if (isOpen) closeToc(); else openToc();
-    });
-
-    closeBtn?.addEventListener('click', closeToc);
-
-    // Close on click outside
-    document.addEventListener('click', (e) => {
-      if (isOpen && !island!.contains(e.target as Node)) {
-        closeToc();
-      }
-    });
-
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen) closeToc();
-    });
-
-    // Click a link -> close panel
-    links.forEach((link) => {
-      link.addEventListener('click', () => {
-        setTimeout(closeToc, 150);
-      });
-    });
-
-    // Intersection observer for active heading
+    // Intersection observer
     if (currentObserver) (currentObserver as IntersectionObserver).disconnect();
 
     currentObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
+            const newSlug = entry.target.id;
             links.forEach((l) => l.classList.remove('active'));
-            const active = document.querySelector(`.toc-link[data-toc-slug="${entry.target.id}"]`);
+            const active = document.querySelector(`.toc-link[data-toc-slug="${newSlug}"]`);
             if (active) {
               active.classList.add('active');
-              // Auto-scroll the panel to keep active link visible
-              if (isOpen && panel) {
-                const linkEl = active as HTMLElement;
-                const panelRect = panel.getBoundingClientRect();
-                const linkRect = linkEl.getBoundingClientRect();
-                if (linkRect.top < panelRect.top || linkRect.bottom > panelRect.bottom) {
-                  linkEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                }
+              // Auto-scroll active link into view when panel is open
+              if (isOpen) {
+                (active as HTMLElement).scrollIntoView({ block: 'nearest', behavior: 'smooth' });
               }
+            }
+            // Flash open on section change
+            if (newSlug !== lastActiveSlug) {
+              lastActiveSlug = newSlug;
+              flashOpen();
             }
           }
         }
@@ -318,7 +391,16 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
       }
     });
 
-    // Initial state
+    // When user hovers the capsule while expanded via auto, cancel the auto-close
+    capsule!.addEventListener('mouseenter', () => {
+      if (isOpen && autoCloseTimer) cancelAutoClose();
+    });
+    capsule!.addEventListener('mouseleave', () => {
+      // If it was auto-opened (not user-opened), schedule close again
+      if (isOpen && !userClosed) scheduleAutoClose(1500);
+    });
+
+    // Init
     island.classList.add('island-hidden');
     updateIslandVisibility();
     updateProgress();
