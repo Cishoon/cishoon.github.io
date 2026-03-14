@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+// 从 slug 中提取分类（第一级目录名）
+const categoryMap = new Map<string, number>();
+for (const post of posts) {
+  const category = post.slug.split('/')[0];
+  categoryMap.set(category, (categoryMap.get(category) || 0) + 1);
+}
+
+const categories = [...categoryMap.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([name, count]) => ({ name, count }));
+---
+
+<BaseLayout title="Categories">
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-12">
+      <h1 class="text-3xl font-bold text-zinc-800 dark:text-zinc-100 tracking-tight">Categories</h1>
+      <p class="text-zinc-500 mt-2 font-mono text-sm">{categories.length} categories</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {categories.map(({ name, count }) => (
+        <a
+          href={`/categories/${name}`}
+          class="group relative flex items-center justify-between p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-indigo-300 dark:hover:border-indigo-800 bg-white/50 dark:bg-zinc-900/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-indigo-400 dark:bg-indigo-500 opacity-60 group-hover:opacity-100 transition-opacity"></div>
+            <span class="text-base font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              {name}
+            </span>
+          </div>
+          <span class="text-xs font-mono text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
+            {count}
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
