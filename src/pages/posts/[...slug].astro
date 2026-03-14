@@ -268,7 +268,9 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     let isOpen = false;
     let autoCloseTimer: ReturnType<typeof setTimeout> | null = null;
     let lastActiveSlug = '';
-    let userClosed = false; // user explicitly closed, suppress auto-open until next manual open
+    let userClosed = false;
+    let manualOpen = false; // user clicked to open — never auto-close
+    let isHovering = false;
     let currentObserver: IntersectionObserver | null = null;
 
     function expand() {
@@ -278,7 +280,9 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     }
 
     function collapse() {
+      if (isHovering) return;
       isOpen = false;
+      manualOpen = false;
       capsule!.classList.remove('expanded');
     }
 
@@ -287,26 +291,29 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     }
 
     function scheduleAutoClose(ms: number) {
+      if (manualOpen) return; // never auto-close a manually opened panel
       cancelAutoClose();
       autoCloseTimer = setTimeout(() => { collapse(); }, ms);
     }
 
     // Auto-expand on section change, then collapse after delay
     function flashOpen() {
-      if (userClosed) return;
+      if (userClosed || manualOpen) return;
       expand();
       scheduleAutoClose(2500);
     }
 
     // Header click toggles
     header!.addEventListener('click', (e) => {
-      // Don't toggle if clicking close button
       if ((e.target as HTMLElement).closest('#toc-close')) return;
       cancelAutoClose();
       if (isOpen) {
         userClosed = true;
+        manualOpen = false;
+        isHovering = false;
         collapse();
       } else {
+        manualOpen = true;
         expand();
       }
     });
@@ -315,6 +322,7 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
       e.stopPropagation();
       cancelAutoClose();
       userClosed = true;
+      isHovering = false;
       collapse();
     });
 
@@ -322,21 +330,17 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
     document.addEventListener('click', (e) => {
       if (isOpen && !island!.contains(e.target as Node)) {
         cancelAutoClose();
+        isHovering = false;
         collapse();
       }
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen) { cancelAutoClose(); userClosed = true; collapse(); }
+      if (e.key === 'Escape' && isOpen) { cancelAutoClose(); userClosed = true; isHovering = false; collapse(); }
     });
 
-    // Click a link -> collapse after short delay
-    links.forEach((link) => {
-      link.addEventListener('click', () => {
-        cancelAutoClose();
-        setTimeout(collapse, 200);
-      });
-    });
+    // Click a link -> DON'T collapse, just let the page scroll
+    // Collapse will happen naturally via mouseleave when user moves away
 
     // Visibility
     function updateIslandVisibility() {
@@ -391,13 +395,15 @@ const tocHeadings = headings.filter(h => h.depth <= 3);
       }
     });
 
-    // When user hovers the capsule while expanded via auto, cancel the auto-close
+    // Track hover state — never auto-collapse while hovering
     capsule!.addEventListener('mouseenter', () => {
-      if (isOpen && autoCloseTimer) cancelAutoClose();
+      isHovering = true;
+      cancelAutoClose();
     });
     capsule!.addEventListener('mouseleave', () => {
-      // If it was auto-opened (not user-opened), schedule close again
-      if (isOpen && !userClosed) scheduleAutoClose(1500);
+      isHovering = false;
+      // Only auto-close if it was opened by flashOpen, not by user click
+      if (isOpen && !manualOpen) scheduleAutoClose(1500);
     });
 
     // Init
