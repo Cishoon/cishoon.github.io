@@ -11,24 +11,43 @@ date: 2026-03-19
 
 > 关于 Attention 的介绍强烈推荐李宏毅老师的教学视频：[自注意力机制和Transformer详细解析](https://www.bilibili.com/video/BV1r8nMz4EAj)。
 
-众所周知，Attention是Transformer模型中的核心组件之一。
-
-记模型的输入是长度 $N$ 的序列 $X$，其中每个元素 $x_i$ 都是一个 $d$ 维的向量：
+记模型的输入是长度 $N$ 的序列 $X$，其中每个元素 $x_i$ 都是一个 $d_{model}$ 维的向量：
 
 $$
-X = [x_1, x_2, ..., x_N] \\
-x_i \in \mathbb{R}^d
+X = \begin{bmatrix}
+x_1 \\
+x_2 \\
+\vdots \\
+x_N
+\end{bmatrix} 
+\\
+x_i \in \mathbb{R}^{d_{model}}
 $$
 
-$x_i$ 是第 $i$ 个 token 对应的嵌入向量（Token Embedding）。
+从输入prompt到得到 $X$ ，分为以下几个步骤：
 
 import EmbeddingProcess from './components/EmbeddingProcess';
 
 <EmbeddingProcess client:load />
 
+1. 输入的句子经过分词器（tokenizer）处理，转换成一系列离散的token。
+2. 每一个token被映射到一个高维空间中，形成一个向量，这个过程叫做嵌入（embedding）。嵌入层将每个token转换成一个 $d_{model}$ 维的向量。
 
+将 $N$ 个 token 转换成向量后，纵向排列成一个 $(N, d_{model})$ 的矩阵 $X$。
 
+然后将每一个 token 的向量 $x_i$ ，映射到查询（Query）、键（Key）和值（Value）三个不同的空间中：
 
+$$
+q_i = W^Q x_i, \quad k_i = W^K x_i, \quad v_i = W^V x_i
+$$
+
+从线性代数的角度看，$W^Q \in \mathbb{R}^{d \times d_{model}}$ 本质上定义了一个从原始表示空间 $\mathbb{R}^{d_{model}}$ 到查询空间 $\mathbb{R}^{d}$ 的线性映射。对每个 token 向量 $x_i$，乘以 $W^Q$ 相当于将它投影到一个专门用于“提问”的子空间中。
+
+import LinearProjection from './components/LinearProjection';
+
+<LinearProjection client:load />
+
+---
 
 它通过计算输入序列中每个元素之间的相关性来捕捉上下文信息。朴素的Attention计算方式如下：
 

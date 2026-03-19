@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const PROMPT = "Attention is all you need";
-const TOKENS = ["Attention", "is", "all", "you", "need"];
+const PROMPT_PARTS = [
+  { token: "Attention", trailing: " " },
+  { token: "is", trailing: " " },
+  { token: "all", trailing: " " },
+  { token: "you", trailing: " " },
+  { token: "need", trailing: "" },
+];
+const TOKENS = PROMPT_PARTS.map(p => p.token);
 
-// 实际 embedding 维度 d=128，界面只展示前3维 + ... + 后3维
+// 实际 embedding 维度 d=128，界面只展示前3维 + ··· + 后3维
 const D = 128;
 const SHOW_HEAD = 3;
 const SHOW_TAIL = 3;
@@ -19,9 +25,6 @@ function displaySlice(vec) {
   return { head: vec.slice(0, SHOW_HEAD), tail: vec.slice(-SHOW_TAIL) };
 }
 
-// step 0: 展示句子
-// step 1: 句子内部切分出 token（原地高亮分割）
-// step 2: Embedding 模块出现，token 逐个送入，输出向量纵向排列
 const STEP_COUNT = 3;
 
 function vecColor(v) {
@@ -36,33 +39,26 @@ function vecColor(v) {
 
 export default function EmbeddingProcess() {
   const [step, setStep] = useState(0);
-  // step2 中逐个送入的进度（0 ~ TOKENS.length）
   const [embedProgress, setEmbedProgress] = useState(0);
   const containerRef = useRef(null);
   const timerRef = useRef(null);
 
-  const prev = useCallback(() => {
-    setStep(s => {
-      const ns = Math.max(0, s - 1);
-      if (ns < 2) setEmbedProgress(0);
-      return ns;
-    });
+  const goto = useCallback((s) => {
+    setStep(s);
+    if (s < 2) setEmbedProgress(0);
   }, []);
+  const prev = useCallback(() => goto(Math.max(0, step - 1)), [step, goto]);
+  const next = useCallback(() => goto(Math.min(STEP_COUNT - 1, step + 1)), [step, goto]);
 
-  const next = useCallback(() => {
-    setStep(s => Math.min(STEP_COUNT - 1, s + 1));
-  }, []);
-
-  // step 2 进入时，逐个送入 token 的动画
+  // step 2: 逐个送入动画
   useEffect(() => {
     if (step !== 2) return;
     if (embedProgress < TOKENS.length) {
-      timerRef.current = setTimeout(() => setEmbedProgress(p => p + 1), 500);
+      timerRef.current = setTimeout(() => setEmbedProgress(p => p + 1), 600);
       return () => clearTimeout(timerRef.current);
     }
   }, [step, embedProgress]);
 
-  // 离开 step 2 时重置进度
   useEffect(() => {
     if (step < 2) setEmbedProgress(0);
   }, [step]);
@@ -79,6 +75,43 @@ export default function EmbeddingProcess() {
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
+  // step 0: 句子样式（无间隙、无背景）
+  // step 1: 裂开（间隙、背景色、圆角）
+  // step 2: token 被消耗后变灰缩小
+  const tokenStyle = (i) => {
+    const consumed = step === 2 && i < embedProgress;
+    const base = {
+      display: 'inline-block',
+      fontFamily: 'monospace',
+      fontSize: 14,
+      fontWeight: 500,
+      whiteSpace: 'pre',
+      transition: 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+      cursor: 'default',
+    };
+    if (step === 0) {
+      return {
+        ...base,
+        padding: '4px 0',
+        borderRadius: 0,
+        background: 'transparent',
+        color: '#0f172a',
+        marginRight: 0,
+      };
+    }
+    // step >= 1: 分词块
+    return {
+      ...base,
+      padding: '4px 10px',
+      borderRadius: 5,
+      marginRight: 6,
+      background: consumed ? '#e2e8f0' : '#0891b2',
+      color: consumed ? '#94a3b8' : '#fff',
+      opacity: consumed ? 0.45 : 1,
+      transform: consumed ? 'scale(0.92)' : 'scale(1)',
+    };
+  };
+
   return (
     <div
       ref={containerRef}
@@ -94,15 +127,12 @@ export default function EmbeddingProcess() {
         border: '1px solid #e2e8f0',
         background: '#f8fafc',
         outline: 'none',
-        minHeight: 260,
-        position: 'relative',
-        overflow: 'hidden',
       }}
     >
       {/* Top bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: '#164e63' }}>
-          {['① 输入句子', '② Tokenizer 分词', `③ Embedding → ℝ^${D}`][step]}
+          {['① 输入句子', '② Tokenizer 分词', `③ Token → Embedding → ℝ^${D}`][step]}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <NavBtn onClick={prev} disabled={step === 0}>←</NavBtn>
@@ -113,7 +143,7 @@ export default function EmbeddingProcess() {
         </div>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress dots */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 20 }}>
         {Array.from({ length: STEP_COUNT }, (_, i) => (
           <div key={i} style={{
@@ -124,174 +154,102 @@ export default function EmbeddingProcess() {
         ))}
       </div>
 
-      {/* === Stage area === */}
-      <div style={{ position: 'relative' }}>
+      {/* === Token 行：始终存在，样式随 step 过渡 === */}
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        padding: '12px 16px',
+        borderRadius: 8,
+        border: step >= 1 ? '1px dashed #0891b2' : '1px solid #e2e8f0',
+        background: '#fff',
+        transition: 'border 300ms',
+        minHeight: 40,
+      }}>
+        {PROMPT_PARTS.map((part, i) => (
+          <span key={i}>
+            <span style={tokenStyle(i)}>{part.token}</span>
+            {/* step 0 时显示空格保持句子原样 */}
+            {step === 0 && part.trailing && (
+              <span style={{ fontFamily: 'monospace', fontSize: 14 }}>{part.trailing}</span>
+            )}
+          </span>
+        ))}
+      </div>
 
-        {/* Step 0: 完整句子 */}
-        {step === 0 && (
+      {/* === Step 2: Embedding 模块 + 输出向量 === */}
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: step >= 2 ? 500 : 0,
+        opacity: step >= 2 ? 1 : 0,
+        transition: 'max-height 500ms ease, opacity 400ms ease',
+      }}>
+        {/* 箭头 */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 6px' }}>
+          <svg width="16" height="22" viewBox="0 0 16 22" fill="none">
+            <path d="M8 2 L8 15 M3 12 L8 18 L13 12" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
+        {/* Embedding Layer 模块 */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6 }}>
           <div style={{
-            display: 'flex', justifyContent: 'center', padding: '32px 0',
-            animation: 'fadeIn 300ms ease',
+            padding: '8px 32px', borderRadius: 8,
+            background: 'linear-gradient(135deg, #0891b2, #06b6d4)',
+            color: '#fff', fontSize: 13, fontWeight: 600,
+            letterSpacing: '0.04em',
+            boxShadow: embedProgress > 0 && embedProgress < TOKENS.length
+              ? '0 0 20px rgba(8,145,178,0.4)' : '0 2px 8px rgba(8,145,178,0.15)',
+            transition: 'box-shadow 300ms',
           }}>
-            <div style={{
-              padding: '12px 24px', borderRadius: 8,
-              background: '#fff', border: '1px solid #e2e8f0',
-              fontSize: 16, color: '#0f172a', fontFamily: 'monospace',
-            }}>
-              "{PROMPT}"
-            </div>
+            Embedding Layer
           </div>
-        )}
+        </div>
 
-        {/* Step 1: 句子内切分 token */}
-        {step === 1 && (
-          <div style={{
-            display: 'flex', justifyContent: 'center', padding: '32px 0',
-            animation: 'fadeIn 300ms ease',
-          }}>
-            <div style={{
-              display: 'flex', flexWrap: 'wrap', gap: 6,
-              padding: '12px 16px', borderRadius: 8,
-              background: '#fff', border: '1px dashed #0891b2',
-            }}>
-              {TOKENS.map((tok, i) => (
-                <span key={i} style={{
-                  display: 'inline-block',
-                  padding: '4px 10px', borderRadius: 5,
-                  fontSize: 14, fontFamily: 'monospace', fontWeight: 500,
-                  background: '#0891b2', color: '#fff',
-                  transform: 'scale(1)',
-                  animation: `popIn 300ms cubic-bezier(0.34,1.56,0.64,1) ${i * 80}ms both`,
-                }}>
-                  {tok}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* 箭头 */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '6px 0 10px' }}>
+          <svg width="16" height="22" viewBox="0 0 16 22" fill="none">
+            <path d="M8 2 L8 15 M3 12 L8 18 L13 12" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
 
-        {/* Step 2: Embedding 流程 */}
-        {step === 2 && (
-          <div style={{ animation: 'fadeIn 300ms ease' }}>
-            {/* 上方：横向 tokens 队列 */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              justifyContent: 'center', marginBottom: 12,
-            }}>
-              {TOKENS.map((tok, i) => {
-                const consumed = i < embedProgress;
-                const active = i === embedProgress - 1;
-                return (
-                  <span key={i} style={{
-                    padding: '4px 10px', borderRadius: 5,
-                    fontSize: 13, fontFamily: 'monospace', fontWeight: 500,
-                    background: consumed ? '#e2e8f0' : '#0891b2',
-                    color: consumed ? '#94a3b8' : '#fff',
-                    opacity: consumed ? 0.5 : 1,
-                    transform: active ? 'translateY(4px) scale(0.95)' : 'translateY(0)',
-                    transition: 'all 350ms ease',
-                  }}>
-                    {tok}
-                  </span>
-                );
-              })}
-            </div>
-
-            {/* 中间：Embedding 模块 */}
-            <div style={{
-              display: 'flex', justifyContent: 'center', margin: '8px 0',
-            }}>
-              <div style={{
-                padding: '8px 28px', borderRadius: 8,
-                background: 'linear-gradient(135deg, #0891b2, #06b6d4)',
-                color: '#fff', fontSize: 13, fontWeight: 600,
-                letterSpacing: '0.05em',
-                boxShadow: embedProgress > 0 && embedProgress <= TOKENS.length
-                  ? '0 0 16px rgba(8,145,178,0.35)' : 'none',
-                transition: 'box-shadow 300ms',
-              }}>
-                Embedding Layer
-              </div>
-            </div>
-
-            {/* 下方箭头 */}
-            <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0 12px' }}>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
-                <path d="M8 2 L8 14 M3 11 L8 16 L13 11" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-
-            {/* 下方：输出的向量纵向排列 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-              {TOKENS.map((tok, i) => {
-                const show = i < embedProgress;
-                const { head, tail } = displaySlice(EMBEDDINGS[i]);
-                return (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    opacity: show ? 1 : 0,
-                    transform: show ? 'translateY(0)' : 'translateY(-10px)',
-                    transition: `all 350ms ease ${show ? '0ms' : '0ms'}`,
-                    height: show ? 30 : 0,
-                    overflow: 'hidden',
-                  }}>
-                    <span style={{
-                      width: 72, fontSize: 12, fontFamily: 'monospace',
-                      color: '#164e63', fontWeight: 500, textAlign: 'right', flexShrink: 0,
-                    }}>
-                      x<sub>{i + 1}</sub> =
-                    </span>
-                    <span style={{ color: '#94a3b8', fontSize: 12 }}>[</span>
-                    {head.map((v, j) => (
-                      <VecCell key={j} value={v} show={show} delay={j * 30} />
-                    ))}
-                    <span style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'monospace', letterSpacing: 2 }}>···</span>
-                    {tail.map((v, j) => (
-                      <VecCell key={`t${j}`} value={v} show={show} delay={(SHOW_HEAD + j) * 30} />
-                    ))}
-                    <span style={{ color: '#94a3b8', fontSize: 12 }}>]</span>
-                    <span style={{ fontSize: 11, color: '#94a3b8', fontStyle: 'italic', marginLeft: 4 }}>
-                      {tok}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* 图例 */}
-            {embedProgress >= TOKENS.length && (
-              <div style={{
-                marginTop: 14, fontSize: 11, color: '#64748b',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                animation: 'fadeIn 400ms ease',
+        {/* 输出向量纵向排列 */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+          {TOKENS.map((tok, i) => {
+            const show = i < embedProgress;
+            const { head, tail } = displaySlice(EMBEDDINGS[i]);
+            return (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                opacity: show ? 1 : 0,
+                transform: show ? 'translateY(0)' : 'translateY(-8px)',
+                maxHeight: show ? 32 : 0,
+                transition: 'all 350ms ease',
+                overflow: 'hidden',
               }}>
                 <span style={{
-                  display: 'inline-block', width: 10, height: 10, borderRadius: 2,
-                  background: 'linear-gradient(90deg, #3b82f6, #fff, #f97316)', flexShrink: 0,
-                }} />
-                d={D}，展示前{SHOW_HEAD}维 + 后{SHOW_TAIL}维 | 蓝(负) → 白(0) → 橙(正)
+                  width: 56, fontSize: 12, fontFamily: 'monospace',
+                  color: '#164e63', fontWeight: 600, textAlign: 'right', flexShrink: 0,
+                }}>
+                  x<sub>{i + 1}</sub>
+                </span>
+                <span style={{ color: '#94a3b8', fontSize: 12, fontFamily: 'monospace' }}>=&nbsp;[</span>
+                {head.map((v, j) => (
+                  <VecCell key={j} value={v} show={show} delay={j * 30} />
+                ))}
+                <span style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'monospace', letterSpacing: 2 }}>···</span>
+                {tail.map((v, j) => (
+                  <VecCell key={`t${j}`} value={v} show={show} delay={(SHOW_HEAD + j) * 30} />
+                ))}
+                <span style={{ color: '#94a3b8', fontSize: 12, fontFamily: 'monospace' }}>]</span>
+                <span style={{ fontSize: 11, color: '#94a3b8', fontStyle: 'italic' }}>{tok}</span>
               </div>
-            )}
-          </div>
-        )}
+            );
+          })}
+        </div>
+        </div>
       </div>
-
-      {/* Keyboard hint */}
-      <div style={{ marginTop: 16, fontSize: 11, color: '#94a3b8', textAlign: 'center' }}>
-        ← → 方向键切换步骤
-      </div>
-
-      {/* Keyframe animations */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes popIn {
-          from { opacity: 0; transform: scale(0.7); }
-          to { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
     </div>
   );
 }
