@@ -142,7 +142,7 @@ html, body {
 }
 
 .prose h1 {
-  font-size: 2.25em;
+  font-size: 2em;
   line-height: 1.2;
   border-bottom: 1px solid #eee;
   padding-bottom: 0.3em;
@@ -416,4 +416,9 @@ html, body {
 /* 任务列表 */
 .prose input[type="checkbox"] {
   margin-left: -1.3em;
+}
+
+
+.katex .mspace {
+  height: 1rem;
 }
