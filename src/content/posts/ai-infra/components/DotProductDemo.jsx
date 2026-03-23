@@ -91,8 +91,6 @@ export default function DotProductDemo() {
   const dragging = useRef(false);
   // step 2: 逐行点积
   const [calcRow2, setCalcRow2] = useState(-1);
-  // step 3: 逐行计算 S
-  const [calcRow3, setCalcRow3] = useState(-1);
   const timersRef = useRef([]);
 
   const clearTimers = useCallback(() => {
@@ -107,19 +105,6 @@ export default function DotProductDemo() {
     setCalcRow2(-1);
     for (let r = 0; r <= VIS_ROWS; r++) {
       timersRef.current.push(setTimeout(() => setCalcRow2(r), 400 + r * 600));
-    }
-    return clearTimers;
-  }, [step, clearTimers]);
-
-  // step 3 animation: row-by-row calc starts after Step3's internal transpose finishes
-  // Step3 phases: 0→600ms→1(transpose)→2000ms→2(formula)
-  // So calcRow3 should start after phase 2 begins (2000ms) + small buffer
-  useEffect(() => {
-    if (step !== 2) return;
-    clearTimers();
-    setCalcRow3(-1);
-    for (let r = 0; r <= VIS_ROWS; r++) {
-      timersRef.current.push(setTimeout(() => setCalcRow3(r), 2400 + r * 600));
     }
     return clearTimers;
   }, [step, clearTimers]);
@@ -227,7 +212,7 @@ export default function DotProductDemo() {
 
       {step === 0 && <Step1 canvasRef={canvasRef} kj={kj} dot={dot} dotColor={dotColor} onDown={onDown} onMove={onMove} dragging={dragging} />}
       {step === 1 && <Step2 calcRow={calcRow2} />}
-      {step === 2 && <Step3 calcRow={calcRow3} />}
+      {step === 2 && <Step3 />}
     </div>
   );
 }
@@ -377,34 +362,100 @@ function gridSize() {
   return { w, h };
 }
 
-function Step3({ calcRow }) {
-  const vri = (isH, i) => isH ? i : SH + i;
-  // phase: 0 = show K, 1 = transpose anim, 2 = show formula + calc
+const VIS_COLS = SH + ST; // 可见列数 = 3
+const TOTAL_CELLS = VIS_ROWS * VIS_COLS; // 3×3 = 9
+const SUB_LABEL = (vi) => vi < SH ? String(vi) : 'N-1';
+
+function Step3() {
+  // phase: 0=Q stacking, 1=show K, 2=K→Kᵀ transpose, 3=formula+逐格计算
   const [phase, setPhase] = useState(0);
+  const [qRowsShown, setQRowsShown] = useState(0);
+  const [calcStep, setCalcStep] = useState(-1); // -1=none, 0..8=computing cell, 9=all done
   const timers = useRef([]);
 
   useEffect(() => {
     timers.current.forEach(t => clearTimeout(t));
     timers.current = [];
     setPhase(0);
-    // phase 0 → 1: start transpose
-    timers.current.push(setTimeout(() => setPhase(1), 600));
-    // phase 1 → 2: show formula
-    timers.current.push(setTimeout(() => setPhase(2), 2000));
+    setQRowsShown(0);
+    setCalcStep(-1);
+
+    // Phase 0: Q stacking - 4 visual elements (head0, head1, ellipsis, tail0)
+    for (let r = 1; r <= 4; r++) {
+      timers.current.push(setTimeout(() => setQRowsShown(r), 200 + r * 350));
+    }
+    // Phase 1: show K
+    timers.current.push(setTimeout(() => setPhase(1), 2000));
+    // Phase 2: start transpose
+    timers.current.push(setTimeout(() => setPhase(2), 2600));
+    // Phase 3: show formula
+    timers.current.push(setTimeout(() => setPhase(3), 4000));
+    // 逐格计算: 9 cells, each 600ms
+    for (let c = 0; c <= TOTAL_CELLS; c++) {
+      timers.current.push(setTimeout(() => setCalcStep(c), 4400 + c * 600));
+    }
+
     return () => timers.current.forEach(t => clearTimeout(t));
   }, []);
 
   const sz = gridSize();
 
-  if (phase < 2) {
-    // Phase 0-1: 转置动画
-    // 省略符号位置
-    const ellColX = SH * (CELL_W + GAP); // ⋯ 列的 x
-    const ellRowY = SH * (CELL_H + GAP); // ⋮ 行的 y
+  // Phase 0: qᵢ 堆叠形成 Q
+  if (phase === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, minHeight: 180 }}>
         <div style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'monospace', textAlign: 'center' }}>
-          {phase === 0 ? 'K (N×d)' : 'K → Kᵀ (d×N)  行列互换'}
+          每个 qᵢ 是一个行向量，堆叠形成 Q
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+          {/* q_i labels */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingTop: 4 }}>
+            {qRowsShown >= 1 && (
+              <div style={{ height: 28, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '1px 0' }}>
+                <span style={{ fontSize: 10, color: '#2dd4bf', fontFamily: 'monospace', fontWeight: 600 }}>q₀ →</span>
+              </div>
+            )}
+            {qRowsShown >= 2 && (
+              <div style={{ height: 28, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '1px 0' }}>
+                <span style={{ fontSize: 10, color: '#2dd4bf', fontFamily: 'monospace', fontWeight: 600 }}>q₁ →</span>
+              </div>
+            )}
+            {qRowsShown >= 3 && (
+              <div style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                <span style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>⋮</span>
+              </div>
+            )}
+            {qRowsShown >= 4 && (
+              <div style={{ height: 28, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '1px 0' }}>
+                <span style={{ fontSize: 10, color: '#2dd4bf', fontFamily: 'monospace', fontWeight: 600 }}>qₙ₋₁→</span>
+              </div>
+            )}
+          </div>
+          {/* Q matrix */}
+          {qRowsShown > 0 && (
+            <Bk>
+              {qRowsShown >= 1 && <MRow row={Q_vis.headRows[0]} hl={false} />}
+              {qRowsShown >= 2 && <MRow row={Q_vis.headRows[1]} hl={false} />}
+              {qRowsShown >= 3 && <EllipsisRow />}
+              {qRowsShown >= 4 && Q_vis.tailRows.map((row, i) => <MRow key={`t${i}`} row={row} hl={false} />)}
+            </Bk>
+          )}
+        </div>
+        {qRowsShown >= 4 && (
+          <span style={{ fontSize: 11, color: '#2dd4bf', fontWeight: 600, fontFamily: 'monospace' }}>Q (N × d)</span>
+        )}
+      </div>
+    );
+  }
+
+  // Phase 1-2: K → Kᵀ 转置动画
+  if (phase < 3) {
+    const ellColX = SH * (CELL_W + GAP);
+    const ellRowY = SH * (CELL_H + GAP);
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, minHeight: 180 }}>
+        <div style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'monospace', textAlign: 'center' }}>
+          {phase === 1 ? 'K (N×d)' : 'K → Kᵀ (d×N)  行列互换'}
         </div>
         <div style={{
           position: 'relative',
@@ -423,7 +474,7 @@ function Step3({ calcRow }) {
               }}>⋯</span>
             );
           })}
-          {/* 省略符号: ⋮ 行 (每列一个 ⋮) */}
+          {/* 省略符号: ⋮ 行 */}
           {[...Array(T_COLS)].map((_, ci) => {
             const x = ci < SH ? ci * (CELL_W + GAP) : SH * (CELL_W + GAP) + ELLIPSIS_W + GAP + (ci - SH) * (CELL_W + GAP);
             return (
@@ -445,8 +496,8 @@ function Step3({ calcRow }) {
           {/* 数值 cell 动画 */}
           {K_CELLS.map(({ ri, ci, v }, idx) => {
             const from = cellPos(ri, ci);
-            const to = cellPos(ci, ri); // 转置: (ri,ci) → (ci,ri)
-            const pos = phase >= 1 ? to : from;
+            const to = cellPos(ci, ri);
+            const pos = phase >= 2 ? to : from;
             return (
               <span key={idx} style={{
                 position: 'absolute',
@@ -465,69 +516,118 @@ function Step3({ calcRow }) {
           })}
         </div>
         <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600, fontFamily: 'monospace' }}>
-          {phase === 0 ? 'K' : 'Kᵀ'}
+          {phase === 1 ? 'K' : 'Kᵀ'}
         </div>
       </div>
     );
   }
 
-  // Phase 2: 完整公式 Q · Kᵀ = S
+  // Phase 3: Q · Kᵀ = S — 逐格计算 (9 步)
+  const curRow = calcStep >= 0 && calcStep < TOTAL_CELLS ? Math.floor(calcStep / VIS_COLS) : -1;
+  const curCol = calcStep >= 0 && calcStep < TOTAL_CELLS ? calcStep % VIS_COLS : -1;
+  const allDone = calcStep >= TOTAL_CELLS;
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      gap: 10, flexWrap: 'wrap', minHeight: 180,
-    }}>
-      {/* Q (N × d) */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-        <span style={{ fontSize: 11, color: '#2dd4bf', fontWeight: 600, fontFamily: 'monospace' }}>Q</span>
-        <Bk>
-          {Q_vis.headRows.map((row, i) => <MRow key={`h${i}`} row={row} hl={calcRow === vri(true, i)} />)}
-          <EllipsisRow />
-          {Q_vis.tailRows.map((row, i) => <MRow key={`t${i}`} row={row} hl={calcRow === vri(false, i)} />)}
-        </Bk>
-        <span style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>N × d</span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, minHeight: 180 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        gap: 10, flexWrap: 'wrap',
+      }}>
+        {/* Q (N × d) */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 11, color: '#2dd4bf', fontWeight: 600, fontFamily: 'monospace' }}>Q</span>
+          <Bk>
+            {Q_vis.headRows.map((row, i) => (
+              <MRow key={`h${i}`} row={row} hl={curRow === i} />
+            ))}
+            <EllipsisRow />
+            {Q_vis.tailRows.map((row, i) => (
+              <MRow key={`t${i}`} row={row} hl={curRow === SH + i} />
+            ))}
+          </Bk>
+          <span style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>N × d</span>
+        </div>
+
+        <span style={{ fontSize: 16, color: '#94a3b8', fontWeight: 300 }}>·</span>
+
+        {/* Kᵀ (d × N) */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 11, color: '#facc15', fontWeight: 600, fontFamily: 'monospace' }}>
+            K<sup>T</sup>
+          </span>
+          <Bk>
+            {KT_vis.headRows.map((row, r) => (
+              <MRow key={`h${r}`} row={row} hl={false} hlCol={curCol} />
+            ))}
+            <EllipsisRow />
+            {KT_vis.tailRows.map((row, r) => (
+              <MRow key={`t${r}`} row={row} hl={false} hlCol={curCol} />
+            ))}
+          </Bk>
+          <span style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>d × N</span>
+        </div>
+
+        <span style={{ fontSize: 16, color: '#94a3b8', fontWeight: 300 }}>=</span>
+
+        {/* S (N × N) */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 11, color: '#0891b2', fontWeight: 600, fontFamily: 'monospace' }}>S</span>
+          <Bk accent>
+            {S_vis.headRows.map((row, i) => (
+              <SRow key={`h${i}`} row={row} visRow={i} calcStep={calcStep} />
+            ))}
+            <EllipsisRow />
+            {S_vis.tailRows.map((row, i) => (
+              <SRow key={`t${i}`} row={row} visRow={SH + i} calcStep={calcStep} />
+            ))}
+          </Bk>
+          <span style={{ fontSize: 10, color: '#0891b2', fontFamily: 'monospace' }}>N × N</span>
+        </div>
       </div>
 
-      <span style={{ fontSize: 16, color: '#94a3b8', fontWeight: 300 }}>·</span>
-
-      {/* Kᵀ (d × N) */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-        <span style={{ fontSize: 11, color: '#facc15', fontWeight: 600, fontFamily: 'monospace' }}>
-          K<sup>T</sup>
-        </span>
-        <Bk>
-          {KT_vis.headRows.map((row, r) => <MRow key={`h${r}`} row={row} hl={false} />)}
-          <EllipsisRow />
-          {KT_vis.tailRows.map((row, r) => <MRow key={`t${r}`} row={row} hl={false} />)}
-        </Bk>
-        <span style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>d × N</span>
-      </div>
-
-      <span style={{ fontSize: 16, color: '#94a3b8', fontWeight: 300 }}>=</span>
-
-      {/* S (N × N) */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-        <span style={{ fontSize: 11, color: '#0891b2', fontWeight: 600, fontFamily: 'monospace' }}>S</span>
-        <Bk accent>
-          {S_vis.headRows.map((row, i) => <SRow key={`h${i}`} row={row} idx={vri(true, i)} cur={calcRow} />)}
-          <EllipsisRow />
-          {S_vis.tailRows.map((row, i) => <SRow key={`t${i}`} row={row} idx={vri(false, i)} cur={calcRow} />)}
-        </Bk>
-        <span style={{ fontSize: 10, color: '#0891b2', fontFamily: 'monospace' }}>N × N</span>
-      </div>
+      {/* Annotation: 当前正在计算哪个元素 */}
+      {curRow >= 0 && (
+        <div style={{
+          fontSize: 12, fontFamily: 'monospace', textAlign: 'center',
+          padding: '6px 14px', borderRadius: 6,
+          background: 'rgba(8,145,178,0.08)', color: '#0891b2',
+          transition: 'opacity 200ms',
+        }}>
+          <span style={{ color: '#2dd4bf' }}>Q</span>{' 第 '}{SUB_LABEL(curRow)}{' 行'}
+          {' × '}
+          <span style={{ color: '#facc15' }}>K<sup>T</sup></span>{' 第 '}{SUB_LABEL(curCol)}{' 列'}
+          {' → '}
+          <span style={{ fontWeight: 700 }}>
+            S<sub>{SUB_LABEL(curRow)},{SUB_LABEL(curCol)}</sub> = ···
+          </span>
+        </div>
+      )}
+      {allDone && (
+        <div style={{
+          fontSize: 12, fontFamily: 'monospace', textAlign: 'center',
+          padding: '6px 14px', borderRadius: 6,
+          background: 'rgba(8,145,178,0.08)', color: '#0891b2',
+        }}>
+          S = Q · K<sup>T</sup> — 每个 S<sub>ij</sub> = q<sub>i</sub> · k<sub>j</sub>
+        </div>
+      )}
     </div>
   );
 }
 
-function SRow({ row, idx, cur }) {
-  const computed = cur > idx;
-  const computing = cur === idx;
-  const bg = computing ? 'rgba(8,145,178,0.15)' : 'transparent';
+function SRow({ row, visRow, calcStep }) {
+  const rowActive = calcStep >= 0 && calcStep < TOTAL_CELLS && Math.floor(calcStep / VIS_COLS) === visRow;
+  const bg = rowActive ? 'rgba(8,145,178,0.15)' : 'transparent';
   return (
     <div style={{ display: 'flex', gap: 2, background: bg, borderRadius: 3, padding: '1px 2px', transition: 'background 250ms' }}>
-      {row.head.map((v, j) => <SCell key={j} v={v} done={computed} active={computing} />)}
+      {row.head.map((v, j) => {
+        const cellIdx = visRow * VIS_COLS + j;
+        return <SCell key={j} v={v} done={calcStep > cellIdx} active={calcStep === cellIdx} />;
+      })}
       <Dots h />
-      {row.tail.map((v, j) => <SCell key={`t${j}`} v={v} done={computed} active={computing} />)}
+      {row.tail.map((v, j) => {
+        const cellIdx = visRow * VIS_COLS + SH + j;
+        return <SCell key={`t${j}`} v={v} done={calcStep > cellIdx} active={calcStep === cellIdx} />;
+      })}
     </div>
   );
 }
@@ -570,16 +670,17 @@ function RCell({ value, idx, cur }) {
   );
 }
 
-function MRow({ row, hl }) {
+function MRow({ row, hl, hlCol = -1 }) {
+  const hasColHl = hlCol >= 0;
   return (
     <div style={{
       display: 'flex', gap: 2,
       background: hl ? 'rgba(8,145,178,0.12)' : 'transparent',
       borderRadius: 3, padding: '1px 2px', transition: 'background 200ms',
     }}>
-      {row.head.map((v, j) => <Cl key={j} value={v} hl={hl} />)}
+      {row.head.map((v, j) => <Cl key={j} value={v} hl={hl || (hasColHl && j === hlCol)} />)}
       <Dots h />
-      {row.tail.map((v, j) => <Cl key={`t${j}`} value={v} hl={hl} />)}
+      {row.tail.map((v, j) => <Cl key={`t${j}`} value={v} hl={hl || (hasColHl && (SH + j) === hlCol)} />)}
     </div>
   );
 }

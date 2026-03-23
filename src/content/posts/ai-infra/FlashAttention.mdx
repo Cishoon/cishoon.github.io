@@ -65,7 +65,7 @@ $$
 
 我们逐步拆解这个公式。
 
-#### 1 $QK^T$
+#### 1. $QK^T$
 
 $Q$ 的第 $i$ 行 $q_i$ 是 $x_i$ 在查询空间中的表示，$K$ 的第 $j$ 行 $k_j$ 是 $x_j$ 在键空间中的表示.
 
@@ -75,10 +75,241 @@ import DotProductDemo from './components/DotProductDemo';
 
 <DotProductDemo client:load />
 
+#### 2. $\frac{QK^T}{\sqrt{d}}$
+
+为什么这里要除以 $\sqrt{d}$ 呢？
+
+假设：$q_i$ 和 $k_j$ 的每个分量都是独立的、均值为 $0$、方差为 $1$ 的随机变量。
 
 
+点积展开：
 
+$$
+q_i \cdot k_j = \sum_{l=1}^{d} q_{il} \cdot k_{jl}
+$$
 
+分析每一项：每个 $q_{il} \cdot k_{jl}$ 是两个独立的零均值、单位方差随机变量的乘积：
 
+每个 $q_{il} \cdot k_{jl}$ 是两个独立的零均值、单位方差随机变量的乘积：
 
+- $E[q_{il} \cdot k_{jl}] = E[q_{il}] \cdot E[k_{jl}] = 0 \cdot 0 = 0$
+- $\text{Var}(q_{il} \cdot k_{jl}) = E[q_{il}^2] \cdot E[k_{jl}^2] - (E[q_{il}] \cdot E[k_{jl}])^2 = 1 \cdot 1 - 0 = 1$
 
+对 d 项求和，由于各分量独立，方差可加：
+
+$$
+E[q_i \cdot k_j] = 0, \quad \text{Var}(q_i \cdot k_j) = d
+$$
+
+所以点积的标准差为 $\sqrt{d}$。当 $d$ 很大时（如 64、128），点积的值会很大，导致 softmax 输出趋近 one-hot 向量（梯度接近 0，训练困难）。
+
+除以$\sqrt{d}$ 后：
+$$
+\text{Var}\left(\frac{q_i \cdot k_j}{\sqrt{d}}\right) = \frac{\text{Var}(q_i \cdot k_j)}{d} = \frac{d}{d} = 1
+$$
+
+#### 3. $\text{softmax}(\frac{QK^T}{\sqrt{d}})$
+
+对上一步得到的缩放点积结果，沿最后一个维度（即 Key 的序列维度）求 Softmax，将注意力分数归一化为概率分布。
+
+直接计算 $\exp(s_{ij})$ 时，如果 $s_{ij}$ 很大，会导致浮点溢出。实践中使用 **safe softmax**：先减去每行的最大值 $m_i = \max_j s_{ij}$，再取指数：
+
+$$
+\alpha_{ij} = \frac{\exp(s_{ij} - m_i)}{\sum_{k=1}^{n} \exp(s_{ik} - m_i)}, \quad \text{其中} \; s_{ij} = \frac{q_i \cdot k_j}{\sqrt{d}}
+$$
+
+减去 $m_i$ 不改变 softmax 的结果（分子分母同乘 $e^{-m_i}$ 可以约掉），但保证了指数的输入 $\leq 0$，避免数值溢出。
+
+归一化后，每一行的注意力权重之和为 1，表示当前 Query 对所有 Key 的关注程度分布。
+
+import SoftmaxDemo from './components/SoftmaxDemo';
+
+<SoftmaxDemo client:load />
+
+#### 4. $\text{softmax}(\frac{QK^T}{\sqrt{d}}) V$
+
+将注意力权重与 $V$ 矩阵相乘，得到最终的加权输出：
+
+$$
+O = \alpha V
+$$
+
+其中输出矩阵 $O$ 的每一行 $o_i = \sum_{j=1}^{n} \alpha_{ij} v_j$，即对所有 Value 向量按注意力权重进行加权求和。直觉上，模型通过注意力分数决定"关注哪些位置的信息"，再从这些位置提取对应的 Value 进行聚合。
+
+import AttentionOutputDemo from './components/AttentionOutputDemo';
+
+<AttentionOutputDemo client:load />
+
+# 2 编写朴素Attention的 cuda 算子
+
+首先定义好基础结构，分配 `d_S` `d_P` 作为中间变量：
+
+```c++
+#include <cmath>
+#include <cfloat>
+#include <cstdio>
+#include <cuda_runtime.h>
+
+#define TILE 16
+#define BLOCK_SIZE 256
+#define cdiv(a, b) (((a) + (b) - 1) / (b))
+
+void launch_naive_attention(
+    const float* d_Q, const float* d_K, const float* d_V, float* d_O,
+    int N, int d
+) {
+    float* d_S, *d_P;
+    cudaMalloc(&d_S, sizeof(float) * N * N);
+    cudaMalloc(&d_P, sizeof(float) * N * N);
+    
+    // 1. S = Q K^T / sqrt(d)
+    dim3 block1(TILE, TILE);
+    dim3 grid1(cdiv(N, TILE), cdiv(N, TILE));
+    ScaledDotProductKernel<<<grid1, block1>>>(d_Q, d_K, d_S, N, d);
+
+    // 2. P = softmax(S); per row
+    dim3 block2(BLOCK_SIZE);
+    dim3 grid2(cdiv(N, BLOCK_SIZE));
+    SoftmaxKernel<<<grid2, block2>>>(d_S, d_P, N);
+
+    // 3. O = P V
+    dim3 block3(TILE, TILE);
+    dim3 grid3(cdiv(N, TILE), cdiv(d, TILE));
+    PVMultiplyKernel<<<grid3, block3>>>(d_P, d_V, d_O, N, d);
+
+    cudaFree(d_S);
+    cudaFree(d_P);
+}
+```
+
+## 2.1 ScaledDotProductKernel
+
+第一阶段，计算 $S = QK^T / \sqrt{d}$，本质是一个标准的矩阵乘法。输出矩阵 $S$ 是 $N \times N$，每个线程负责计算一个输出元素 $S_{ij}$，因此按 TILE × TILE 划分 thread block，再根据输出矩阵的大小确定 grid 维度：
+
+```c++
+dim3 block1(TILE, TILE);
+// 输出矩阵 S 是 N×N，每个线程计算一个 S_ij，grid 按 TILE 分块覆盖整个输出矩阵
+dim3 grid1(cdiv(N, TILE), cdiv(N, TILE));
+ScaledDotProductKernel<<<grid1, block1>>>(
+    d_Q, d_K, d_S, N, d
+);
+```
+
+device 侧，注意 `d_Q` 和 `d_K` 在显存中的布局都是 $N \times d$（行优先），我们并没有真正构造 $K^T$。计算 $S_{ij} = q_i \cdot k_j$ 时，只需让 Q 按第 `row` 行、K 按第 `col` 行去取同一维度 `i` 的元素做内积即可：
+
+```c++
+__global__ void ScaledDotProductKernel(const float* d_Q, const float* d_K, float* d_S, int N, int d) {
+    int row = threadIdx.x + blockIdx.x * blockDim.x;
+    int col = threadIdx.y + blockIdx.y * blockDim.y;
+    
+    if (row < N && col < N) {
+        float sum = 0.0f;
+        for (int i = 0; i < d; i++) {
+            // Q[row, i] * K[col, i]  (K[col] 即 K^T 的第 col 列)
+            sum += d_Q[row * d + i] * d_K[col * d + i];
+        }
+        d_S[row * N + col] = sum / sqrtf((float)d);
+    }
+}
+```
+
+## 2.2 SoftmaxKernel
+
+第二阶段对 S 逐行求 softmax。Softmax 是按行独立的操作，所以每个线程处理一整行，不需要二维 block：
+
+```c++
+dim3 block2(BLOCK_SIZE);
+dim3 grid2(cdiv(N, BLOCK_SIZE));
+SoftmaxKernel<<<grid2, block2>>>(
+    d_S, d_P, N
+);
+```
+
+device 侧，每个线程负责 S 的一行，内部分三步：求最大值 `m`、求指数和、归一化写回 P。注意 `expf` 中要减去 `m` 防止溢出：
+
+```c++
+__global__ void SoftmaxKernel(const float* d_S, float* d_P, int N) {
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (row < N) {
+        // 1. 求本行最大值
+        float m = -FLT_MAX;
+        for (int i = 0; i < N; i++) {
+            m = fmaxf(m, d_S[row * N + i]);
+        }
+
+        // 2. 求指数和 (减去 m 防止溢出)
+        float sum = 0.0f;
+        for (int i = 0; i < N; i++) {
+            sum += expf(d_S[row * N + i] - m);
+        }
+
+        // 3. 归一化，写回 P
+        for (int i = 0; i < N; i++) {
+            d_P[row * N + i] = expf(d_S[row * N + i] - m) / sum;
+        }
+    }
+}
+```
+
+## 2.3 PVMultiplyKernel
+
+第三阶段计算 $O = PV$，又是一个标准矩阵乘法。$P$ 是 $N \times N$，$V$ 是 $N \times d$，输出 $O$ 是 $N \times d$。与第一阶段类似，按输出矩阵的形状配置 grid：
+
+```c++
+dim3 block3(TILE, TILE);
+dim3 grid3(cdiv(N, TILE), cdiv(d, TILE));
+PVMultiplyKernel<<<grid3, block3>>>(
+    d_P, d_V, d_O, N, d
+);
+```
+
+device 侧，每个线程计算 $O_{ij} = \sum_{k} P_{ik} \cdot V_{kj}$：
+
+```c++
+__global__ void PVMultiplyKernel(const float* d_P, const float* d_V, float* d_O, int N, int d) {
+    int row = threadIdx.x + blockIdx.x * blockDim.x;
+    int col = threadIdx.y + blockIdx.y * blockDim.y;
+
+    if (row < N && col < d) {
+        float sum = 0.0f;
+        for (int i = 0; i < N; i++) {
+            sum += d_P[row * N + i] * d_V[i * d + col];
+        }
+        d_O[row * d + col] = sum;
+    }
+}
+```
+
+# 3 通用的优化算法
+
+我们先不使用 FlashAttention 用到的算法，从更常用的cuda优化方案思考上述代码的优化空间。
+
+## 3.1 分块矩阵乘法
+
+```c++
+dim3 block1(TILE, TILE);
+dim3 grid1(cdiv(N, TILE), cdiv(N, TILE));
+ScaledDotProductKernel<<<grid1, block1>>>(
+    d_Q, d_K, d_S, N, d
+);
+
+__global__ void ScaledDotProductKernel(const float* d_Q, const float* d_K, float* d_S, int N, int d) {
+    int row = threadIdx.x + blockIdx.x * blockDim.x;
+    int col = threadIdx.y + blockIdx.y * blockDim.y;
+    
+    if (row < N && col < N) {
+        float sum = 0.0f;
+        for (int i = 0; i < d; i++) {
+            sum += d_Q[row * d + i] * d_K[col * d + i];
+        }
+        d_S[row * N + col] = sum / sqrtf((float)d);
+    }
+}
+```
+
+重新思考这段代码。每一个 block 里有 TILE x TILE 个线程。每一列的d_K、每一行的d_Q都分别被取用了 TILE 次！
+
+而直接从显存 HBM 中取用数据IO效率是很慢的。这就可以用到 SM 里的 shared_memory 共享内存，只从显存里读取一次数据写入共享内存，后续都从共享内存中读取。
+
+所以我们需要两块 TILE x TILE 的 float 矩阵的共享内存空间。
