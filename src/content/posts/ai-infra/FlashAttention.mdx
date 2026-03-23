@@ -308,8 +308,12 @@ __global__ void ScaledDotProductKernel(const float* d_Q, const float* d_K, float
 }
 ```
 
-重新思考这段代码。每一个 block 里有 TILE x TILE 个线程。每一列的d_K、每一行的d_Q都分别被取用了 TILE 次！
+重新审视这段代码的访存模式。一个 block 有 TILE × TILE 个线程，它们共同计算输出矩阵 S 中一个 TILE × TILE 的子块。为了计算这个子块，同一行的 TILE 个线程都需要读取 Q 的同一行，同一列的 TILE 个线程都需要读取 K 的同一行——也就是说，**每一行 Q 数据被同 block 内的 TILE 个线程重复读取，每一行 K 数据同理**。
 
-而直接从显存 HBM 中取用数据IO效率是很慢的。这就可以用到 SM 里的 shared_memory 共享内存，只从显存里读取一次数据写入共享内存，后续都从共享内存中读取。
+朴素实现中，这些重复读取全部走 HBM（显存），而 HBM 的带宽是 GPU 计算的主要瓶颈。解决方案是利用每个 SM 上的 **shared memory（共享内存/SRAM）**：block 内的线程先协作地将所需数据从 HBM 搬运到 shared memory，之后所有线程都从 shared memory 读取，避免重复的 HBM 访问。
 
-所以我们需要两块 TILE x TILE 的 float 矩阵的共享内存空间。
+但 shared memory 容量有限（通常 48~164 KB），无法一次装下 Q 和 K 沿 d 维度的完整行。因此需要**分块（tiling）**：将 d 维度切成若干个大小为 TILE 的片段，每次只加载一小块到 shared memory，计算出部分内积并累加，循环直到遍历完整个 d 维度。每个 block 需要分配两块 TILE × TILE 的 shared memory 空间，分别缓存 Q 和 K 的当前 tile。
+
+import TiledMatmulDemo from './components/TiledMatmulDemo';
+
+<TiledMatmulDemo client:load />
