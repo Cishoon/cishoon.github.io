@@ -124,8 +124,8 @@ export default function EmbeddingProcess() {
         margin: '2rem auto',
         padding: '1.5rem',
         borderRadius: 12,
-        border: '1px solid #e2e8f0',
-        background: '#f8fafc',
+        border: '1px solid transparent',
+        background: 'transparent',
         outline: 'none',
       }}
     >

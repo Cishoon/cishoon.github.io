@@ -149,27 +149,27 @@ html, body {
 }
 
 .prose h2 {
-  font-size: 1.75em;
+  font-size: 1.5em;
   line-height: 1.225;
   border-bottom: 1px solid #eee;
   padding-bottom: 0.3em;
 }
 
 .prose h3 {
-  font-size: 1.5em;
+  font-size: 1.25em;
   line-height: 1.43;
 }
 
 .prose h4 {
-  font-size: 1.25em;
+  font-size: 1em;
 }
 
 .prose h5 {
-  font-size: 1em;
+  font-size: 0.75em;
 }
 
 .prose h6 {
-  font-size: 1em;
+  font-size: 0.75em;
   color: #777;
 }
 
