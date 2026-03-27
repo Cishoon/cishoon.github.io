@@ -315,7 +315,17 @@ proxy() {
             unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY no_proxy
             echo -e "\033[31m[OK] Proxy is OFF.\033[0m"
             ;;
+        ssh)
+            local current_user=$(whoami)
+            local current_host=$(echo $SSH_CONNECTION | awk '{print $3}')
+            local ssh_cmd="ssh -o ServerAliveInterval=30 -fNT -R ${proxy_port}:127.0.0.1:7890 ${current_user}@${current_host}"
 
+            echo -e "\033[36m[Info] 生成的反向隧道命令：\033[0m"
+            echo -e "\033[33m$ssh_cmd\033[0m"
+            local b64_cmd=$(echo -n "$ssh_cmd" | base64 -w 0 2>/dev/null || echo -n "$ssh_cmd" | base64)
+            printf "\033]52;c;%s\a" "$b64_cmd"
+            echo -e "\033[32m[Success] 命令已尝试跨端复制到本地电脑剪贴板！\033[0m"
+            ;;
         status)
             if [ -n "$http_proxy" ]; then
                 echo -e "\033[32m[Status] Proxy is currently ON ($http_proxy)\033[0m"
