@@ -398,10 +398,6 @@ __global__ void PVMultiplyKernel(const float* d_P, const float* d_V, float* d_O,
 
 ## 3.2 并行规约
 
-import ParallelReductionDemo from './components/ParallelReductionDemo';
-
-<ParallelReductionDemo client:load />
-
 `SoftmaxKernel` 中，现在每一个线程负责一行的 S ，需要 $O(N)$ 的遍历每一行 3 次，并发性太低了。
 
 重新分析 Softmax 我们需要做什么：
@@ -466,6 +462,11 @@ import ParallelReductionDemo from './components/ParallelReductionDemo';
     float m = sdata[0];
     ```
     
+import ParallelReductionDemo from './components/ParallelReductionDemo';
+
+<ParallelReductionDemo client:load />
+
+    
 2. **指数求和**
 
     同样的两步走，先求局部和，再用归约的算法求和。
@@ -496,6 +497,10 @@ import ParallelReductionDemo from './components/ParallelReductionDemo';
     ```
     
 ## 3.3 线程粗化（COARSE）
+
+import ThreadCoarseningDemo from './components/ThreadCoarseningDemo';
+
+<ThreadCoarseningDemo client:load />
 
 下面回过头，继续优化分块矩阵乘法。
 
