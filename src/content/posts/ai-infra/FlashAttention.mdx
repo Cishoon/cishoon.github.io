@@ -398,4 +398,294 @@ __global__ void PVMultiplyKernel(const float* d_P, const float* d_V, float* d_O,
 
 ## 3.2 并行规约
 
+import ParallelReductionDemo from './components/ParallelReductionDemo';
+
+<ParallelReductionDemo client:load />
+
 `SoftmaxKernel` 中，现在每一个线程负责一行的 S ，需要 $O(N)$ 的遍历每一行 3 次，并发性太低了。
+
+重新分析 Softmax 我们需要做什么：
+
+1. **获取每一行的最大值**
+
+    之前的做法是，每个Block计算一行，让1个线程遍历这一行。这一个线程就需要递增 $N$ 次。
+  
+    如果可以同时让 `BLOCK_SIZE` 个线程一起计算最大值，递增的次数就减少了 `BLOCK_SIZE` 倍。
+  
+    一个线程负责 `N / BLOCK_SIZE` 个数据，统计一个局部最大值。
+    
+    所有线程执行完成后，得到 `BLOCK_SIZE` 个局部最大值。之后再对这 `BLOCK_SIZE` 个局部最大值求**整体最大值**。
+    
+    因此我们需要 `BLOCK_SIZE * sizeof(float)` 的空间存局部最大值，N个BLOCK每个BLOCK负责一行，每块 `BLOCK_SIZE` 个线程。
+    
+    ```c++
+    // 2. P = softmax(S);
+    dim3 block2(BLOCK_SIZE);
+    dim3 grid2(N);
+    SoftmaxKernel<<<grid2, block2>>>(
+        d_S, d_P, N
+    );
+    
+    __global__ void SoftmaxKernel(const float* d_S, float* d_P, int N) {
+        int row = blockIdx.x;
+        int tid = threadIdx.x;
+        
+        __shared__ float sdata[BLOCK_SIZE];
+        
+        // 1. 求局部最大值
+        sdata[tid] = -FLT_MAX;
+        for (int i = tid; i < N; i += BLOCK_SIZE) {
+            sdata[tid] = fmax(sdata[tid], d_S[row * N + i]);
+        }
+    }
+    ```
+    
+    这里每个线程反复对 sdata[tid] 进行读写，虽然 SRAM 的读取速度已经很快了，但是寄存器的读写速度更高。
+    可以做一个简单的优化：
+    
+    ```c++
+    // 1. 求局部最大值
+    float local_max = -FLT_MAX;
+    for (int i = tid; i < N; i += BLOCK_SIZE) {
+        local_max = fmax(local_max, d_S[row * N + i]);
+    }
+    sdata[tid] = local_max;
+    ```
+    
+    之后对 `sdata` 中 `BLOCK_SIZE` 个局部最大值进行归约。此时每个线程的职责要发生变换，所以需要先同步。
+    
+    ```c++
+    __syncthreads();
+    // 归约，求整行的最大值
+    for (int stride = BLOCK_SIZE / 2; stride >= 1; stride >>= 1) {
+        if (tid < stride) {
+            sdata[tid] = fmax(sdata[tid], sdata[tid + stride]);
+        }
+        __syncthreads();
+    }
+    float m = sdata[0];
+    ```
+    
+2. **指数求和**
+
+    同样的两步走，先求局部和，再用归约的算法求和。
+    
+    ```c++
+    float local_sum = 0.0f;
+    for (int i = tid; i < N; i += BLOCK_SIZE) {
+        local_sum += expf(d_S[row * N + i] - m);
+    }
+    sdata[tid] = local_sum;
+    __syncthreads();
+    
+    for (int stride = BLOCK_SIZE / 2; stride >= 1; stride >>= 1) {
+        if (tid < stride) {
+            sdata[tid] += sdata[tid + stride];
+        }
+        __syncthreads();
+    }
+    float sum = sdata[0];
+    ```
+  
+3. **逐个元素的自然指数除以指数和**
+
+    ```c++
+    for (int i = tid; i < N; i += BLOCK_SIZE) {
+        d_P[row * N + i] = expf(d_S[row * N + i] - m) / sum;
+    }
+    ```
+    
+## 3.3 线程粗化（COARSE）
+
+下面回过头，继续优化分块矩阵乘法。
+
+参考3.1的动画，计算 $C = Q \times K^T$ 时，分块矩阵乘法的核心公式为：
+
+$$C_{ij} = \sum_{k} Q_{ik} \cdot K^T_{kj}$$
+
+以 $C_{00}$ 为例，展开得：
+
+$$C_{00} = Q_{00} \cdot K^T_{00} + Q_{01} \cdot K^T_{10}$$
+
+可以看到，$Q_{00}$ 在计算 $C_{00}$ 和 $C_{01}$ 时都会被用到：
+
+$$C_{00} = \mathbf{Q_{00}} \cdot K^T_{00} + Q_{01} \cdot K^T_{10}$$
+$$C_{01} = \mathbf{Q_{00}} \cdot K^T_{01} + Q_{01} \cdot K^T_{11}$$
+
+也就是说，$Q_{00}$ 这个 TILE 被两组不同的线程分别从全局内存读取了两次。
+
+线程粗化（Thread Coarsening）的思路是：既然 $Q_{00}$ 反正要被读进共享内存，那就让同一组线程一次性把 $C_{00}$ 和 $C_{01}$ 都算完，而不是分给两组线程各算一个。
+
+具体来说，原本两个线程块分别计算：
+- 线程块 A：读取 $Q_{00}$，计算 $C_{00}$
+- 线程块 B：读取 $Q_{00}$，计算 $C_{01}$
+
+粗化之后，一个线程块同时完成：
+- 读取 $Q_{00}$（只读一次）
+- 计算 $C_{00}$ 和 $C_{01}$
+
+这样，$Q_{00}$ 从全局内存到共享内存的读取次数从 2 次降为 1 次，减少了冗余的全局内存访问。
+
+```c++
+dim3 block1(TILE, TILE);
+dim3 grid1(cdiv(N, TILE), cdiv(N, TILE * COARSE));
+
+__global__ void ScaledDotProductKernel(const float* d_Q, const float* d_K, float* d_S, int N, int d) {
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int row = threadIdx.x + blockIdx.x * TILE;
+    int col = threadIdx.y + blockIdx.y * TILE * COARSE;
+    
+    __shared__ float s_Q[TILE][TILE];
+    __shared__ float s_K[TILE][TILE];
+    
+    float sum[COARSE] = {};
+    
+    for (int i = 0; i < cdiv(d, TILE); i++) {
+        if (row < N && i * TILE + ty < d)
+            s_Q[tx][ty] = d_Q[row * d + i * TILE + ty];
+        else
+            s_Q[tx][ty] = 0.0f;
+        
+        #pragma unroll
+        for (int c = 0; c < COARSE; c++) {
+            int cur_col = col + c * TILE;
+            
+            if (cur_col < N && i * TILE + tx < d)
+                s_K[tx][ty] = d_K[cur_col * d + i * TILE + tx];
+            else
+                s_K[tx][ty] = 0.0f;
+            __syncthreads();
+            
+            for (int k = 0; k < TILE; k++) {
+                sum[c] += s_Q[tx][k] * s_K[k][ty];    
+            }
+            __syncthreads();
+        }
+    }
+    
+    float scale = 1.0f / sqrtf((float)d);
+    for (int c = 0; c < COARSE; c++) {
+        int cur_col = col + c * TILE;
+        if (row < N && cur_col < N)
+            d_S[row * N + cur_col] = sum[c] * scale;
+    }
+}
+```
+
+同理，对 `PVMultiplyKernel` 也可以做线程粗化。
+
+## 性能对比
+
+到此为止，我们对比一下原版和四个优化的性能差异
+
+| N | 朴素实现 | 分块矩阵乘法 | 并行归约 | 线程粗化 |
+|---:|---:|---:|---:|---:|
+| 256 | 0.134 ms | 0.106 ms | 0.062 ms | 0.122 ms |
+| 512 | 0.533 ms | 0.418 ms | 0.318 ms | 0.410 ms |
+| 1024 | 1.453 ms | 1.063 ms | 0.836 ms | 0.929 ms |
+| 16384 | 160.555 ms | 89.030 ms | 63.558 ms | 56.797 ms |
+
+注意到引入了线程粗化后，N 较小时（256~1024），性能反而比并行归约差。这是因为线程粗化用 `COARSE=4` 将每个线程块的工作量扩大了 4 倍，同时线程块总数减少为原来的 1/4。当 N 较小时，线程块本来就不多，再减少 4 倍后 GPU 的 SM 无法被充分占满，并行度不足反而拖慢了速度。到 N=16384 时，线程块数量足够多，粗化减少的冗余读取才真正体现出优势。
+
+很有成就感，性能逐步提升了接近3倍。接下来，我们继续。
+
+## 3.4 合并访存（COALESCING）
+
+其实前面的代码，都有一个关键的性能问题。
+
+CUDA 线程线性化顺序是 `tid = tx + ty * blockDim.x`，所以，同一个 warp 里，tx = 0..15，ty 固定。
+
+而前面的代码中：
+
+```c++
+row = tx + blockIdx.x * TILE
+s_Q[tx][ty] = d_Q[row * d + i*TILE + ty]
+```
+
+相邻线程的地址间隔是 d，不连续，非合并访问。
+
+所以概念中我们应该记住，tx一般是列，ty是行，如果有第三个维度，tz是深度。应该让 tx 永远保持在最外层，代码从 tx 的角度看是连续的。
+
+修复方法是：**交换 `tx` 和 `ty` 的角色**，让 `tx` 对应列，`ty` 对应行。这样同一 warp 内相邻线程（tx 连续）访问的是连续的内存地址。
+
+```c++
+row = ty + blockIdx.y * TILE    
+col = tx + blockIdx.x * TILE    
+s_Q[ty][tx] = d_Q[row * d + i*TILE + tx]
+```
+
+相邻线程（tx 连续）访问 `d_Q[row * d + ...]` 的连续偏移，实现合并访存。
+
+相应地，host 侧也要调换 grid 的 x、y 维度：
+
+```c++
+dim3 block1(TILE, TILE);
+dim3 grid1(cdiv(N, TILE * COARSE), cdiv(N, TILE));
+```
+
+### K 的转置访问方式变化
+
+Q 的修改很直观，但 K 需要额外思考一下。我们要加载的是 $K^T$ 的一个 TILE，忽略块内偏移，只看块号：
+
+```
+k_row = i * TILE
+k_col = blockIdx.x * TILE * COARSE + c * TILE
+```
+
+按 $K^T$ 的视角加载：
+
+```c++
+s_K[ty][tx] = d_KT[k_row + ty][k_col + tx]
+```
+
+转置回 $K$：
+
+```c++
+s_K[ty][tx] = d_K[k_col + tx][k_row + ty]   // 这里展开就是 3.3 的写法
+```
+
+但这里 tx 在行序（外层索引）上，同一 warp 内 tx 连续会导致不同行的访问，不是合并访存。
+
+**方法一**：所以我们**交换 d_K 下标中的 tx 和 ty**：
+
+```c++
+s_K[ty][tx] = d_K[k_col + ty][k_row + tx]   // tx 到了内层，合并访存
+```
+
+这个交换不会改变取的是哪个 TILE，只是让 TILE 内部多了一次转置——存进共享内存的数据相比 3.3 是转置的。
+
+没关系，后续计算时取 $s\_K^T$ 就转回来了：
+
+```c++
+// 3.3: s_Q[tx][k] * s_K[k][ty]    — 直接用 s_K
+// 3.4: s_Q[ty][k] * s_K[tx][k]    — 用 s_K 的转置，抵消加载时多出的转置
+```
+
+两次转置抵消，最终结果正确。
+
+**方法二**：或者，我们可以在读取的时候，对s_K做一次转置：
+
+```c++
+s_K[ty][tx] = d_K[k_col + ty][k_row + tx]   
+s_K[tx][ty] = d_K[k_col + ty][k_row + tx] // 写入s_K时转置
+```
+
+后续计算时就不用再次转置了，还是：
+```c++
+s_Q[tx][k] * s_K[k][ty]
+```
+
+## 3.5 Bank Confict
+
+3.4 最后提到的对 K 的两种处理方式，乍一看感觉本质上完全一样吧？我们实际测试一下。
+
+| N | 线程粗化 | 方法一：计算时再转置 | 方法二：先转置 |
+|---:|---:|---:|---:|
+| 256 | 0.122 ms | 0.081 ms | 0.077 ms |
+| 512 | 0.407 ms | 0.324 ms | 0.310 ms |
+| 1024 | 0.929 ms | 0.756 ms | 0.708 ms |
+| 16384 | 57.096 ms | 33.187 ms | 24.386 ms |
+
+非常的 Amazing 啊，这一个微小的改动竟然有这么明显地性能提升。
+
