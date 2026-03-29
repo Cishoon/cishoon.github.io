@@ -11,7 +11,9 @@ const NUM_BANKS = 32;
 const K_VAL = 3; // 固定 k=3
 const NUM_THREADS = 16; // tx = 0..15
 
-// ── 计算两种模式下每个线程的 offset 和 bank ──
+const PADDED_STRIDE = TILE + 1; // 17
+
+// ── 计算三种模式下每个线程的 offset 和 bank ──
 function computeAccesses(mode) {
   const accesses = [];
   for (let tx = 0; tx < NUM_THREADS; tx++) {
@@ -19,6 +21,10 @@ function computeAccesses(mode) {
     if (mode === 'conflict') {
       // s_K[tx][k]: row-major, offset = tx * TILE + k
       offset = tx * TILE + K_VAL;
+      bank = offset % NUM_BANKS;
+    } else if (mode === 'padded') {
+      // s_K[tx][k] with s_K[TILE][TILE+1]: stride = 17
+      offset = tx * PADDED_STRIDE + K_VAL;
       bank = offset % NUM_BANKS;
     } else {
       // s_K[k][tx]: row-major, offset = k * TILE + tx
@@ -32,6 +38,7 @@ function computeAccesses(mode) {
 
 const CONFLICT_ACCESSES = computeAccesses('conflict');
 const NO_CONFLICT_ACCESSES = computeAccesses('noconflict');
+const PADDED_ACCESSES = computeAccesses('padded');
 
 // ── bank 冲突分析 ──
 function analyzeBankUsage(accesses, upToStep) {
@@ -65,14 +72,15 @@ function getBankColorMap(accesses) {
 
 const CONFLICT_COLOR_MAP = getBankColorMap(CONFLICT_ACCESSES);
 const NO_CONFLICT_COLOR_MAP = getBankColorMap(NO_CONFLICT_ACCESSES);
+const PADDED_COLOR_MAP = getBankColorMap(PADDED_ACCESSES);
 
 export default function BankConflictDemo() {
-  const [mode, setMode] = useState('conflict'); // 'conflict' | 'noconflict'
+  const [mode, setMode] = useState('conflict'); // 'conflict' | 'noconflict' | 'padded'
   const [step, setStep] = useState(0);
   const totalSteps = NUM_THREADS;
 
-  const accesses = mode === 'conflict' ? CONFLICT_ACCESSES : NO_CONFLICT_ACCESSES;
-  const colorMap = mode === 'conflict' ? CONFLICT_COLOR_MAP : NO_CONFLICT_COLOR_MAP;
+  const accesses = mode === 'conflict' ? CONFLICT_ACCESSES : mode === 'padded' ? PADDED_ACCESSES : NO_CONFLICT_ACCESSES;
+  const colorMap = mode === 'conflict' ? CONFLICT_COLOR_MAP : mode === 'padded' ? PADDED_COLOR_MAP : NO_CONFLICT_COLOR_MAP;
   const { bankCounts, maxCount } = analyzeBankUsage(accesses, step);
 
   const isFirst = step === 0;
@@ -115,6 +123,7 @@ export default function BankConflictDemo() {
           <span style={{ fontSize: 13, fontWeight: 600, color: "#164e63" }}>Shared Memory Bank Conflict</span>
           <TabBtn active={mode === "conflict"} onClick={() => switchMode("conflict")} label="s_K[tx][k]" />
           <TabBtn active={mode === "noconflict"} onClick={() => switchMode("noconflict")} label="s_K[k][tx]" />
+          <TabBtn active={mode === "padded"} onClick={() => switchMode("padded")} label="TILE+1 padding" />
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <span style={{ fontSize: 11, color: "#94a3b8", fontFamily: "monospace" }}>
@@ -142,6 +151,10 @@ export default function BankConflictDemo() {
           <>
             k={K_VAL} 固定，tx=0..15 访问 <span style={{ color: "#ef4444", fontWeight: 600 }}>s_K[tx][{K_VAL}]</span> &mdash; stride={TILE}，{TILE}%{NUM_BANKS}=
             {TILE}，每 2 个线程撞同一 bank
+          </>
+        ) : mode === "padded" ? (
+          <>
+            k={K_VAL} 固定，tx=0..15 访问 <span style={{ color: "#059669", fontWeight: 600 }}>s_K[tx][{K_VAL}]</span>，但声明为 s_K[{TILE}][{TILE}+1] &mdash; stride={PADDED_STRIDE}，gcd({PADDED_STRIDE},32)=1，无冲突
           </>
         ) : (
           <>
@@ -304,6 +317,8 @@ export default function BankConflictDemo() {
           >
             {mode === "conflict" ? (
               <>点击 &#x25B6; 逐线程查看 s_K[tx][{K_VAL}] 的 bank 访问模式</>
+            ) : mode === "padded" ? (
+              <>点击 &#x25B6; 逐线程查看 s_K[TILE][TILE+1] padding 后的 bank 访问模式</>
             ) : (
               <>点击 &#x25B6; 逐线程查看 s_K[{K_VAL}][tx] 的 bank 访问模式</>
             )}
@@ -332,6 +347,10 @@ export default function BankConflictDemo() {
                   </>
                 ) : null}
               </>
+            ) : mode === "padded" ? (
+              <>
+                thread {step - 1} → offset {accesses[step - 1].offset} (stride=17) → bank {accesses[step - 1].bank} (独占)
+              </>
             ) : (
               <>
                 thread {step - 1} → offset {accesses[step - 1].offset} → bank {accesses[step - 1].bank} (独占)
@@ -356,6 +375,8 @@ export default function BankConflictDemo() {
               <>
                 {maxCount}-way conflict &mdash; 需要 {maxCount} 个周期
               </>
+            ) : mode === "padded" ? (
+              <>无冲突 &mdash; stride=17 与 32 互质，16 线程映射到 16 个不同 bank</>
             ) : (
               <>无冲突 &mdash; 1 个周期完成</>
             )}
