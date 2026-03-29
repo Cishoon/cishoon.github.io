@@ -1,62 +1,148 @@
 /**
  * ThreadCoarseningDemo — 线程粗化动画演示
  * 对比无粗化 vs COARSE=2 的分块矩阵乘法
- * Q(4×2) × K^T(2×4) = C(4×4), TILE=2
- * 展示 Q tile 被重复加载 vs 复用的区别
+ * Q(4×4) × K^T(4×4) = C(4×4), TILE=2, NUM_TILES=2
+ * 展示 tile 沿 d 方向移动，以及 Q tile 被重复加载 vs 复用的区别
  */
 import { useState, useCallback } from 'react';
 
 // ── 矩阵参数 ──
-const N = 4, D = 2, TILE = 2, COARSE = 2;
-const GRID = N / TILE; // 2×2 output tile grid
+const N = 4, D = 4, TILE = 2, COARSE = 2;
+const GRID = N / TILE;       // 2 — 输出 tile 网格 2×2
+const NUM_TILES = D / TILE;  // 2 — d 方向分 2 块 tile
 
-// ── 生成简单矩阵 ──
-const Q = [[2, 1], [0, 3], [1, 2], [3, 1]];
-const K = [[1, 2], [3, 0], [2, 1], [0, 3]]; // K is N×d
-// K^T is d×N: KT[i][j] = K[j][i]
+// ── 生成矩阵数据 ──
+const Q = [[2, 1, 3, 0], [0, 3, 1, 2], [1, 2, 0, 3], [3, 1, 2, 1]];
+const K = [[1, 2, 0, 3], [3, 0, 2, 1], [2, 1, 3, 0], [0, 3, 1, 2]];
 const KT = Array.from({ length: D }, (_, i) => Array.from({ length: N }, (__, j) => K[j][i]));
-// C = Q × K^T
 const C = Q.map(qr => Array.from({ length: N }, (_, j) => qr.reduce((s, v, l) => s + v * KT[l][j], 0)));
 
-// ── 颜色方案 ──
+// ── 颜色 ──
 const BLOCK_COLORS = ['#0891b2', '#7c3aed', '#ea580c', '#059669'];
 
-// ── 无粗化的步骤序列 ──
-// 4 个 block，每个 block: load Q tile, load K^T tile, compute
-// Block(0,0) → Block(0,1) → Block(1,0) → Block(1,1)
-const NAIVE_STEPS = [
-  { block: [0, 0], action: 'load_q', qTile: [0, 0], desc: 'Block(0,0): 从 HBM 加载 Q₀₀ 到 shmem' },
-  { block: [0, 0], action: 'load_kt', ktTile: [0, 0], desc: 'Block(0,0): 从 HBM 加载 K^T₀₀ 到 shmem' },
-  { block: [0, 0], action: 'compute', cTile: [0, 0], desc: 'Block(0,0): 计算 C₀₀ = Q₀₀ · K^T₀₀' },
-  { block: [0, 1], action: 'load_q', qTile: [0, 0], desc: 'Block(0,1): 从 HBM 加载 Q₀₀ 到 shmem（重复!）' },
-  { block: [0, 1], action: 'load_kt', ktTile: [0, 1], desc: 'Block(0,1): 从 HBM 加载 K^T₀₁ 到 shmem' },
-  { block: [0, 1], action: 'compute', cTile: [0, 1], desc: 'Block(0,1): 计算 C₀₁ = Q₀₀ · K^T₀₁' },
-  { block: [1, 0], action: 'load_q', qTile: [1, 0], desc: 'Block(1,0): 从 HBM 加载 Q₁₀ 到 shmem' },
-  { block: [1, 0], action: 'load_kt', ktTile: [0, 0], desc: 'Block(1,0): 从 HBM 加载 K^T₀₀ 到 shmem' },
-  { block: [1, 0], action: 'compute', cTile: [1, 0], desc: 'Block(1,0): 计算 C₁₀ = Q₁₀ · K^T₀₀' },
-  { block: [1, 1], action: 'load_q', qTile: [1, 0], desc: 'Block(1,1): 从 HBM 加载 Q₁₀ 到 shmem（重复!）' },
-  { block: [1, 1], action: 'load_kt', ktTile: [0, 1], desc: 'Block(1,1): 从 HBM 加载 K^T₀₁ 到 shmem' },
-  { block: [1, 1], action: 'compute', cTile: [1, 1], desc: 'Block(1,1): 计算 C₁₁ = Q₁₀ · K^T₀₁' },
-];
+// ── 生成步骤序列 ──
+function genNaiveSteps() {
+  // 4 个 block，每个 block 沿 d 做 NUM_TILES 次迭代
+  // 每次迭代: load Q+K^T → compute (累加部分和)
+  const steps = [];
+  for (let br = 0; br < GRID; br++) {
+    for (let bc = 0; bc < GRID; bc++) {
+      for (let t = 0; t < NUM_TILES; t++) {
+        const isQRedundant = bc > 0; // 同一行的 Q tile 已经被其他 block 加载过
+        steps.push({
+          type: 'load', block: [br, bc], tileIter: t,
+          qTile: [br, t], ktTile: [t, bc],
+          redundantQ: isQRedundant,
+          desc: `Block(${br},${bc}) tile ${t}: 加载 Q${sub(br, t)} ${isQRedundant ? '(重复!)' : ''} 和 K^T${sub(t, bc)} 到 shmem`,
+        });
+        steps.push({
+          type: 'compute', block: [br, bc], tileIter: t,
+          cTile: [br, bc], qTile: [br, t], ktTile: [t, bc],
+          desc: `Block(${br},${bc}) tile ${t}: 累加 C${sub(br, bc)} += Q${sub(br, t)} · K^T${sub(t, bc)}${t === NUM_TILES - 1 ? ' ✓' : ''}`,
+        });
+      }
+    }
+  }
+  return steps;
+}
 
-// ── 粗化的步骤序列 ──
-// 2 个 block，每个 block 负责 COARSE=2 列的 output tile
-// Block(0,0) → Block(1,0)
-const COARSE_STEPS = [
-  { block: [0, 0], action: 'load_q', qTile: [0, 0], desc: 'Block(0,0): 从 HBM 加载 Q₀₀ 到 shmem（只需一次）' },
-  { block: [0, 0], action: 'load_kt', ktTile: [0, 0], desc: 'Block(0,0): 从 HBM 加载 K^T₀₀ 到 shmem' },
-  { block: [0, 0], action: 'compute', cTile: [0, 0], desc: 'Block(0,0): 计算 C₀₀ = Q₀₀ · K^T₀₀' },
-  { block: [0, 0], action: 'load_kt', ktTile: [0, 1], desc: 'Block(0,0): 复用 shmem 中的 Q₀₀，加载 K^T₀₁' },
-  { block: [0, 0], action: 'compute', cTile: [0, 1], desc: 'Block(0,0): 计算 C₀₁ = Q₀₀ · K^T₀₁（Q₀₀ 复用!）' },
-  { block: [1, 0], action: 'load_q', qTile: [1, 0], desc: 'Block(1,0): 从 HBM 加载 Q₁₀ 到 shmem（只需一次）' },
-  { block: [1, 0], action: 'load_kt', ktTile: [0, 0], desc: 'Block(1,0): 从 HBM 加载 K^T₀₀ 到 shmem' },
-  { block: [1, 0], action: 'compute', cTile: [1, 0], desc: 'Block(1,0): 计算 C₁₀ = Q₁₀ · K^T₀₀' },
-  { block: [1, 0], action: 'load_kt', ktTile: [0, 1], desc: 'Block(1,0): 复用 shmem 中的 Q₁₀，加载 K^T₀₁' },
-  { block: [1, 0], action: 'compute', cTile: [1, 1], desc: 'Block(1,0): 计算 C₁₁ = Q₁₀ · K^T₀₁（Q₁₀ 复用!）' },
-];
+function genCoarseSteps() {
+  // 2 个 block (grid cols 减半)，每个 block 负责 COARSE=2 列 tile
+  // 每次 tile 迭代: load Q → (load K^T_0 + compute) → (load K^T_1 + compute, Q 复用)
+  const steps = [];
+  for (let br = 0; br < GRID; br++) {
+    for (let t = 0; t < NUM_TILES; t++) {
+      steps.push({
+        type: 'load_q', block: [br, 0], tileIter: t,
+        qTile: [br, t],
+        desc: `Block(${br},0) tile ${t}: 加载 Q${sub(br, t)} 到 shmem（只需一次）`,
+      });
+      for (let c = 0; c < COARSE; c++) {
+        steps.push({
+          type: 'load_kt_compute', block: [br, 0], tileIter: t,
+          ktTile: [t, c], cTile: [br, c],
+          reuse: c > 0,
+          desc: c > 0
+            ? `Block(${br},0) tile ${t}: 复用 Q${sub(br, t)}，加载 K^T${sub(t, c)} → 累加 C${sub(br, c)}`
+            : `Block(${br},0) tile ${t}: 加载 K^T${sub(t, c)} → 累加 C${sub(br, c)}`,
+        });
+      }
+    }
+  }
+  return steps;
+}
+
+function sub(r, c) { return `₍${r}${c}₎`; }
+
+const NAIVE_STEPS = genNaiveSteps();
+const COARSE_STEPS = genCoarseSteps();
+
+// ── 从步骤历史中提取状态 ──
+function deriveState(steps, step) {
+  let qReads = 0, ktReads = 0;
+  const cPartials = {}; // "r,c" → 已完成的 tile 迭代数
+  let shmemQ = null, shmemKT = null;
+  let curQTile = null, curKTTile = null, curCTile = null;
+  let isRedundant = false;
+
+  for (let i = 0; i < Math.min(step, steps.length); i++) {
+    const s = steps[i];
+    if (s.type === 'load') {
+      qReads++; ktReads++;
+      shmemQ = s.qTile; shmemKT = s.ktTile;
+    } else if (s.type === 'load_q') {
+      qReads++;
+      shmemQ = s.qTile;
+    } else if (s.type === 'load_kt_compute') {
+      ktReads++;
+      shmemKT = s.ktTile;
+      const key = `${s.cTile[0]},${s.cTile[1]}`;
+      cPartials[key] = (cPartials[key] || 0) + 1;
+    } else if (s.type === 'compute') {
+      const key = `${s.cTile[0]},${s.cTile[1]}`;
+      cPartials[key] = (cPartials[key] || 0) + 1;
+    }
+  }
+
+  // 当前步骤高亮
+  const cur = step > 0 && step <= steps.length ? steps[step - 1] : null;
+  if (cur) {
+    if (cur.type === 'load') {
+      curQTile = cur.qTile; curKTTile = cur.ktTile;
+      isRedundant = cur.redundantQ;
+    } else if (cur.type === 'load_q') {
+      curQTile = cur.qTile;
+    } else if (cur.type === 'load_kt_compute') {
+      curKTTile = cur.ktTile; curCTile = cur.cTile;
+      isRedundant = cur.reuse;
+    } else if (cur.type === 'compute') {
+      curCTile = cur.cTile;
+      curQTile = cur.qTile; curKTTile = cur.ktTile;
+    }
+  }
+
+  return { qReads, ktReads, hbmReads: qReads + ktReads, cPartials, shmemQ, shmemKT, curQTile, curKTTile, curCTile, isRedundant, cur };
+}
+
+// ── 计算 tile 子矩阵乘法的部分和 ──
+function tilePartialSum(br, bc, upToCount) {
+  // C[br][bc] tile 的值，累加 upToCount 个 tile 迭代
+  const result = Array.from({ length: TILE }, () => Array.from({ length: TILE }, () => 0));
+  const count = Math.min(upToCount, NUM_TILES);
+  for (let t = 0; t < count; t++) {
+    for (let i = 0; i < TILE; i++) {
+      for (let j = 0; j < TILE; j++) {
+        for (let k = 0; k < TILE; k++) {
+          result[i][j] += Q[br * TILE + i][t * TILE + k] * KT[t * TILE + k][bc * TILE + j];
+        }
+      }
+    }
+  }
+  return result;
+}
 
 export default function ThreadCoarseningDemo() {
-  const [mode, setMode] = useState('naive'); // 'naive' or 'coarse'
+  const [mode, setMode] = useState('naive');
   const steps = mode === 'naive' ? NAIVE_STEPS : COARSE_STEPS;
   const totalSteps = steps.length;
   const [step, setStep] = useState(0);
@@ -67,43 +153,17 @@ export default function ThreadCoarseningDemo() {
 
   const isFirst = step === 0;
   const isLast = step >= totalSteps;
-  const curStep = step > 0 && step <= totalSteps ? steps[step - 1] : null;
 
-  // 统计 HBM 读取次数
-  let hbmReads = 0;
-  let qReads = 0;
-  let ktReads = 0;
-  const computedTiles = new Set();
-  for (let i = 0; i < Math.min(step, totalSteps); i++) {
-    if (steps[i].action === 'load_q') { hbmReads++; qReads++; }
-    if (steps[i].action === 'load_kt') { hbmReads++; ktReads++; }
-    if (steps[i].action === 'compute') computedTiles.add(`${steps[i].cTile[0]},${steps[i].cTile[1]}`);
-  }
+  const state = deriveState(steps, step);
+  const { qReads, ktReads, hbmReads, cPartials, shmemQ, shmemKT, curQTile, curKTTile, curCTile, isRedundant, cur } = state;
 
-  // 当前 shmem 中的内容
-  let shmemQ = null;
-  let shmemKT = null;
-  for (let i = Math.min(step, totalSteps) - 1; i >= 0; i--) {
-    if (!shmemQ && steps[i].action === 'load_q') shmemQ = steps[i].qTile;
-    if (!shmemKT && steps[i].action === 'load_kt') shmemKT = steps[i].ktTile;
-    if (shmemQ && shmemKT) break;
-  }
-
-  // 当前高亮的 tile
-  const activeQTile = curStep?.action === 'load_q' ? curStep.qTile : null;
-  const activeKTTile = curStep?.action === 'load_kt' ? curStep.ktTile : null;
-  const activeCTile = curStep?.action === 'compute' ? curStep.cTile : null;
-  const curBlockColor = curStep ? BLOCK_COLORS[curStep.block[0] * GRID + curStep.block[1]] : null;
-
-  // 判断是否为重复加载
-  const isRedundant = curStep?.desc.includes('重复');
+  const curBlockColor = cur ? BLOCK_COLORS[cur.block[0] * GRID + (mode === 'naive' ? cur.block[1] : 0)] : null;
 
   function switchMode(m) {
     setMode(m);
     setStep(0);
   }
 
-  // 获取 tile 数据
   function getQTileData(tr, tc) {
     return Array.from({ length: TILE }, (_, i) =>
       Array.from({ length: TILE }, (__, j) => Q[tr * TILE + i][tc * TILE + j])
@@ -115,9 +175,23 @@ export default function ThreadCoarseningDemo() {
     );
   }
 
+  // 计算 C 矩阵中每个元素的当前显示值
+  function getCValue(i, j) {
+    const tr = Math.floor(i / TILE);
+    const tc = Math.floor(j / TILE);
+    const key = `${tr},${tc}`;
+    const count = cPartials[key] || 0;
+    if (count === 0) return null;
+    const partial = tilePartialSum(tr, tc, count);
+    return partial[i - tr * TILE][j - tc * TILE];
+  }
+
+  const naiveTotalReads = GRID * GRID * NUM_TILES * 2; // 16
+  const coarseTotalReads = GRID * NUM_TILES * (1 + COARSE); // 12
+
   return (
     <div role="figure" aria-label="线程粗化演示" style={{
-      fontFamily: 'Inter, system-ui, sans-serif', maxWidth: 800,
+      fontFamily: 'Inter, system-ui, sans-serif', maxWidth: 880,
       margin: '2rem auto', padding: '1.5rem', borderRadius: 12,
       background: 'transparent', border: '1px solid transparent',
     }}>
@@ -144,7 +218,7 @@ export default function ThreadCoarseningDemo() {
       <div style={{
         display: 'flex', gap: 16, marginBottom: 16, justifyContent: 'center', flexWrap: 'wrap',
       }}>
-        <Counter label="Q 读取" value={qReads} warn={mode === 'naive' && qReads > 0} />
+        <Counter label="Q 读取" value={qReads} warn={mode === 'naive' && isRedundant} />
         <Counter label="K^T 读取" value={ktReads} />
         <Counter label="总 HBM 读取" value={hbmReads} highlight />
       </div>
@@ -158,9 +232,9 @@ export default function ThreadCoarseningDemo() {
         <TileMatrix
           label="Q" labelColor="#0891b2" rows={N} cols={D} tileSize={TILE}
           data={Q}
-          activeTile={activeQTile}
+          activeTile={curQTile}
           activeColor={isRedundant ? '#ef4444' : curBlockColor}
-          shmemTile={shmemQ}
+          shmemTile={!curQTile ? shmemQ : null}
         />
 
         <Op symbol="×" sub="K^T" />
@@ -169,21 +243,21 @@ export default function ThreadCoarseningDemo() {
         <TileMatrix
           label="K^T" labelColor="#0891b2" rows={D} cols={N} tileSize={TILE}
           data={KT}
-          activeTile={activeKTTile}
+          activeTile={curKTTile}
           activeColor={curBlockColor}
-          shmemTile={shmemKT}
+          shmemTile={!curKTTile ? shmemKT : null}
         />
 
         <Op symbol="=" />
 
         {/* C 输出矩阵 */}
-        <TileMatrix
-          label="C" labelColor="#7c3aed" rows={N} cols={N} tileSize={TILE}
-          data={C}
-          activeTile={activeCTile}
+        <OutputMatrix
+          rows={N} cols={N} tileSize={TILE}
+          fullData={C}
+          valueFn={getCValue}
+          activeTile={curCTile}
           activeColor={curBlockColor}
-          computedTiles={computedTiles}
-          isOutput
+          cPartials={cPartials}
         />
       </div>
 
@@ -194,18 +268,16 @@ export default function ThreadCoarseningDemo() {
         }}>
           {shmemQ && (
             <ShmemTile
-              label="shmem_Q"
-              color={isRedundant && activeQTile ? '#ef4444' : '#0891b2'}
+              label={`shmem_Q = Q${sub(shmemQ[0], shmemQ[1])}`}
+              color={isRedundant && curQTile ? '#ef4444' : '#0891b2'}
               data={getQTileData(shmemQ[0], shmemQ[1])}
-              pulsing={activeQTile != null}
             />
           )}
           {shmemKT && (
             <ShmemTile
-              label="shmem_K"
+              label={`shmem_K = K^T${sub(shmemKT[0], shmemKT[1])}`}
               color="#0891b2"
               data={getKTTileData(shmemKT[0], shmemKT[1])}
-              pulsing={activeKTTile != null}
             />
           )}
         </div>
@@ -214,34 +286,36 @@ export default function ThreadCoarseningDemo() {
       {/* Block 分配图 */}
       <div style={{ marginTop: 16 }}>
         <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#64748b', fontWeight: 600 }}>
-          线程块分配 ({mode === 'naive' ? '4 个 Block' : '2 个 Block, COARSE=2'})
+          线程块分配 ({mode === 'naive' ? `${GRID * GRID} 个 Block` : `${GRID} 个 Block, COARSE=${COARSE}`})
         </span>
         <div style={{
           display: 'grid', gridTemplateColumns: `repeat(${GRID}, 1fr)`,
-          gap: 3, marginTop: 6, maxWidth: 240,
+          gap: 3, marginTop: 6, maxWidth: 260,
         }}>
           {Array.from({ length: GRID }, (_, r) =>
             Array.from({ length: GRID }, (__, c) => {
               let blockLabel, color;
               if (mode === 'naive') {
-                blockLabel = `Block(${r},${c})`;
+                blockLabel = `Blk(${r},${c})`;
                 color = BLOCK_COLORS[r * GRID + c];
               } else {
-                blockLabel = `Block(${r},0)`;
+                blockLabel = `Blk(${r},0)`;
                 color = BLOCK_COLORS[r * GRID];
               }
-              const isActive = curStep && curStep.block[0] === r && (mode === 'naive' ? curStep.block[1] === c : true);
-              const isDone = computedTiles.has(`${r},${c}`);
+              const key = `${r},${c}`;
+              const count = cPartials[key] || 0;
+              const isDone = count >= NUM_TILES;
+              const isActive = cur && cur.block[0] === r && (mode === 'naive' ? cur.block[1] === c : true);
               return (
                 <div key={`${r}-${c}`} style={{
                   padding: '4px 6px', borderRadius: 4, textAlign: 'center',
                   fontSize: 9, fontFamily: 'monospace', fontWeight: 600,
                   background: isDone ? color : isActive ? `${color}20` : '#f1f5f9',
                   color: isDone ? '#fff' : isActive ? color : '#94a3b8',
-                  border: isActive ? `1.5px solid ${color}` : '1.5px solid transparent',
+                  border: isActive && !isDone ? `1.5px solid ${color}` : '1.5px solid transparent',
                   transition: 'all 250ms',
                 }}>
-                  C<sub>{r}{c}</sub> → {blockLabel}
+                  C{r}{c} → {blockLabel}
                 </div>
               );
             })
@@ -261,13 +335,14 @@ export default function ThreadCoarseningDemo() {
             : isLast ? '#059669'
             : '#0891b2',
           transition: 'all 200ms',
+          maxWidth: 700,
         }}>
-          {step === 0 && `点击 ▶ 开始 — ${mode === 'naive' ? '无粗化: 4 个 Block 各自加载数据' : '线程粗化: 2 个 Block，每个负责 2 列 tile'}`}
-          {curStep && curStep.desc}
+          {step === 0 && `点击 ▶ 开始 — Q(4×4) × K^T(4×4), TILE=2, 沿 d 做 ${NUM_TILES} 次 tile 迭代`}
+          {cur && cur.desc}
           {isLast && (
             mode === 'naive'
-              ? `完成！共 ${hbmReads} 次 HBM 读取（Q 被重复加载了 ${qReads - GRID} 次）`
-              : `完成！共 ${hbmReads} 次 HBM 读取（Q 零冗余，节省 ${8 - hbmReads} 次读取）`
+              ? `完成！共 ${hbmReads} 次 HBM 读取（Q 被重复加载了 ${qReads - GRID * NUM_TILES} 次）`
+              : `完成！共 ${hbmReads} 次 HBM 读取（Q 零冗余，比无粗化节省 ${naiveTotalReads - hbmReads} 次）`
           )}
         </div>
       </div>
@@ -275,12 +350,61 @@ export default function ThreadCoarseningDemo() {
   );
 }
 
-// ── Tile 矩阵可视化 ──
-function TileMatrix({ label, labelColor, rows, cols, tileSize, data, activeTile, activeColor, shmemTile, computedTiles, isOutput }) {
-  const CELL = 30;
-  const tileRows = rows / tileSize;
-  const tileCols = cols / tileSize;
+// ── 输出矩阵 C 的可视化（显示部分和进度） ──
+function OutputMatrix({ rows, cols, tileSize, fullData, valueFn, activeTile, activeColor, cPartials }) {
+  const CELL = 28;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+      <span style={{ fontSize: 11, color: '#7c3aed', fontWeight: 600, fontFamily: 'monospace' }}>C</span>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${cols}, ${CELL}px)`,
+        gap: 1,
+      }}>
+        {Array.from({ length: rows }, (_, i) =>
+          Array.from({ length: cols }, (__, j) => {
+            const tr = Math.floor(i / tileSize);
+            const tc = Math.floor(j / tileSize);
+            const key = `${tr},${tc}`;
+            const count = cPartials[key] || 0;
+            const isDone = count >= NUM_TILES;
+            const isActive = activeTile && activeTile[0] === tr && activeTile[1] === tc;
+            const val = valueFn(i, j);
 
+            let bg = '#f8fafc';
+            let border = '1px solid #e2e8f0';
+            if (isActive) {
+              bg = `${activeColor}20`;
+              border = `2px solid ${activeColor}`;
+            } else if (isDone) {
+              bg = 'rgba(124,58,237,0.12)';
+              border = '1px solid rgba(124,58,237,0.3)';
+            } else if (count > 0) {
+              bg = 'rgba(124,58,237,0.06)';
+            }
+
+            return (
+              <span key={`${i}-${j}`} style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: CELL, height: CELL, borderRadius: 3,
+                fontSize: val !== null ? 9 : 11, fontFamily: 'monospace', fontWeight: 500,
+                background: bg, color: val !== null ? '#0f172a' : '#cbd5e1',
+                border, transition: 'all 250ms',
+              }}>
+                {val !== null ? val : '·'}
+              </span>
+            );
+          })
+        )}
+      </div>
+      <span style={{ fontSize: 9, color: '#94a3b8', fontFamily: 'monospace' }}>{rows}×{cols}</span>
+    </div>
+  );
+}
+
+// ── Tile 矩阵可视化 ──
+function TileMatrix({ label, labelColor, rows, cols, tileSize, data, activeTile, activeColor, shmemTile }) {
+  const CELL = 28;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
       <span style={{ fontSize: 11, color: labelColor, fontWeight: 600, fontFamily: 'monospace' }}>{label}</span>
@@ -293,21 +417,17 @@ function TileMatrix({ label, labelColor, rows, cols, tileSize, data, activeTile,
           Array.from({ length: cols }, (__, j) => {
             const tr = Math.floor(i / tileSize);
             const tc = Math.floor(j / tileSize);
-            const isActiveTile = activeTile && activeTile[0] === tr && activeTile[1] === tc;
-            const isShmemTile = shmemTile && shmemTile[0] === tr && shmemTile[1] === tc && !isActiveTile;
-            const isDoneTile = computedTiles && computedTiles.has(`${tr},${tc}`);
+            const isActive = activeTile && activeTile[0] === tr && activeTile[1] === tc;
+            const isShmem = shmemTile && shmemTile[0] === tr && shmemTile[1] === tc;
 
             let bg = '#f8fafc';
             let border = '1px solid #e2e8f0';
-
-            if (isActiveTile) {
+            if (isActive) {
               bg = `${activeColor}25`;
               border = `2px solid ${activeColor}`;
-            } else if (isDoneTile) {
-              bg = 'rgba(124,58,237,0.12)';
-              border = '1px solid rgba(124,58,237,0.3)';
-            } else if (isShmemTile) {
-              bg = 'rgba(8,145,178,0.06)';
+            } else if (isShmem) {
+              bg = 'rgba(8,145,178,0.08)';
+              border = '1px dashed rgba(8,145,178,0.3)';
             }
 
             return (
@@ -330,7 +450,7 @@ function TileMatrix({ label, labelColor, rows, cols, tileSize, data, activeTile,
 }
 
 // ── Shared Memory Tile ──
-function ShmemTile({ label, color, data, pulsing }) {
+function ShmemTile({ label, color, data }) {
   const CELL = 30;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>

@@ -498,10 +498,6 @@ import ParallelReductionDemo from './components/ParallelReductionDemo';
     
 ## 3.3 线程粗化（COARSE）
 
-import ThreadCoarseningDemo from './components/ThreadCoarseningDemo';
-
-<ThreadCoarseningDemo client:load />
-
 下面回过头，继续优化分块矩阵乘法。
 
 参考3.1的动画，计算 $C = Q \times K^T$ 时，分块矩阵乘法的核心公式为：
@@ -530,6 +526,10 @@ $$C_{01} = \mathbf{Q_{00}} \cdot K^T_{01} + Q_{01} \cdot K^T_{11}$$
 - 计算 $C_{00}$ 和 $C_{01}$
 
 这样，$Q_{00}$ 从全局内存到共享内存的读取次数从 2 次降为 1 次，减少了冗余的全局内存访问。
+
+import ThreadCoarseningDemo from './components/ThreadCoarseningDemo';
+
+<ThreadCoarseningDemo client:load />
 
 ```c++
 dim3 block1(TILE, TILE);
@@ -693,4 +693,60 @@ s_Q[tx][k] * s_K[k][ty]
 | 16384 | 57.096 ms | 33.187 ms | 24.386 ms |
 
 非常的 Amazing 啊，这一个微小的改动竟然有这么明显地性能提升。
+
+要理解方法二为什么更快，需要先了解 **Bank Conflict**。
+
+### Shared Memory 的物理结构
+
+Shared memory 被切成 **32 个 bank**，每个 bank 是独立的内存模块，可以同时服务一个请求。
+
+地址分配规则很简单：**第 n 个 float 在第 n % 32 号 bank**。
+
+```
+地址:  0   1   2   3  ...  31  32  33 ...
+bank:  0   1   2   3  ...  31   0   1 ...
+```
+
+**理想情况**：一个 warp 32 个线程同时读 shared memory，如果每个线程访问不同的 bank，32 个 bank 并行服务，一个周期搞定。
+
+**Bank Conflict**：一个 bank 在同一周期只能服务一个线程。如果多个线程访问同一个 bank，硬件会串行化这些请求。N-way conflict = 该 bank 同时被 N 个线程访问 = 需要 N 个周期。
+
+import BankConflictDemo from './components/BankConflictDemo';
+
+<BankConflictDemo client:load />
+
+### 具体分析 s_K 的两种读取方式
+
+**方法一** `s_K[tx][k]`，k=3 固定，tx=0..15（同一个 warp 的前半部分）：
+
+```
+s_K[0][3]  → offset = 0*16+3  = 3   → bank 3
+s_K[1][3]  → offset = 1*16+3  = 19  → bank 19
+s_K[2][3]  → offset = 2*16+3  = 35  → bank 3   ← 撞 tx=0
+s_K[3][3]  → offset = 3*16+3  = 51  → bank 19  ← 撞 tx=1
+s_K[4][3]  → offset = 4*16+3  = 67  → bank 3   ← 撞
+...
+s_K[7][3]  → offset = 7*16+3  = 115 → bank 19  ← 撞
+```
+
+bank 3 被 8 个线程同时访问 → 硬件串行执行 8 次 → **8-way conflict，慢 8 倍**。
+
+根本原因：`tx` 每增加 1，offset 增加 TILE=16。而 `16 % 32 = 16`，`32 % 32 = 0`，每隔两个线程就回到同一 bank，16 个线程只踩 2 个 bank。
+
+**方法二** `s_K[k][tx]`，k=3 固定，tx=0..15：
+
+```
+s_K[3][0]  → offset = 3*16+0  = 48  → bank 16
+s_K[3][1]  → offset = 3*16+1  = 49  → bank 17
+s_K[3][2]  → offset = 3*16+2  = 50  → bank 18
+...
+s_K[3][15] → offset = 3*16+15 = 63  → bank 31
+```
+
+tx 每增加 1，offset 增加 1，bank 也增加 1 → 16 个线程访问 16 个不同 bank，**无冲突**。
+
+Bank conflict 的根源是**步长**。步长是 32 的因数时出问题；步长是 1（连续访问）时最好。
+
+- `s_K[tx][k]`：tx 走在"行"方向，步长=TILE=16 → 冲突
+- `s_K[k][tx]`：tx 走在"列"方向，步长=1 → 无冲突
 
