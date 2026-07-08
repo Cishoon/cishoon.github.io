@@ -342,3 +342,60 @@ proxy() {
 
 proxy on
 ```
+
+
+
+# 一键安装增强版 proxy 命令
+
+上面那份 `proxy` 函数每次换机器都要手动复制、改 IP/端口也得翻源码。我把它重写成了一个**可移植（bash + zsh 通用）的增强版**，托管在本站，一行命令即可安装：
+
+```bash
+curl -fsSL https://cishoon.top/proxy.sh | sh
+```
+
+装完 `source ~/.zshrc`（或 `~/.bashrc`）即可。相比上面的版本，多了：
+
+- **命名预设**：给常用的 host:port 起个名字，`proxy on macmini` 一键切换
+- **默认目标**：`proxy on` 不带参数时用默认预设
+- **开机自启开关**：`proxy autostart on/off`，不用手动删源码里的 `proxy on`
+- **预设增删查**：命令行直接管理，自动写回配置文件
+- 保留了原版的 `proxy ssh` 反向隧道 + OSC52 剪贴板功能
+
+## 用法
+
+```bash
+proxy on                      # 用默认预设开启
+proxy on macmini              # 用指定预设
+proxy on 192.168.1.5:1080     # 直接指定 host:port（省略端口默认 7890）
+proxy off                     # 关闭
+proxy status                  # 查看状态
+proxy ssh [rport] [lport]     # 生成反向隧道命令并复制到本地剪贴板
+
+proxy default macmini         # 设置默认目标（不带参数则查看）
+proxy autostart on            # 开机自动启用（on/off）
+proxy preset list             # 列出预设
+proxy preset add office 192.168.1.5:1080   # 新增/更新预设
+proxy preset rm office        # 删除预设
+proxy help                    # 帮助
+```
+
+## 配置文件
+
+所有设置存在 `~/.config/shellproxy/config`，可以用上面的命令管理，也可以直接手动编辑：
+
+```ini
+default=local
+autostart=off
+fallback_port=7890
+# presets:  preset <name> <host[:port]>
+preset local 127.0.0.1:7890
+preset macmini 10.8.6.81:7890
+```
+
+函数本体在 `~/.config/shellproxy/proxy.sh`，安装脚本会幂等地往 `~/.bashrc` / `~/.zshrc` 里加一行 source（重复安装不会重复注入）。
+
+卸载：
+
+```bash
+curl -fsSL https://cishoon.top/proxy.sh | sh -s -- uninstall
+```
